@@ -73,6 +73,26 @@ Open `index.html` in a modern browser. No build step required.
 
 For GitHub Pages, push this folder to a repo and enable Pages.
 
+## Control Assets
+
+The on-screen joystick and buttons use PNG images in the `assets/` folder:
+
+- `assets/joy_base.png`
+- `assets/joy_knob.png`
+- `assets/btn_thrust_up.png`
+- `assets/btn_thrust_down.png`
+- `assets/btn_pitch_up.png`
+- `assets/btn_pitch_down.png`
+
+These binary images are not in the repo yet. To add them:
+
+1. Download the SpacePack package or the control PNGs.
+2. On this GitHub repo page, click **Add file → Upload files**.
+3. Drag the 6 PNG files into an `assets/` folder (create it if needed).
+4. Commit the changes.
+
+Keyboard and mouse controls work even without the images (the buttons will show as broken until the assets are uploaded).
+
 ## Customization
 
 Edit the `PACK` object at the top of `js/space.js` to add planets, moons, stations, or ship types. See the comments in the original single-file version for the full format.
