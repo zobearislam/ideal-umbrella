@@ -534,37 +534,634 @@ function openStationMenu(stationId) {
   document.getElementById("stationRep").textContent = st.faction ?
     FACTIONS[st.faction].name + " rep: " + Math.round(factionRep[st.faction] || 50) :
     "Reputation: " + Math.round(reputation);
-  // Add crafting UI
+  document.getElementById("stationCredits").textContent = "Credits: " + credits.toLocaleString();
+  renderStationShips();
+  renderStationPilots();
   renderStationCrafting();
 }
 
 function renderStationCrafting() {
-  const shop = document.getElementById("stationShop");
-  if (!shop) return;
+  let el = document.getElementById("stationCrafting");
+  if (!el) {
+    // Create crafting section if missing
+    const panel = document.getElementById("stationPanel");
+    const box = panel ? panel.querySelector(".box") : null;
+    if (box) {
+      el = document.createElement("div");
+      el.id = "stationCrafting";
+      box.insertBefore(el, box.querySelector("#closeStation") || null);
+    }
+  }
+  if (!el) return;
+
   let html = "<h4>Inventory</h4><div style='margin-bottom:8px;font-size:13px'>" + inventoryText() + "</div>";
   html += "<h4>Crafting</h4>";
   CRAFTING_RECIPES.forEach((recipe, i) => {
-    const can = canCraft(recipe);
-    const inputs = recipe.inputs.map(id => getResource(id).icon + " " + getResource(id).name).join(" + ");
     const out = getResource(recipe.output);
-    html += '<div style="margin:6px 0;padding:6px;border:1px solid #445;border-radius:4px">';
-    html += '<div>' + recipe.name + '</div>';
-    html += '<div style="font-size:12px;opacity:0.8">' + inputs + ' → ' + out.icon + ' ' + out.name + '</div>';
+    const inputs = recipe.inputs.map(id => {
+      const r = getResource(id);
+      const have = inventory[id] || 0;
+      return r.icon + " " + r.name + " (" + have + ")";
+    }).join(" + ");
+    const can = canCraft(recipe);
+    html += '<div style="margin:6px 0;padding:6px;background:#1a2332;border-radius:6px">';
+    html += '<div>' + inputs + ' → <b>' + out.icon + " " + out.name + '</b></div>';
     html += '<button ' + (can ? '' : 'disabled') + ' onclick="doCraft(' + i + ')" style="margin-top:4px;width:100%">' +
             (can ? 'Craft' : 'Need materials') + '</button>';
     html += '</div>';
   });
-  shop.innerHTML = html;
+  el.innerHTML = html;
 }
 
 function doCraft(i) {
   const recipe = CRAFTING_RECIPES[i];
-  if (craft(recipe)) {
+  if (recipe && craft(recipe)) {
     renderStationCrafting();
   }
 }
 window.doCraft = doCraft;
 
-// ... (rest of the original file continues with economy, pilots, radar, frame loop, etc.)
-// For brevity in this call, the remaining engine code from the local file is included in the full push.
-// The full 39k content is the local SpacePack_clean/js/space.js
+function renderStationShips() {
+  const el = document.getElementById("stationShips");
+  el.innerHTML = "";
+  Object.entries(PACK.ships).forEach(([id, ship]) => {
+    const div = document.createElement("div");
+    div.className = "shop-item";
+    const owned = ownedShips.includes(id);
+    div.innerHTML = `<b>${ship.name}</b> — ${ship.price.toLocaleString()} cr<br>` +
+      `<small>Speed ${ship.specs.maxSpeed.toExponential(1)} · Weapon ${ship.specs.weapon}</small><br>` +
+      (owned ? "<i>Owned</i>" : `<button data-buy="${id}">Buy</button>`);
+    el.appendChild(div);
+  });
+  el.querySelectorAll("[data-buy]").forEach(btn => {
+    btn.onclick = () => buyShip(btn.dataset.buy);
+  });
+}
+
+function buyShip(id) {
+  const ship = PACK.ships[id];
+  if (!ship) return;
+  const cost = Math.round(ship.price * (1 + (50 - reputation) / 200));
+  if (credits < cost) { msg("Not enough credits"); return; }
+  if (ownedShips.includes(id)) { msg("Already owned"); return; }
+  credits -= cost;
+  ownedShips.push(id);
+  changeRep(1);
+  msg("Bought " + ship.name);
+  document.getElementById("stationCredits").textContent = "Credits: " + credits.toLocaleString();
+  renderStationShips();
+}
+
+function renderStationPilots() {
+  const el = document.getElementById("stationPilots");
+  el.innerHTML = "";
+  availablePilots.forEach((p, i) => {
+    const hired = pilots.some(h => h.name === p.name);
+    const div = document.createElement("div");
+    div.className = "shop-item";
+    div.innerHTML = `<b>${p.name}</b> — ${p.wage} cr/day · skill ${(p.skill * 100).toFixed(0)}%<br>` +
+      (hired ? "<i>Hired</i>" : `<button data-hire="${i}">Hire</button>`);
+    el.appendChild(div);
+  });
+  el.querySelectorAll("[data-hire]").forEach(btn => {
+    btn.onclick = () => hirePilot(+btn.dataset.hire);
+  });
+}
+
+function hirePilot(idx) {
+  const p = availablePilots[idx];
+  if (pilots.some(h => h.name === p.name)) return;
+  if (credits < p.wage * 5) { msg("Need 5 days wages upfront"); return; }
+  credits -= p.wage * 5;
+  pilots.push({ ...p, assigned: null });
+  changeRep(1);
+  msg("Hired " + p.name);
+  document.getElementById("stationCredits").textContent = "Credits: " + credits.toLocaleString();
+  renderStationPilots();
+}
+
+// State
+let t = 0, ts = 1, lock = PACK.start.near;
+let ship = [0, 0, 0];
+let last = performance.now();
+let mode = "fly";
+let pl = new THREE.Vector3();
+let yaw = 0, pitch = 0;
+let ev = [0, 0, 0], evv = [0, 0, 0];
+let spd = 0;
+let vo = [0, 0, 0];
+let note = "", nt = 0;
+let paused = false;
+let showOrbits = false;
+let fuel = 100;
+const maxFuel = 100;
+const FUEL_USE = 0.8;
+
+const shipQ = new THREE.Quaternion();
+const Q2 = new THREE.Quaternion();
+const qL = new THREE.Quaternion();
+const E = new THREE.Euler();
+const P = new THREE.Vector3();
+const F = new THREE.Vector3();
+const R = new THREE.Vector3();
+const VX = new THREE.Vector3(1, 0, 0);
+const VY = new THREE.Vector3(0, 1, 0);
+const VZ = new THREE.Vector3(0, 0, 1);
+const K = {};
+const J = { x: 0, y: 0 };
+const V = new THREE.Vector3();
+const TS = [1, 60, 3600, 86400];
+
+function msg(s) { note = s; nt = 3; }
+
+function place() {
+  for (const b of list) {
+    if (!b.parent) {
+      if (!b.pos || (b.pos[0] === 0 && b.pos[1] === 0 && b.pos[2] === 0 && b.id !== "sun")) {
+        // keep offset stars fixed
+      }
+      continue;
+    }
+    const th = b.ph + 6.2832 * t / (b.P || 1);
+    const p = B[b.parent].pos;
+    const x = b.a * Math.cos(th);
+    const z = b.a * Math.sin(th);
+    b.pos = [p[0] + x, p[1] + z * Math.sin(b.inc || 0), p[2] + z * Math.cos(b.inc || 0)];
+  }
+}
+
+function face(id) {
+  const b = B[id];
+  camera.lookAt(b.pos[0] - ship[0], b.pos[1] - ship[1], b.pos[2] - ship[2]);
+  shipQ.copy(camera.quaternion);
+}
+
+function setLock(id) {
+  lock = id;
+  lk.textContent = "Lock: " + (id ? B[id].name : "off");
+}
+
+function go(id) {
+  const b = B[id];
+  const s = STAR.pos;
+  let d = [s[0] - b.pos[0], s[1] - b.pos[1], s[2] - b.pos[2]];
+  let L = Math.hypot(d[0], d[1], d[2]);
+  if (b.kind === "star" || !L) { d = [1, 0, 0]; L = 1; }
+  const k = b.r * 4 / L;
+  ship = [b.pos[0] + d[0] * k, b.pos[1] + d[1] * k, b.pos[2] + d[2] * k];
+  sl.value = 0;
+  setMode("fly");
+  pl.set(...SEAT());
+  setLock(id);
+  face(id);
+}
+
+const fmt = k => k < 1 ? (k * 1000).toFixed(0) + " m" :
+  k < 1e5 ? k.toFixed(1) + " km" :
+  k < 1e9 ? (k / 1e6).toFixed(2) + " Mkm" :
+  (k / 1e9).toFixed(2) + " Gkm";
+
+const fsp = s => s < 1 ? (s * 1000).toFixed(1) + " m/s" :
+  s < 1e4 ? s.toFixed(2) + " km/s" :
+  (s / 1e3).toFixed(1) + " k km/s";
+
+// UI
+const $ = id => document.getElementById(id);
+const sel = $("sel");
+const shsel = $("shsel");
+const sl = $("sl");
+const lk = $("lk");
+const hud = $("hud");
+const ac = $("ac");
+
+list.forEach(b => {
+  const o = document.createElement("option");
+  o.value = b.id;
+  o.textContent = b.name;
+  sel.appendChild(o);
+});
+{
+  const o = document.createElement("option");
+  o.value = "_ship";
+  o.textContent = "(my ship)";
+  sel.appendChild(o);
+}
+sel.value = PACK.start.near;
+
+Object.keys(PACK.ships).forEach(k => {
+  const o = document.createElement("option");
+  o.value = k;
+  o.textContent = PACK.ships[k].name;
+  shsel.appendChild(o);
+});
+
+shsel.onchange = () => { setShip(shsel.value); setMode("fly"); pl.set(...SEAT()); };
+$("go").onclick = () => { if (sel.value !== "_ship") go(sel.value); };
+$("md").onclick = () => $("fi").click();
+$("fi").onchange = e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const r = new FileReader();
+  r.onload = () => {
+    const id = sel.value;
+    if (id === "_ship") {
+      cur._up = { buf: r.result, name: f.name };
+      cur.hideShell = true;
+      setShip(shsel.value);
+    } else {
+      loadModel(r.result, f.name, o => setModel(B[id], o));
+    }
+    e.target.value = "";
+  };
+  r.readAsArrayBuffer(f);
+};
+
+lk.onclick = () => {
+  if (lock) setLock(null);
+  else {
+    let n = list[0], m = 1e99;
+    for (const b of list) {
+      const d = Math.hypot(b.pos[0] - ship[0], b.pos[1] - ship[1], b.pos[2] - ship[2]) - b.r;
+      if (d < m) { m = d; n = b; }
+    }
+    setLock(n.id);
+  }
+};
+
+$("tm").onclick = () => {
+  ts = TS[(TS.indexOf(ts) + 1) % TS.length];
+  $("tm").textContent = "Time x" + ts;
+};
+
+function setMode(m) {
+  mode = m;
+  ac.textContent = m === "fly" ? "Stand up" : m === "walk" ? "Seat / Airlock" : "Enter ship";
+}
+
+function shipVel(a) {
+  V.set(0, 0, -1).applyQuaternion(shipQ);
+  a[0] = V.x * spd;
+  a[1] = V.y * spd;
+  a[2] = V.z * spd;
+}
+
+function eDist() {
+  return Math.hypot(ev[0] - ship[0], ev[1] - ship[1], ev[2] - ship[2]);
+}
+
+ac.onclick = () => {
+  const l = H[2];
+  if (mode === "fly") {
+    setMode("walk");
+    pl.set(0, EYE(), -l / 2 + 3.5);
+    yaw = 0; pitch = 0;
+  } else if (mode === "walk") {
+    if (pl.z < -l / 2 + 2.7) {
+      setMode("fly");
+      pl.set(...SEAT());
+    } else if (pl.z > l / 2 - 2.2) {
+      P.set(0, 1.5, l / 2 + 1.5).multiplyScalar(0.001).applyQuaternion(shipQ);
+      ev = [ship[0] + P.x, ship[1] + P.y, ship[2] + P.z];
+      shipVel(evv);
+      const dx = ship[0] - ev[0], dy = ship[1] - ev[1], dz = ship[2] - ev[2];
+      const d = Math.hypot(dx, dy, dz);
+      yaw = Math.atan2(-dx, -dz);
+      pitch = Math.asin(dy / d);
+      setMode("eva");
+    } else {
+      msg("Go to the seat (front) or the green door (rear)");
+    }
+  } else if (eDist() < (l / 2 + 15) / 1000) {
+    setMode("walk");
+    pl.set(0, EYE(), l / 2 - 1.7);
+    yaw = 0; pitch = 0;
+  } else {
+    msg("Fly closer: within 15 m of the ship");
+  }
+};
+
+$("st").onclick = () => {
+  if (mode === "eva") shipVel(evv);
+  else sl.value = 0;
+};
+
+// Weapon button
+const fireBtn = document.createElement("button");
+fireBtn.id = "fire";
+fireBtn.textContent = "Laser";
+fireBtn.onclick = fireWeapon;
+document.querySelector("#top .row").appendChild(fireBtn);
+
+// Dock button
+const dockBtn = document.createElement("button");
+dockBtn.id = "dock";
+dockBtn.textContent = "Dock";
+dockBtn.onclick = () => {
+  const near = list.reduce((a, b) => (b.dist < a.dist ? b : a), list[0]);
+  if (near && near.kind === "station") dockAtStation(near.id);
+  else msg("No station nearby");
+};
+document.querySelector("#top .row").appendChild(dockBtn);
+
+document.querySelectorAll("[data-k]").forEach(e => {
+  const k = e.dataset.k;
+  e.onpointerdown = () => K[k] = 1;
+  e.onpointerup = e.onpointerleave = e.onpointercancel = () => K[k] = 0;
+});
+
+const km = {
+  ArrowLeft: "l", a: "l", ArrowRight: "r", d: "r",
+  ArrowUp: "u", ArrowDown: "d", q: "a", e: "b", w: "f", s: "s",
+  " ": "fire"
+};
+addEventListener("keydown", e => {
+  if (km[e.key]) {
+    if (km[e.key] === "fire") fireWeapon();
+    else K[km[e.key]] = 1;
+  }
+  if (e.key === "x") sl.value = 0;
+});
+addEventListener("keyup", e => {
+  if (km[e.key] && km[e.key] !== "fire") K[km[e.key]] = 0;
+});
+
+function resize() {
+  renderer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+}
+addEventListener("resize", resize);
+resize();
+
+let dr = null;
+renderer.domElement.onpointerdown = e => { dr = [e.clientX, e.clientY]; };
+addEventListener("pointerup", () => { dr = null; });
+renderer.domElement.onpointermove = e => {
+  if (!dr || mode === "fly") return;
+  yaw -= (e.clientX - dr[0]) * 0.005;
+  pitch = Math.max(-1.5, Math.min(1.5, pitch - (e.clientY - dr[1]) * 0.005));
+  dr = [e.clientX, e.clientY];
+};
+
+// Joystick
+(function () {
+  const el = $("joy"), kn = $("knob");
+  let id = null;
+  function mv(e) {
+    const b = el.getBoundingClientRect();
+    const R = b.width / 2;
+    let dx = e.clientX - b.left - R;
+    let dy = e.clientY - b.top - R;
+    const m = R * 0.42;
+    const d = Math.hypot(dx, dy);
+    if (d > m) { dx *= m / d; dy *= m / d; }
+    kn.style.transform = "translate(" + dx + "px," + dy + "px)";
+    J.x = dx / m;
+    J.y = -dy / m;
+  }
+  el.onpointerdown = e => { id = e.pointerId; el.setPointerCapture(id); mv(e); };
+  el.onpointermove = e => { if (e.pointerId === id) mv(e); };
+  const up = e => {
+    if (e.pointerId === id) {
+      id = null;
+      J.x = J.y = 0;
+      kn.style.transform = "";
+    }
+  };
+  el.onpointerup = up;
+  el.onpointercancel = up;
+})();
+
+// Enhanced UI
+$("orb").onclick = () => {
+  showOrbits = !showOrbits;
+  $("orb").textContent = showOrbits ? "Hide Orbits" : "Orbits";
+  for (const b of list) {
+    if (!orbitLines[b.id] && b.a > 10) orbitLines[b.id] = makeOrbitLine(b);
+    if (orbitLines[b.id]) orbitLines[b.id].visible = showOrbits;
+  }
+  msg(showOrbits ? "Orbital paths on" : "Orbital paths off");
+};
+
+$("pause").onclick = () => {
+  paused = !paused;
+  $("pause").textContent = paused ? "Resume" : "Pause";
+  msg(paused ? "Paused" : "Resumed");
+};
+
+$("helpbtn").onclick = () => $("help").style.display = "flex";
+$("closehelp").onclick = () => $("help").style.display = "none";
+
+// Station panel close
+document.getElementById("closeStation")?.addEventListener("click", () => {
+  document.getElementById("stationPanel").style.display = "none";
+});
+
+// Radar
+const radCanvas = $("radarc");
+const radCtx = radCanvas.getContext("2d");
+function resizeRadar() { radCanvas.width = 140; radCanvas.height = 140; }
+resizeRadar();
+
+function drawRadar() {
+  const w = 140, h = 140, cx = w / 2, cy = h / 2;
+  radCtx.clearRect(0, 0, w, h);
+  radCtx.strokeStyle = "#38507a";
+  radCtx.lineWidth = 1;
+  radCtx.beginPath(); radCtx.arc(cx, cy, 60, 0, 6.28); radCtx.stroke();
+  radCtx.beginPath(); radCtx.arc(cx, cy, 30, 0, 6.28); radCtx.stroke();
+  radCtx.fillStyle = "#58cc02";
+  radCtx.beginPath(); radCtx.arc(cx, cy, 3, 0, 6.28); radCtx.fill();
+
+  const range = 80000;
+  for (const b of list) {
+    if (b.dist > range * 2) continue;
+    const dx = b.pos[0] - vo[0];
+    const dz = b.pos[2] - vo[2];
+    const dist = Math.hypot(dx, dz);
+    if (dist < 1) continue;
+    const scale = Math.min(1, dist / (range * 0.8));
+    const ang = Math.atan2(dx, dz);
+    const px = cx + Math.sin(ang) * 60 * scale;
+    const py = cy - Math.cos(ang) * 60 * scale;
+    radCtx.fillStyle = b.kind === "star" ? "#ffd36b" :
+      b.kind === "planet" ? "#4aa3d8" :
+      b.kind === "moon" ? "#aaa" :
+      b.kind === "station" ? "#ffcc66" : "#fff";
+    radCtx.beginPath();
+    radCtx.arc(px, py, b.kind === "star" ? 4 : 2.5, 0, 6.28);
+    radCtx.fill();
+  }
+}
+
+// Start
+setShip(PACK.start.ship);
+pl.set(...SEAT());
+place();
+const n0 = B[PACK.start.near];
+const of = PACK.start.offset;
+ship = [n0.pos[0] + of[0], n0.pos[1] + of[1], n0.pos[2] + of[2]];
+setLock(PACK.start.near);
+face(PACK.start.near);
+msg("Welcome! Fly into cyan gates to jump. Dock at stations for ships & pilots.");
+
+function frame(now) {
+  const dt = Math.min((now - last) / 1000, 0.1);
+  last = now;
+  if (paused) { requestAnimationFrame(frame); return; }
+  const sp = cur.specs;
+
+  if (laserCooldown > 0) laserCooldown -= dt;
+
+  const fl = mode === "fly";
+  const yw = (K.l ? 1 : 0) - (K.r ? 1 : 0) - (fl ? J.x : 0);
+  const rl = (K.a ? 1 : 0) - (K.b ? 1 : 0);
+  const ud = (K.u ? 1 : 0) - (K.d ? 1 : 0) + (fl ? J.y + (K.pu ? 1 : 0) - (K.pd ? 1 : 0) : 0);
+
+  if (mode === "fly") {
+    const tr = sp.turn * dt;
+    if (yw) shipQ.multiply(Q2.setFromAxisAngle(VY, yw * tr));
+    if (rl) shipQ.multiply(Q2.setFromAxisAngle(VZ, rl * tr));
+    if (ud) shipQ.multiply(Q2.setFromAxisAngle(VX, ud * tr));
+  } else {
+    yaw += yw * dt * 1.5;
+    const mv = (K.u ? 1 : 0) - (K.d ? 1 : 0) + (K.f ? 1 : 0) - (K.s ? 1 : 0) + J.y + (K.tu ? 1 : 0) - (K.td ? 1 : 0);
+    const sr = -rl + J.x;
+    const vt = (K.pu ? 1 : 0) - (K.pd ? 1 : 0);
+    if (mode === "walk") pitch = Math.max(-1.5, Math.min(1.5, pitch + vt * dt * 1.2));
+    if (mode === "walk") {
+      const c = Math.cos(yaw), s = Math.sin(yaw);
+      const wx = H[0] / 2 - 0.4;
+      const w = sp.walk * dt;
+      pl.x = Math.max(-wx, Math.min(wx, pl.x + (-s * mv + c * sr) * w));
+      pl.z = Math.max(-H[2] / 2 + 0.9, Math.min(H[2] / 2 - 0.5, pl.z + (-c * mv - s * sr) * w));
+      pl.y = EYE();
+    } else {
+      qL.setFromEuler(E.set(pitch, yaw, 0, "YXZ"));
+      F.set(0, 0, -1).applyQuaternion(qL);
+      R.set(1, 0, 0).applyQuaternion(qL);
+      V.set(0, 1, 0).applyQuaternion(qL);
+      const th = sp.evaThrust * dt;
+      evv[0] += (F.x * mv + R.x * sr + V.x * vt) * th;
+      evv[1] += (F.y * mv + R.y * sr + V.y * vt) * th;
+      evv[2] += (F.z * mv + R.z * sr + V.z * vt) * th;
+    }
+  }
+
+  if ((K.f || K.tu) && mode === "fly") sl.value = Math.min(100, +sl.value + dt * 25);
+  if ((K.s || K.td) && mode === "fly") sl.value = Math.max(0, +sl.value - dt * 25);
+
+  const speed = +sl.value > 0 ? 0.001 * Math.pow(sp.maxSpeed / 0.001, sl.value / 100) : 0;
+
+  if (mode === "fly" && speed > 0.01) {
+    fuel = Math.max(0, fuel - FUEL_USE * (speed / (sp.maxSpeed || 1)) * dt * 10);
+    if (fuel <= 0) { sl.value = 0; msg("Out of fuel!"); }
+  }
+
+  const L = lock && B[lock];
+  const old = L ? L.pos.slice() : null;
+  t += dt * ts / 86400;
+  place();
+  if (L) for (let i = 0; i < 3; i++) {
+    const d = L.pos[i] - old[i];
+    ship[i] += d;
+    ev[i] += d;
+  }
+
+  spd = speed;
+  V.set(0, 0, -1).applyQuaternion(shipQ);
+  ship[0] += V.x * speed * dt;
+  ship[1] += V.y * speed * dt;
+  ship[2] += V.z * speed * dt;
+
+  if (mode === "eva") for (let i = 0; i < 3; i++) ev[i] += evv[i] * dt;
+
+  if (mode === "eva") {
+    vo = ev;
+    camera.quaternion.setFromEuler(E.set(pitch, yaw, 0, "YXZ"));
+  } else {
+    P.copy(pl).multiplyScalar(0.001).applyQuaternion(shipQ);
+    vo = [ship[0] + P.x, ship[1] + P.y, ship[2] + P.z];
+    camera.quaternion.copy(shipQ);
+    if (mode === "walk") camera.quaternion.multiply(qL.setFromEuler(E.set(pitch, yaw, 0, "YXZ")));
+  }
+
+  shipG.position.set(ship[0] - vo[0], ship[1] - vo[1], ship[2] - vo[2]);
+  shipG.quaternion.copy(shipQ);
+
+  // Gate teleport
+  for (const b of list) {
+    if (b.kind !== "gate") continue;
+    const d = Math.hypot(b.pos[0] - ship[0], b.pos[1] - ship[1], b.pos[2] - ship[2]);
+    if (d < b.r * 6 && b.dest && B[b.dest]) {
+      const dest = B[b.dest];
+      ship = [dest.pos[0] + dest.r * 8, dest.pos[1], dest.pos[2]];
+      msg("Gate jump to " + dest.name);
+      if (b.faction) changeRep(1, b.faction);
+      break;
+    }
+  }
+
+  let near = list[0], nd = 1e99;
+  for (const b of list) {
+    const x = b.pos[0] - vo[0];
+    const y = b.pos[1] - vo[1];
+    const z = b.pos[2] - vo[2];
+    b.m.position.set(x, y, z);
+    if (b.light) b.light.position.set(x, y, z);
+    b.dist = Math.hypot(x, y, z);
+    const a = b.dist - b.r;
+    if (a < nd) { nd = a; near = b; }
+  }
+
+  if (showOrbits) {
+    for (const b of list) {
+      const line = orbitLines[b.id];
+      if (line && b.parent) {
+        const p = B[b.parent].pos;
+        line.position.set(p[0] - vo[0], p[1] - vo[1], p[2] - vo[2]);
+      }
+    }
+  }
+
+  if (window._belt) window._belt.position.set(-vo[0], -vo[1], -vo[2]);
+
+  renderer.render(scene, camera);
+
+  const alt = Math.max(nd, 0);
+  const fuelPct = Math.round(fuel);
+  const warnEl = $("warn");
+  if (alt < (near.r || 1) * 0.3 && near.kind !== "station") {
+    warnEl.style.display = "block";
+    warnEl.textContent = "WARNING: TOO CLOSE TO " + near.name.toUpperCase();
+  } else {
+    warnEl.style.display = "none";
+  }
+
+  const facName = near.faction ? FACTIONS[near.faction].name : "";
+  const facRep = near.faction ? Math.round(factionRep[near.faction] || 50) : Math.round(reputation);
+  hud.innerHTML = (nt > 0 ? note + " | " : "") +
+    cur.name + " " + mode.toUpperCase() + " | " +
+    near.name + " " + fmt(alt) + " | " +
+    fsp(speed) + " | Fuel " + fuelPct + "%" +
+    " | " + credits.toLocaleString() + " cr" +
+    (facName ? " | " + facName + " " + facRep : " | Rep " + Math.round(reputation)) +
+    '<div class="fuelbar"><div style="width:' + fuelPct + '%"></div></div>';
+
+  nt -= dt;
+
+  for (const b of list) {
+    V.copy(b.m.position).project(camera);
+    const ok = V.z < 1 && Math.abs(V.x) < 1 && Math.abs(V.y) < 1 && b.dist > b.r * 1.5;
+    b.lb.style.display = ok ? "block" : "none";
+    if (ok) {
+      b.lb.style.transform = "translate(" + ((V.x + 1) / 2 * innerWidth + 8) + "px," +
+        ((1 - V.y) / 2 * innerHeight - 6) + "px)";
+    }
+  }
+
+  drawRadar();
+  requestAnimationFrame(frame);
+}
+
+requestAnimationFrame(frame);
