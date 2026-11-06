@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Space Pack — Enhanced</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="top" class="bar">
+  <div class="row">
+    <select id="sel"></select>
+    <button id="go">Go</button>
+    <button id="lk">Lock</button>
+    <button id="tm">Time x1</button>
+    <button id="orb">Orbits</button>
+    <button id="pause">Pause</button>
+    <button id="helpbtn">Help</button>
+    <button id="ac">Stand up</button>
+    <select id="shsel"></select>
+    <button id="md">Model</button>
+    <input type="file" id="fi" accept=".glb,.gltf,.obj" hidden>
+  </div>
+  <div id="hud"></div>
+</div>
+
+<div id="bot" class="bar">
+  <div class="cl">
+    <div class="pair">
+      <img class="bi" data-k="tu" src="assets/btn_thrust_up.png" alt="thrust up">
+      <img class="bi" data-k="td" src="assets/btn_thrust_down.png" alt="thrust down">
+    </div>
+  </div>
+  <div id="joy">
+    <img id="jb" src="assets/joy_base.png" alt="joystick">
+    <img id="knob" src="assets/joy_knob.png" alt="knob">
+  </div>
+  <div class="cl">
+    <div class="pair">
+      <img class="bi" data-k="pu" src="assets/btn_pitch_up.png" alt="pitch up">
+      <img class="bi" data-k="pd" src="assets/btn_pitch_down.png" alt="pitch down">
+    </div>
+  </div>
+  <div id="mid">
+    <input id="sl" type="range" min="0" max="100" value="0">
+    <button id="st">Stop</button>
+  </div>
+</div>
+
+<div id="radar"><canvas id="radarc"></canvas></div>
+<div id="warn"></div>
+
+<div id="stationPanel" style="display:none">
+  <div class="box">
+    <h3 id="stationTitle">Station</h3>
+    <div id="stationCredits"></div>
+    <div id="stationRep"></div>
+    <h4>Ships</h4>
+    <div id="stationShips"></div>
+    <h4>Pilots</h4>
+    <div id="stationPilots"></div>
+    <h4>Resources & Crafting</h4>
+    <div id="stationCrafting"></div>
+    <button id="closeStation" style="margin-top:12px;width:100%">Close</button>
+  </div>
+</div>
+  <div class="box">
+    <h3>Space Pack Controls</h3>
+    <p><b>Fly mode:</b> Joystick / WASD / arrows to turn. W/S or slider for speed. Q/E roll. X stop.</p>
+    <p><b>Walk mode:</b> Move inside ship. Green door = airlock. Front = seat.</p>
+    <p><b>EVA:</b> Free movement outside. Stay close to re-enter.</p>
+    <p><b>Lock:</b> Follows a body. Go jumps near selected object.</p>
+    <p><b>Orbits:</b> Toggle orbital paths. Pause freezes time.</p>
+    <p><b>Gates:</b> Fly into the cyan ring gates to jump to the connected gate.</p>
+    <p><b>Factions:</b> Stations belong to Sol Federation, Alpha Cooperative, Sirius Mining Corp, or Independent. Reputation is tracked per faction.</p>
+    <p><b>Dock:</b> Near a station, press Dock to buy ships, hire pilots, and craft resources.</p>
+    <p><b>Laser:</b> Spacebar or Laser button fires abstract defense laser. Affects reputation.</p>
+    <p><b>Economy:</b> Credits buy ships. Reputation changes prices and rises with peaceful actions.</p>
+    <p style="margin-top:16px;color:#89cff0">Tip: Lock Earth or ISS and accelerate time to watch orbits.</p>
+    <button id="closehelp" style="margin-top:12px;width:100%">Close</button>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+<script src="js/space.js"></script>
+</body>
+</html>
