@@ -1,6 +1,37 @@
 # Space Pack — Enhanced
 
-A browser-based solar system simulator with flyable ships, walkable interiors, EVA, and orbital mechanics. Built for educational and exploratory use.
+A browser-based solar system simulator with flyable ships, walkable interiors, EVA, orbital mechanics, economy, reputation, factions, and resource crafting. Built for educational and exploratory use. Family-friendly.
+
+## Resources Module
+
+Resources are defined in `js/space.js` under `RESOURCES`. Each resource has:
+
+- `id` — unique string key
+- `name` — display name
+- `icon` — emoji or short symbol
+
+Current resources: Iron Ore 🪨, Fuel Cell ⛽, Crystal 💎, Alloy ⚙️, Circuit 🔌, Ice 🧊.
+
+You can add more by editing the `RESOURCES` object.
+
+## Crafting Table
+
+Recipes are in `CRAFTING_RECIPES`. Each recipe is:
+
+```js
+{ id: "smelt-alloy", name: "Smelt Alloy", inputs: ["iron", "fuel"], output: "alloy" }
+```
+
+- Inputs are resource IDs that are consumed (1 each).
+- Output is the resource ID produced.
+- Crafting is available at any station via the station menu.
+
+Example recipes:
+- Iron + Fuel → Alloy
+- Crystal + Iron → Circuit
+- Ice + Crystal → Fuel
+
+Player starts with some inventory. Crafting consumes inputs and adds the output.
 
 ## Gates
 - Cyan ring gates connect locations (Earth ↔ Alpha Centauri, Earth ↔ Sirius, Mars ↔ Jupiter)
@@ -16,7 +47,7 @@ A browser-based solar system simulator with flyable ships, walkable interiors, E
 - Reputation is tracked per faction and shown in the HUD
 - Prices and access can be affected by faction standing
 
-## New Features (Economy & Reputation)
+## Economy & Stations
 
 - **Stations** around every planet and large moon, plus three Sol stations
 - **Alpha Centauri** and **Sirius** systems with their own planets
@@ -24,7 +55,7 @@ A browser-based solar system simulator with flyable ships, walkable interiors, E
 - **Hire pilots** (Aria Chen, Marcus Vale, Lina Okoye, Theo Park) with wages and skill
 - **Reputation** (0–100): rises with peaceful actions, falls when firing defense laser near bodies
 - **Defense laser** on every ship (Spacebar or Laser button) — abstract, non-graphic
-- **Dock** button to open station menu when near a station
+- **Dock** button to open station menu when near a station (ships, pilots, inventory, crafting)
 - New ship: **Interceptor** (fast, higher weapon rating)
 
 ## Controls (updated)
@@ -63,7 +94,7 @@ A browser-based solar system simulator with flyable ships, walkable interiors, E
 ```
 index.html          Main page
 css/style.css       Styles
-js/space.js         Simulation logic
+js/space.js         Simulation logic (includes RESOURCES and CRAFTING_RECIPES)
 assets/             Control button and joystick images
 ```
 
@@ -73,29 +104,11 @@ Open `index.html` in a modern browser. No build step required.
 
 For GitHub Pages, push this folder to a repo and enable Pages.
 
-## Control Assets
-
-The on-screen joystick and buttons use PNG images in the `assets/` folder:
-
-- `assets/joy_base.png`
-- `assets/joy_knob.png`
-- `assets/btn_thrust_up.png`
-- `assets/btn_thrust_down.png`
-- `assets/btn_pitch_up.png`
-- `assets/btn_pitch_down.png`
-
-These binary images are not in the repo yet. To add them:
-
-1. Download the SpacePack package or the control PNGs.
-2. On this GitHub repo page, click **Add file → Upload files**.
-3. Drag the 6 PNG files into an `assets/` folder (create it if needed).
-4. Commit the changes.
-
-Keyboard and mouse controls work even without the images (the buttons will show as broken until the assets are uploaded).
-
 ## Customization
 
-Edit the `PACK` object at the top of `js/space.js` to add planets, moons, stations, or ship types. See the comments in the original single-file version for the full format.
+- Edit the `RESOURCES` object to add new resources (id, name, icon).
+- Edit `CRAFTING_RECIPES` to add new recipes (inputs array → output).
+- Edit the `PACK` object to add planets, moons, stations, or ship types.
 
 ## License
 
