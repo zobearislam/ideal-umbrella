@@ -859,6 +859,7 @@ function setModel(b, o) {
 }
 
 // Economy & Reputation
+let note = "", nt = 0;
 let credits = 50000;
 let reputation = 50; // global fallback
 const factionRep = { solfed: 50, alphaco: 40, siriusmin: 45, independent: 50, terran: 25, pirate: -55, martian: 10, belt: -10, jovian: 40, outer: 0, vega_co: 15, rigel_sci: 20 };
@@ -1045,7 +1046,7 @@ let yaw = 0, pitch = 0;
 let ev = [0, 0, 0], evv = [0, 0, 0];
 let spd = 0;
 let vo = [0, 0, 0];
-let note = "", nt = 0;
+// note/nt moved earlier
 let paused = false;
 let showOrbits = false;
 let fuel = 100;
