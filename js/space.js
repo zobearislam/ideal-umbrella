@@ -273,6 +273,21 @@ const PACK = {
         ["box", [1.5, 0.4, 4], [0, 0.8, 2], 0x333333],
         ["box", [4, 0.15, 2], [-2, 0.6, 0], 0xffaa66]
       ]
+    },
+    tanker: {
+      name: "Tanker", color: 0x4da3ff, price: 65000, hull: [7, 4.5, 28],
+      specs: { maxSpeed: 4e5, turn: 0.3, evaThrust: 0.003, walk: 3, crew: 4, cargo: 250, weapon: 3 },
+      parts: [
+        ["cyl", [4, 16, 4], [0, 2, -6], 0x6b7a89],
+        ["box", [2, 1.5, 2], [0, 1, 10], 0x333333]
+      ]
+    },
+    courier: {
+      name: "Courier", color: 0xffb84d, price: 18000, hull: [2.5, 2, 7],
+      specs: { maxSpeed: 3e7, turn: 1.5, evaThrust: 0.005, walk: 3, crew: 1, cargo: 8, weapon: 6 },
+      parts: [
+        ["box", [3, 0.3, 2], [0, 0.8, 1], 0xffcc66]
+      ]
     }
   },
   objects: [
@@ -615,6 +630,19 @@ function setModel(b, o) {
 let credits = 50000;
 let reputation = 50; // global fallback
 const factionRep = { solfed: 50, alphaco: 40, siriusmin: 45, independent: 50 };
+
+// Initialize advanced Economy and IAG systems
+if (window.Economy) {
+  Economy.init({ credits }, { factions: FACTIONS });
+  // Sync initial reputation
+  for (const [id, rep] of Object.entries(factionRep)) {
+    if (Economy.factions[id]) Economy.factions[id].reputation = rep;
+  }
+}
+if (window.IAG) {
+  console.log("IAG system ready");
+}
+
 const ownedShips = ["scout"];
 const pilots = [];
 const availablePilots = [
@@ -628,6 +656,7 @@ function changeRep(delta, faction) {
   if (faction && factionRep[faction] !== undefined) {
     factionRep[faction] = Math.max(0, Math.min(100, factionRep[faction] + delta));
     msg(FACTIONS[faction].name + " rep " + (delta > 0 ? "+" : "") + delta + " → " + Math.round(factionRep[faction]));
+    if (window.Economy && Economy.changeReputation) Economy.changeReputation(faction, delta);
   } else {
     reputation = Math.max(0, Math.min(100, reputation + delta));
     msg("Reputation " + (delta > 0 ? "+" : "") + delta + " → " + Math.round(reputation));
