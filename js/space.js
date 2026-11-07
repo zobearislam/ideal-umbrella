@@ -126,14 +126,11 @@ function inventoryText() {
 
 // Gates: pairs that connect two locations
 const GATES = [
-  { id: "gate-earth-alpha", name: "Earth–Alpha Gate", parent: "earth", a: 12000, P: 0.5, dest: "gate-alpha-earth", faction: "solfed" },
-  { id: "gate-alpha-earth", name: "Alpha–Earth Gate", parent: "alpha-cen", a: 80000, P: 0.8, dest: "gate-earth-alpha", faction: "alphaco" },
-  { id: "gate-earth-sirius", name: "Earth–Sirius Gate", parent: "earth", a: 15000, P: 0.6, dest: "gate-sirius-earth", faction: "solfed" },
-  { id: "gate-sirius-earth", name: "Sirius–Earth Gate", parent: "sirius", a: 90000, P: 1.2, dest: "gate-earth-sirius", faction: "siriusmin" },
-  { id: "gate-mars-jupiter", name: "Mars–Jupiter Gate", parent: "mars", a: 8000, P: 0.4, dest: "gate-jupiter-mars", faction: "solfed" },
-  { id: "gate-jupiter-mars", name: "Jupiter–Mars Gate", parent: "jupiter", a: 200000, P: 2.0, dest: "gate-mars-jupiter", faction: "independent" },
+  // Inter-system gates (at stars, not planets)
+  { id: "gate-alpha-sol", name: "Alpha–Sol Gate", parent: "alpha-cen", a: 80000, P: 0.8, dest: "sol-gate-1", faction: "alphaco" },
+  { id: "gate-sirius-sol", name: "Sirius–Sol Gate", parent: "sirius", a: 90000, P: 1.2, dest: "sol-gate-3", faction: "siriusmin" },
 
-  // Five gates orbiting Sol at ~40 AU (Transport Tycoon style outer gates)
+  // Five gates orbiting Sol at ~40 AU
   { id: "sol-gate-1", name: "Sol Gate 1", parent: "sun", a: 40 * 149.6e6, P: 365 * 40, dest: "sol-gate-2", faction: "solfed" },
   { id: "sol-gate-2", name: "Sol Gate 2", parent: "sun", a: 40 * 149.6e6, P: 365 * 40, dest: "sol-gate-3", faction: "solfed" },
   { id: "sol-gate-3", name: "Sol Gate 3", parent: "sun", a: 40 * 149.6e6, P: 365 * 40, dest: "sol-gate-4", faction: "independent" },
@@ -146,18 +143,20 @@ const GATES = [
 // Equatorial space elevators / tethers. Earth has 4 equidistant.
 // Luna has 3. Jupiter has 5 at ~1500 km. Others get 2-4 by default.
 const TETHER_CONFIG = {
-  earth:  { count: 4, altitude: 36000, name: "Earth Tether" },   // GEO-ish
+  earth:  { count: 4, altitude: 36000, name: "Earth Tether" },
   moon:   { count: 3, altitude: 10000, name: "Luna Tether" },
-  jupiter:{ count: 5, altitude: 1500,  name: "Jupiter Tether" }, // as noted ~1500 km
+  phobos: { count: 2, altitude: 3000,  name: "Phobos Tether" },   // low moon orbit style
+  jupiter:{ count: 5, altitude: 1500,  name: "Jupiter Tether" },
   mars:   { count: 3, altitude: 8000,  name: "Mars Tether" },
   saturn: { count: 4, altitude: 20000, name: "Saturn Tether" },
   venus:  { count: 2, altitude: 5000,  name: "Venus Tether" }
 };
 
 const TETHER_MODEL = [
-  ["cyl", [0.8, 40, 0.8], [0, 20, 0], 0x88aacc],   // cable
-  ["box", [4, 2, 4], [0, 42, 0], 0xccccdd],         // top station
-  ["box", [3, 1.5, 3], [0, 0, 0], 0x556677]         // base / hook
+  ["cyl", [0.6, 60, 0.6], [0, 30, 0], 0x88aacc],   // long cable
+  ["box", [5, 2.5, 5], [0, 62, 0], 0xccccdd],       // top station
+  ["box", [3.5, 2, 3.5], [0, 2, 0], 0x556677],      // base / hook
+  ["torus", [3, 0.4, 12], [0, 58, 0], 0x66ccff]     // ring at top
 ];
 
 function generateTethers() {
@@ -190,6 +189,49 @@ function generateTethers() {
     }
   }
   return tethers;
+}
+
+
+// ===================== Contracts / Routes (Transport Tycoon) =====================
+const CONTRACTS = [
+  { id: "c1", from: "earth-station", to: "mars-station", resource: "refined_iron", amount: 5, reward: 12000, desc: "Deliver Refined Iron to Mars" },
+  { id: "c2", from: "earth-tether-1", to: "moon-tether-1", resource: "ice", amount: 3, reward: 4500, desc: "Ice to Luna via tether" },
+  { id: "c3", from: "mars-station", to: "phobos-tether-1", resource: "fuel", amount: 4, reward: 8000, desc: "Fuel to Phobos tether" },
+  { id: "c4", from: "jupiter-tether-1", to: "sol-gate-1", resource: "crystal", amount: 2, reward: 25000, desc: "Crystal to outer Sol Gate" },
+  { id: "c5", from: "sol-gate-2", to: "gate-alpha-sol", resource: "plastic", amount: 6, reward: 18000, desc: "Plastic to Alpha Centauri gate" }
+];
+
+let activeContracts = [];
+let completedContracts = 0;
+
+function acceptContract(id) {
+  const c = CONTRACTS.find(x => x.id === id);
+  if (!c || activeContracts.some(a => a.id === id)) return;
+  activeContracts.push({ ...c, progress: 0 });
+  msg("Accepted: " + c.desc);
+}
+
+function checkDelivery(nearId) {
+  for (const c of activeContracts) {
+    if (c.to === nearId && (inventory[c.resource] || 0) >= c.amount) {
+      inventory[c.resource] -= c.amount;
+      credits += c.reward;
+      completedContracts++;
+      activeContracts = activeContracts.filter(a => a.id !== c.id);
+      msg("Delivered! +" + c.reward.toLocaleString() + " cr — " + c.desc);
+      if (typeof changeRep === "function") changeRep(3);
+      return true;
+    }
+  }
+  return false;
+}
+
+// Call this when docking or near a target
+function tryDeliver() {
+  const near = list.reduce((a, b) => (b.dist < a.dist ? b : a), list[0]);
+  if (near && near.dist < (near.r || 1) * 15) {
+    checkDelivery(near.id);
+  }
 }
 
 const GATE_MODEL = [
@@ -242,6 +284,7 @@ const PACK = {
     O("moon", "Moon", "moon", "earth", 1737.4, 384400, 27.32, 0xb5b5b5, { inc: 0.09 }),
     O("iss", "ISS", "station", "earth", 0.0545, 6779, 0.0645, 0xffffff, { inc: 0.9, model: ISS_MODEL }),
     O("mars", "Mars", "planet", "sun", 3389.5, 227.9e6, 687, 0xc8593a),
+    O("phobos", "Phobos", "moon", "mars", 11.1, 9376, 0.3189, 0xaaaaaa),
     O("jupiter", "Jupiter", "planet", "sun", 69911, 778.5e6, 4332.6, 0xd2a77c),
     O("io", "Io", "moon", "jupiter", 1821.6, 421700, 1.769, 0xe6d36a),
     O("europa", "Europa", "moon", "jupiter", 1560.8, 671100, 3.551, 0xd8c9b0),
@@ -949,7 +992,10 @@ dockBtn.id = "dock";
 dockBtn.textContent = "Dock";
 dockBtn.onclick = () => {
   const near = list.reduce((a, b) => (b.dist < a.dist ? b : a), list[0]);
-  if (near && (near.kind === "station" || near.kind === "tether")) dockAtStation(near.id);
+  if (near && (near.kind === "station" || near.kind === "tether")) {
+    dockAtStation(near.id);
+    tryDeliver();
+  }
   else msg("No station nearby");
 };
 document.querySelector("#top .row").appendChild(dockBtn);
