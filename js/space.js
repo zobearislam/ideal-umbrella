@@ -42,18 +42,18 @@ const RESOURCES = {
   ice:     { id: "ice",     name: "Ice",         icon: "🧊" },
 
   // Tape: Resource (refined & advanced)
-  refined_iron:      { id: "refined_iron",      name: "Refined Iron",       icon: "🔲" },
-  refined_gold:      { id: "refined_gold",      name: "Refined Gold",       icon: "🟡" },
-  refined_titanium:  { id: "refined_titanium",  name: "Refined Titanium",   icon: "🔷" },
-  refined_uranium:   { id: "refined_uranium",   name: "Refined Uranium",    icon: "🟢" },
-  refined_copper:    { id: "refined_copper",    name: "Refined Copper",     icon: "🟠" },
-  refined_aluminium: { id: "refined_aluminium", name: "Refined Aluminium",  icon: "⚪" },
-  pure_silicon:      { id: "pure_silicon",      name: "Pure Silicon",       icon: "🟣" },
-  liquid_oxygen:     { id: "liquid_oxygen",     name: "Liquid Oxygen",      icon: "🔵" },
-  liquid_hydrogen:   { id: "liquid_hydrogen",   name: "Liquid Hydrogen",    icon: "🔵" },
-  cellulose_quartz:  { id: "cellulose_quartz",  name: "Cellulose (Quartz)", icon: "💜" },
-  fertilizer:        { id: "fertilizer",        name: "Fertilizer",         icon: "🟣" },
-  plastic:           { id: "plastic",           name: "Plastic",            icon: "⬜" }
+  refined_iron:      { id: "refined_iron",      name: "Refined Iron",       icon: "assets/resources/refined_iron.png" },
+  refined_gold:      { id: "refined_gold",      name: "Refined Gold",       icon: "assets/resources/refined_gold.png" },
+  refined_titanium:  { id: "refined_titanium",  name: "Refined Titanium",   icon: "assets/resources/refined_titanium.png" },
+  refined_uranium:   { id: "refined_uranium",   name: "Refined Uranium",    icon: "assets/resources/refined_uranium.png" },
+  refined_copper:    { id: "refined_copper",    name: "Refined Copper",     icon: "assets/resources/refined_copper.png" },
+  refined_aluminium: { id: "refined_aluminium", name: "Refined Aluminium",  icon: "assets/resources/refined_aluminium.png" },
+  pure_silicon:      { id: "pure_silicon",      name: "Pure Silicon",       icon: "assets/resources/pure_silicon.png" },
+  liquid_oxygen:     { id: "liquid_oxygen",     name: "Liquid Oxygen",      icon: "assets/resources/liquid_oxygen.png" },
+  liquid_hydrogen:   { id: "liquid_hydrogen",   name: "Liquid Hydrogen",    icon: "assets/resources/liquid_hydrogen.png" },
+  cellulose_quartz:  { id: "cellulose_quartz",  name: "Cellulose (Quartz)", icon: "assets/resources/cellulose_quartz.png" },
+  fertilizer:        { id: "fertilizer",        name: "Fertilizer",         icon: "assets/resources/fertilizer.png" },
+  plastic:           { id: "plastic",           name: "Plastic",            icon: "assets/resources/plastic.png" }
 };
 
 // Crafting table: list of recipes
@@ -83,6 +83,16 @@ function getResource(id) {
   return RESOURCES[id] || { id, name: id, icon: "📦" };
 }
 
+function iconHtml(icon, size) {
+  size = size || 28;
+  if (!icon) return "";
+  if (String(icon).includes(".png") || String(icon).startsWith("assets/")) {
+    return '<img src="' + icon + '" alt="" style="width:' + size + 'px;height:' + size + 'px;vertical-align:middle;border-radius:4px;object-fit:contain;background:#222">';
+  }
+  return icon;
+}
+
+
 function canCraft(recipe) {
   return recipe.inputs.every(id => (inventory[id] || 0) >= 1);
 }
@@ -99,7 +109,7 @@ function craft(recipe) {
   // Add output
   inventory[recipe.output] = (inventory[recipe.output] || 0) + 1;
   const out = getResource(recipe.output);
-  msg("Crafted " + out.icon + " " + out.name);
+  msg("Crafted " + out.name);
   return true;
 }
 
@@ -108,7 +118,7 @@ function inventoryText() {
     .filter(([_, n]) => n > 0)
     .map(([id, n]) => {
       const r = getResource(id);
-      return r.icon + " " + r.name + " ×" + n;
+      return iconHtml(r.icon, 22) + " " + r.name + " ×" + n;
     })
     .join("  ·  ") || "Empty";
 }
@@ -583,11 +593,11 @@ function renderStationCrafting() {
     const inputs = recipe.inputs.map(id => {
       const r = getResource(id);
       const have = inventory[id] || 0;
-      return r.icon + " " + r.name + " (" + have + ")";
+      return iconHtml(r.icon, 20) + " " + r.name + " (" + have + ")";
     }).join(" + ");
     const can = canCraft(recipe);
     html += '<div style="margin:6px 0;padding:6px;background:#1a2332;border-radius:6px">';
-    html += '<div>' + inputs + ' → <b>' + out.icon + " " + out.name + '</b></div>';
+    html += '<div>' + inputs + ' → <b>' + iconHtml(out.icon, 24) + " " + out.name + '</b></div>';
     html += '<button ' + (can ? '' : 'disabled') + ' onclick="doCraft(' + i + ')" style="margin-top:4px;width:100%">' +
             (can ? 'Craft' : 'Need materials') + '</button>';
     html += '</div>';
