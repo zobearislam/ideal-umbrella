@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diplomacy Wireless</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--wood:#2a1810;--wood2:#3d2416;--brass:#c49a45;--brass-d:#7a5a22;--glass:#120c07;--amber:#ffb84d;--amber-d:#a8742a;--green:#9ad17a;--red:#e8765a;color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0}
+body{background:radial-gradient(ellipse at 50% 0,#4a2c1a 0,#1c0f08 70%);color:var(--amber);font-family:'VT323',monospace;font-size:20px;min-height:100vh;padding:56px 14px 28px}
+button{font:inherit;color:inherit;cursor:pointer}
+.tv{position:relative;max-width:980px;margin:0 auto;padding:46px 26px 26px;border-radius:26px;background:linear-gradient(160deg,var(--wood2),var(--wood));border:6px solid var(--brass);box-shadow:inset 0 0 0 3px var(--brass-d),0 14px 40px #000a}
+.rivet{position:absolute;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f2d890,var(--brass-d));box-shadow:0 1px 2px #000}
+.r1{top:12px;left:14px}.r2{top:12px;right:14px}.r3{bottom:12px;left:14px}.r4{bottom:12px;right:14px}
+.badge{position:absolute;left:50%;top:-52px;transform:translateX(-50%);width:170px;z-index:3;filter:drop-shadow(0 4px 6px #000a)}
+.tabs{position:absolute;top:-6px;right:34px;display:flex;gap:6px;z-index:2}
+.tabs button{background:#7a5a22;color:#f2d890;font-family:'IM Fell English SC',serif;font-size:21px;padding:4px 18px 6px;border-radius:0 0 10px 10px;border:2px solid var(--brass-d);border-top:0;min-height:40px}
+.tabs button.on{background:var(--brass);color:#2a1810}
+.screen{position:relative;background:var(--glass);border-radius:18px / 22px;border:5px solid #1a0f08;box-shadow:inset 0 0 50px #000,0 0 0 3px var(--brass-d);padding:60px 18px 18px;overflow:hidden;min-height:500px}
+.screen::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#0000 0 2px,#0004 2px 3px);border-radius:inherit}
+h2{margin:0 0 10px;font:400 26px 'IM Fell English SC',serif;display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--amber-d);flex-wrap:wrap;gap:4px}
+h2 b{font:400 24px 'VT323',monospace}
+h3{margin:14px 0 6px;font:400 22px 'IM Fell English SC',serif}
+.up{color:var(--green)}.down{color:var(--red)}.dim{color:var(--amber-d)}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:20px}
+.list{display:grid;gap:8px;align-content:start}
+.f{display:grid;grid-template-columns:42px 1fr;gap:4px 12px;align-items:center;text-align:left;width:100%;background:#ffb84d0d;border:1px solid var(--amber-d);padding:8px 10px;min-height:58px}
+.f.on{background:#ffb84d26;border-color:var(--amber)}
+.f small{display:block;font-size:18px}
+.ico{width:40px;height:40px;border:2px solid var(--amber);border-radius:50%;display:grid;place-items:center;font:400 22px 'IM Fell English SC',serif}
+.gauge{position:relative;height:16px;border:2px solid var(--brass);border-radius:9px;background:linear-gradient(90deg,#e8765a,#a8742a 50%,#9ad17a);margin:22px 4px 26px}
+.gauge i{position:absolute;top:-9px;width:6px;height:30px;background:#f2d890;border:1px solid #2a1810;border-radius:3px;transform:translateX(-50%);box-shadow:0 0 6px #000}
+.gauge span{position:absolute;top:20px;font-size:16px;color:var(--amber-d)}
+.mini{height:6px;background:#ffb84d22;grid-column:2;position:relative}
+.mini i{position:absolute;top:0;bottom:0}
+.big{font-size:34px;line-height:1}
+.fx{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.fx li{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dashed var(--amber-d);padding:4px 0}
+.acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.act{background:none;border:2px solid var(--amber);padding:4px 14px;min-height:44px;font-size:22px}
+.act:hover:not(:disabled){background:var(--amber);color:var(--glass)}
+.act:disabled{border-color:var(--amber-d);color:var(--amber-d);cursor:not-allowed}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.col{border:3px double var(--brass);padding:10px 12px;background:#ffb84d0d}
+.col ul{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:4px}
+.msg{margin-top:12px;min-height:26px;color:var(--green)}
+.base{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding:0 10px}
+.knob{width:50px;height:50px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f2d890,var(--brass-d) 70%);border:3px solid #2a1810;position:relative;box-shadow:0 3px 6px #000}
+.knob::after{content:"";position:absolute;left:50%;top:5px;width:3px;height:16px;background:#2a1810;transform:translateX(-50%) rotate(var(--a,20deg));transform-origin:50% 20px}
+.grille{flex:1;margin:0 22px;height:34px;background:repeating-linear-gradient(90deg,#0009 0 3px,#c49a4533 3px 8px);border-radius:8px;border:2px solid var(--brass-d)}
+@media(max-width:760px){body{font-size:18px}.tv{padding:40px 12px 18px}.badge{width:130px;top:-44px;left:70px;transform:none}.tabs{right:8px;gap:3px}.tabs button{font-size:17px;padding:4px 9px 6px}.screen{padding:56px 12px 14px}.grid,.cols{grid-template-columns:1fr}.grille{margin:0 10px}}
+@media(prefers-reduced-motion:no-preference){.cur{animation:b 1s steps(2) infinite}@keyframes b{50%{opacity:0}}.gauge i{transition:left .4s}}
+@keyframes b{50%{opacity:0}}
+</style>
+</head>
+<body>
+<main class="tv">
+<i class="rivet r1"></i><i class="rivet r2"></i><i class="rivet r3"></i><i class="rivet r4"></i>
+<svg class="badge" viewBox="0 0 170 130" aria-label="Sun tier: S, T, G">
+<polygon points="45,6 125,6 165,65 125,124 45,124 5,65" fill="#c49a45" stroke="#7a5a22" stroke-width="5"/>
+<polygon points="50,14 120,14 154,65 120,116 50,116 16,65" fill="#2a1810" stroke="#7a5a22" stroke-width="2"/>
+<g stroke="#ffb84d" stroke-width="3" fill="none" stroke-linecap="round"><circle cx="85" cy="38" r="10"/><path d="M85 18v6M85 52v6M65 38h6M99 38h6M71 24l4 4M99 24l-4 4"/></g>
+<g stroke="#7a5a22" stroke-width="2"><line x1="18" y1="62" x2="152" y2="62"/><line x1="18" y1="92" x2="152" y2="92"/></g>
+<g fill="#ffb84d" font-family="IM Fell English SC,serif" font-size="30" text-anchor="middle"><text x="52" y="86">S</text><text x="85" y="86">T</text><text x="118" y="86">G</text></g>
+</svg>
+<nav class="tabs" id="tabs"></nav>
+<section class="screen"><div id="view"></div><div class="msg" id="msg"></div></section>
+<div class="base"><div class="knob" style="--a:-35deg"></div><div class="grille"></div><div class="knob"></div></div>
+</main>
+<script>
+var S={tab:'rel',sel:0,funds:250000};
+function cl(v,a,b){return Math.max(a,Math.min(b,v))}
+function pm(n){return (n>0?'+':'')+n+'%'}
+var F=[
+{n:'Terran Confederation',k:'T',d:'Earth\u2019s unified government. Runs the inner-system ports.',rel:25,verb:'Send gift',fx:[
+ ['Fines',function(r){var m=-Math.round(r*.5);return [pm(m)+' on fines',m<=0]}],
+ ['Cargo checks',function(r){var c=Math.round(cl(40-r*.35,5,75));return [c+'% chance per dock',c<=30]}]]},
+{n:'Pirate Clans',k:'P',d:'Raiders of the lanes. They respect strength and coin.',rel:-55,verb:'Pay tribute',fx:[
+ ['Attacks on your ships',function(r){var c=Math.round(cl(30-r*.28,2,60));return [c+'% chance per trip',c<=20]}],
+ ['Safe passage',function(r){return [r>=30?'Pirate lanes open':'No safe passage',r>=30]}]]},
+{n:'Martian Republic',k:'M',d:'Terraforming colonies with their own ports and laws.',rel:10,verb:'Send gift',fx:[
+ ['Port fees',function(r){var m=-Math.round(r*.3);return [pm(m)+' at Martian docks',m<=0]}],
+ ['Contracts',function(r){return [r>=30?'Early access to contracts':'Standard contracts',r>=30]}]]},
+{n:'Belt Miners\u2019 Union',k:'B',d:'Asteroid prospectors who ship ore and need haulers.',rel:-10,verb:'Send gift',fx:[
+ ['Ore contract pay',function(r){var m=Math.round(r*.2);return [pm(m)+' on ore runs',m>=0]}],
+ ['Refuelling',function(r){return [r>=30?'Free refuel at belt stations':'Full fuel price',r>=30]}]]},
+{n:'Jovian Syndicate',k:'J',d:'A corporate bloc building ships around the gas giants.',rel:40,verb:'Send gift',fx:[
+ ['Ship prices',function(r){var m=-Math.round(r*.15);return [pm(m)+' in their shipyards',m<=0]}],
+ ['License fees',function(r){return [r>=50?'Hazard license discount':'Full license fees',r>=50]}]]},
+{n:'Outer Colonies League',k:'O',d:'Distant settlements beyond the belt, short on supplies.',rel:0,verb:'Send gift',fx:[
+ ['Fuel price',function(r){var m=-Math.round(r*.2);return [pm(m)+' at league stations',m<=0]}],
+ ['Hidden docks',function(r){return [r>=50?'Smuggler docks open':'Docks closed',r>=50]}]]}
+];
+var $=function(id){return document.getElementById(id)};
+function pd(n){return '\u00a3'+n.toLocaleString('en-GB')}
+function say(t){$('msg').innerHTML=t+'<span class="cur">_</span>'}
+function tier(r){return r>=70?['Allied','up']:r>=30?['Friendly','up']:r>-30?['Neutral','dim']:r>-70?['Hostile','down']:['Enemy','down']}
+function side(r){return r>=50?['Joins your side','up']:r<=-50?['Joins your enemies','down']:['Stays out','dim']}
+function pos(r){return ((r+100)/2)+'%'}
+function view(){
+ var h;
+ if(S.tab==='rel'){
+  var f=F[S.sel],t=tier(f.rel),sd=side(f.rel);
+  h='<h2>Diplomacy <b>Funds <span class="up">'+pd(S.funds)+'</span></b></h2><div class="grid"><div class="list">'+
+  F.map(function(x,i){var tt=tier(x.rel);return '<button class="f'+(i===S.sel?' on':'')+'" data-f="'+i+'"><span class="ico">'+x.k+'</span><span>'+x.n+'<small class="'+tt[1]+'">'+tt[0]+' ('+(x.rel>0?'+':'')+x.rel+')</small></span></button>'}).join('')+
+  '</div><div><h3 style="margin-top:0">'+f.n+'</h3><div class="dim">'+f.d+'</div>'+
+  '<div class="gauge" role="img" aria-label="Relations '+f.rel+' out of 100"><i style="left:'+pos(f.rel)+'"></i><span style="left:0">Enemy</span><span style="left:50%;transform:translateX(-50%)">Neutral</span><span style="right:0">Allied</span></div>'+
+  '<div class="big '+t[1]+'">'+t[0]+'</div>'+
+  '<div style="margin-top:6px">In a fight: <span class="'+sd[1]+'">'+sd[0]+'</span></div>'+
+  '<h3>Effects of these relations</h3><ul class="fx">'+f.fx.map(function(e){var r=e[1](f.rel);return '<li><span class="dim">'+e[0]+'</span><span class="'+(r[1]?'up':'down')+'">'+r[0]+'</span></li>'}).join('')+'</ul>'+
+  '<div class="acts"><button class="act" data-a="gift"'+(S.funds<5000||f.rel>=100?' disabled':'')+'>'+f.verb+' '+pd(5000)+'</button><button class="act" data-a="mission"'+(S.funds<15000||f.rel>=100?' disabled':'')+'>Envoy '+pd(15000)+'</button></div></div></div>';
+ }else{
+  var a=[],n=[],o=[];
+  F.forEach(function(x){var s=side(x.rel);(s[1]==='up'?a:s[1]==='down'?o:n).push('<li>'+x.n+' <span class="dim">('+(x.rel>0?'+':'')+x.rel+')</span></li>')});
+  var p=a.length-o.length;
+  h='<h2>Battle forecast <b class="'+(p>0?'up':p<0?'down':'dim')+'">'+(p>0?'Odds favour you':p<0?'Odds against you':'Evenly matched')+'</b></h2><div class="cols">'+
+  '<div class="col"><h3 style="margin-top:0" class="up">Fight at your side</h3><ul>'+(a.join('')||'<li class="dim">No one</li>')+'</ul></div>'+
+  '<div class="col"><h3 style="margin-top:0" class="dim">Stay out</h3><ul>'+(n.join('')||'<li class="dim">No one</li>')+'</ul></div>'+
+  '<div class="col"><h3 style="margin-top:0" class="down">Fight against you</h3><ul>'+(o.join('')||'<li class="dim">No one</li>')+'</ul></div></div>'+
+  '<p class="dim">Factions at +50 or higher back you. Factions at -50 or lower back your enemies.</p>';
+ }
+ $('view').innerHTML=h;
+ $('tabs').innerHTML=[['rel','Relations'],['fight','Forecast']].map(function(t){return '<button data-t="'+t[0]+'" class="'+(S.tab===t[0]?'on':'')+'">'+t[1]+'</button>'}).join('');
+}
+document.addEventListener('click',function(e){
+ var b=e.target.closest('button');if(!b||b.disabled)return;var d=b.dataset,f=F[S.sel];
+ if(d.t){S.tab=d.t;say('')}
+ else if(d.f!==undefined){S.sel=+d.f;say('')}
+ else if(d.a){var c=d.a==='gift'?5000:15000,g=d.a==='gift'?8:20;S.funds-=c;f.rel=cl(f.rel+g,-100,100);say(f.n+': relations '+(g>0?'+':'')+g+' ('+tier(f.rel)[0]+')')}
+ view()});
+view();say('Embassy line open');
+</script>
+</body>
+</html>

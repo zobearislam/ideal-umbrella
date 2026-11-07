@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Company Wireless</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--wood:#2a1810;--wood2:#3d2416;--brass:#c49a45;--brass-d:#7a5a22;--glass:#120c07;--amber:#ffb84d;--amber-d:#a8742a;--green:#9ad17a;--red:#e8765a;color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0}
+body{background:radial-gradient(ellipse at 50% 0,#4a2c1a 0,#1c0f08 70%);color:var(--amber);font-family:'VT323',monospace;font-size:20px;min-height:100vh;padding:56px 14px 28px}
+button{font:inherit;color:inherit;cursor:pointer}
+.tv{position:relative;max-width:980px;margin:0 auto;padding:46px 26px 26px;border-radius:26px;background:linear-gradient(160deg,var(--wood2),var(--wood));border:6px solid var(--brass);box-shadow:inset 0 0 0 3px var(--brass-d),0 14px 40px #000a}
+.rivet{position:absolute;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f2d890,var(--brass-d));box-shadow:0 1px 2px #000}
+.r1{top:12px;left:14px}.r2{top:12px;right:14px}.r3{bottom:12px;left:14px}.r4{bottom:12px;right:14px}
+.badge{position:absolute;left:50%;top:-52px;transform:translateX(-50%);width:170px;z-index:3;filter:drop-shadow(0 4px 6px #000a)}
+.tabs{position:absolute;top:-6px;right:34px;display:flex;gap:6px;z-index:2}
+.tabs button{background:#7a5a22;color:#f2d890;font-family:'IM Fell English SC',serif;font-size:21px;padding:4px 18px 6px;border-radius:0 0 10px 10px;border:2px solid var(--brass-d);border-top:0;min-height:40px}
+.tabs button.on{background:var(--brass);color:#2a1810}
+.screen{position:relative;background:var(--glass);border-radius:18px / 22px;border:5px solid #1a0f08;box-shadow:inset 0 0 50px #000,0 0 0 3px var(--brass-d);padding:60px 18px 18px;overflow:hidden;min-height:470px}
+.screen::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#0000 0 2px,#0004 2px 3px);border-radius:inherit}
+h2{margin:0 0 8px;font:400 26px 'IM Fell English SC',serif;display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--amber-d);flex-wrap:wrap;gap:4px}
+h2 b{font:400 24px 'VT323',monospace}
+.sub{display:flex;gap:8px;margin-bottom:12px}
+.sub button{background:none;border:1px solid var(--amber-d);padding:4px 16px;min-height:44px;font-size:22px}
+.sub button.on{background:var(--amber);color:var(--glass);border-color:var(--amber)}
+.up{color:var(--green)}.down{color:var(--red)}.dim{color:var(--amber-d)}
+.rows{display:grid;gap:8px}
+.row{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;border:1px solid var(--amber-d);padding:8px 12px;background:#ffb84d0d;min-height:56px}
+.ico{width:40px;height:40px;border:2px solid var(--amber);border-radius:50%;display:grid;place-items:center;font-size:20px}
+.row small{display:block;color:var(--amber-d);font-size:18px}
+.act{background:none;border:2px solid var(--amber);padding:4px 14px;min-height:44px;font-size:22px}
+.act:hover:not(:disabled){background:var(--amber);color:var(--glass)}
+.act:disabled{border-color:var(--amber-d);color:var(--amber-d);cursor:not-allowed}
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.plaque{border:3px double var(--brass);padding:12px;background:#ffb84d10;display:flex;flex-direction:column;gap:6px;position:relative}
+.plaque.own{border-color:var(--green)}
+.plaque h3{margin:0;font:400 23px 'IM Fell English SC',serif}
+.plaque p{margin:0;color:var(--amber-d);font-size:18px;line-height:1.1}
+.stamp{color:var(--green);font-size:22px}
+.msg{margin-top:12px;min-height:26px;color:var(--green)}
+.base{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding:0 10px}
+.knob{width:50px;height:50px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f2d890,var(--brass-d) 70%);border:3px solid #2a1810;position:relative;box-shadow:0 3px 6px #000}
+.knob::after{content:"";position:absolute;left:50%;top:5px;width:3px;height:16px;background:#2a1810;transform:translateX(-50%) rotate(var(--a,20deg));transform-origin:50% 20px}
+.grille{flex:1;margin:0 22px;height:34px;background:repeating-linear-gradient(90deg,#0009 0 3px,#c49a4533 3px 8px);border-radius:8px;border:2px solid var(--brass-d)}
+@media(max-width:700px){body{font-size:18px}.tv{padding:40px 12px 18px}.badge{width:130px;top:-44px;left:70px;transform:none}.tabs{right:8px;gap:3px}.tabs button{font-size:17px;padding:4px 9px 6px}.screen{padding:56px 12px 14px}.row{grid-template-columns:40px 1fr;}.row .act,.row>.right{grid-column:1/-1}.grille{margin:0 10px}}
+@media(prefers-reduced-motion:no-preference){.cur{animation:b 1s steps(2) infinite}@keyframes b{50%{opacity:0}}}
+</style>
+</head>
+<body>
+<main class="tv">
+<i class="rivet r1"></i><i class="rivet r2"></i><i class="rivet r3"></i><i class="rivet r4"></i>
+<svg class="badge" viewBox="0 0 170 130" aria-label="Sun tier: S, T, G">
+<polygon points="45,6 125,6 165,65 125,124 45,124 5,65" fill="#c49a45" stroke="#7a5a22" stroke-width="5"/>
+<polygon points="50,14 120,14 154,65 120,116 50,116 16,65" fill="#2a1810" stroke="#7a5a22" stroke-width="2"/>
+<g stroke="#ffb84d" stroke-width="3" fill="none" stroke-linecap="round"><circle cx="85" cy="38" r="10"/><path d="M85 18v6M85 52v6M65 38h6M99 38h6M71 24l4 4M99 24l-4 4"/></g>
+<g stroke="#7a5a22" stroke-width="2"><line x1="18" y1="62" x2="152" y2="62"/><line x1="18" y1="92" x2="152" y2="92"/></g>
+<g fill="#ffb84d" font-family="IM Fell English SC,serif" font-size="30" text-anchor="middle"><text x="52" y="86">S</text><text x="85" y="86">T</text><text x="118" y="86">G</text></g>
+</svg>
+<nav class="tabs" id="tabs"></nav>
+<section class="screen"><div id="view"></div><div class="msg" id="msg"></div></section>
+<div class="base"><div class="knob" style="--a:-35deg"></div><div class="grille"></div><div class="knob"></div></div>
+</main>
+<script>
+var S={tab:'ships',sub:{ships:'fleet',pilots:'roster'},funds:250000};
+var ships=[{n:'Brass Heron',c:'Light hauler',cap:40,p:'Ada Voss'},{n:'Cinder Wren',c:'Courier',cap:15,p:'Tomas Reyes'},{n:'Iron Gull',c:'Bulk freighter',cap:120,p:null}];
+var pilots=[{n:'Ada Voss',r:4,w:3200,s:'Brass Heron'},{n:'Tomas Reyes',r:3,w:2600,s:'Cinder Wren'}];
+var shop=[{n:'Copper Finch',c:'Courier',cap:20,$:45000},{n:'Gearwright',c:'Light hauler',cap:60,$:85000},{n:'Leviathan Mk II',c:'Bulk freighter',cap:200,$:160000},{n:'Aether Lark',c:'Passenger liner',cap:80,$:120000}];
+var apps=[{n:'Ines Calder',r:5,w:4800,$:12000},{n:'Bram Okafor',r:3,w:2400,$:6000},{n:'Wen Ashby',r:4,w:3600,$:9000},{n:'Pip Marlow',r:2,w:1800,$:3000}];
+var lic=[{n:'Light cargo',d:'Haul goods up to 50 tons.',$:0,own:1},{n:'Passenger transport',d:'Carry travellers between stations.',$:0,own:1},{n:'Hazardous goods',d:'Fuel, explosives and acids.',$:40000},{n:'Government courier',d:'Sealed mail and official documents.',$:60000},{n:'Military contracts',d:'Supply runs for the armed fleets.',$:90000},{n:'Deep space charter',d:'Routes beyond the asteroid belt.',$:120000}];
+var $=function(id){return document.getElementById(id)};
+function pd(n){return '£'+n.toLocaleString('en-GB')}
+function say(t){$('msg').innerHTML=t+'<span class="cur">_</span>'}
+function head(t,extra){return '<h2>'+t+' <b>'+(extra||'')+'</b></h2>'}
+function fundsB(){return 'Funds <span class="up">'+pd(S.funds)+'</span>'}
+function subs(k,items){return '<div class="sub">'+items.map(function(i){return '<button data-s="'+i[0]+'" class="'+(S.sub[k]===i[0]?'on':'')+'">'+i[1]+'</button>'}).join('')+'</div>'}
+function row(ic,t,sm,right){return '<div class="row"><span class="ico">'+ic+'</span><span>'+t+'<small>'+sm+'</small></span>'+right+'</div>'}
+function stars(r){return '★'.repeat(r)+'☆'.repeat(5-r)}
+function view(){
+ var h='';
+ if(S.tab==='ships'){
+  h=head('Ships',fundsB())+subs('ships',[['fleet','Fleet ('+ships.length+')'],['buy','Buy more']]);
+  if(S.sub.ships==='fleet')h+='<div class="rows">'+ships.map(function(s){return row('⚓',s.n,s.c+', '+s.cap+' t','<span class="'+(s.p?'up':'down')+'">'+(s.p?'Pilot: '+s.p:'No pilot')+'</span>')}).join('')+'</div>';
+  else h+='<div class="rows">'+shop.map(function(s,i){return row('⚙',s.n,s.c+', '+s.cap+' t','<button class="act" data-buy="'+i+'"'+(S.funds<s.$?' disabled':'')+'>Buy '+pd(s.$)+'</button>')}).join('')+'</div>';
+ }else if(S.tab==='pilots'){
+  var wages=pilots.reduce(function(a,p){return a+p.w},0);
+  h=head('Pilots','Wages '+pd(wages)+'/mo')+subs('pilots',[['roster','Roster ('+pilots.length+')'],['hire','Hire more']]);
+  if(S.sub.pilots==='roster')h+='<div class="rows">'+pilots.map(function(p){return row('☸',p.n,stars(p.r)+' '+pd(p.w)+'/mo','<span class="'+(p.s?'up':'down')+'">'+(p.s?'Flying '+p.s:'Unassigned')+'</span>')}).join('')+'</div>';
+  else h+='<div class="rows">'+apps.map(function(p,i){return row('☸',p.n,stars(p.r)+' '+pd(p.w)+'/mo','<button class="act" data-hire="'+i+'"'+(S.funds<p.$?' disabled':'')+'>Hire '+pd(p.$)+'</button>')}).join('')+'</div>';
+ }else{
+  h=head('Licenses board',fundsB())+'<div class="board">'+lic.map(function(l,i){return '<div class="plaque'+(l.own?' own':'')+'"><h3>'+l.n+'</h3><p>'+l.d+'</p>'+(l.own?'<span class="stamp">Licensed</span>':'<button class="act" data-lic="'+i+'"'+(S.funds<l.$?' disabled':'')+'>Buy '+pd(l.$)+'</button>')+'</div>'}).join('')+'</div>';
+ }
+ $('view').innerHTML=h;
+ $('tabs').innerHTML=[['ships','Ships'],['pilots','Pilots'],['lic','Licenses']].map(function(t){return '<button data-t="'+t[0]+'" class="'+(S.tab===t[0]?'on':'')+'">'+t[1]+'</button>'}).join('');
+}
+function pair(){
+ ships.forEach(function(s){if(!s.p){var p=pilots.filter(function(x){return !x.s})[0];if(p){s.p=p.n;p.s=s.n}}})}
+document.addEventListener('click',function(e){
+ var b=e.target.closest('button');if(!b||b.disabled)return;var d=b.dataset;
+ if(d.t){S.tab=d.t;say('')}
+ else if(d.s){S.sub[S.tab]=d.s;say('')}
+ else if(d.buy!==undefined){var s=shop.splice(+d.buy,1)[0];S.funds-=s.$;ships.push({n:s.n,c:s.c,cap:s.cap,p:null});pair();say(s.n+' joins the fleet')}
+ else if(d.hire!==undefined){var a=apps.splice(+d.hire,1)[0];S.funds-=a.$;pilots.push({n:a.n,r:a.r,w:a.w,s:null});pair();say(a.n+' hired')}
+ else if(d.lic!==undefined){var l=lic[+d.lic];S.funds-=l.$;l.own=1;say(l.n+' license granted')}
+ view()});
+view();say('Company ledger ready');
+</script>
+</body>
+</html>

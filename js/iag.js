@@ -1,5 +1,15 @@
 // IAG (Interstellar Authority Group) reputation / incident system
 window.IAG = (() => {
+  
+  const diplomacyFactions = [
+    { id: "terran", name: "Terran Confederation", desc: "Earth’s unified government. Runs the inner-system ports." },
+    { id: "pirate", name: "Pirate Clans", desc: "Raiders of the lanes. They respect strength and coin." },
+    { id: "martian", name: "Martian Republic", desc: "Terraforming colonies with their own ports and laws." },
+    { id: "belt", name: "Belt Miners’ Union", desc: "Asteroid prospectors who ship ore and need haulers." },
+    { id: "jovian", name: "Jovian Syndicate", desc: "A corporate bloc building ships around the gas giants." },
+    { id: "outer", name: "Outer Colonies League", desc: "Distant settlements beyond the belt, short on supplies." }
+  ];
+
   const laws = {
     unsafeDischarge: { name: "Unsafe weapons discharge", fine: 2500, reputationLoss: 5 },
     unlawfulAssault: { name: "Unlawful assault", fine: 10000, reputationLoss: 20 },
@@ -46,5 +56,5 @@ window.IAG = (() => {
     return true;
   }
 
-  return { laws, recordIncident, confirmIncident, dismissIncident, getIncidents: () => incidents };
+  return { laws, diplomacyFactions, recordIncident, confirmIncident, dismissIncident, getIncidents: () => incidents };
 })();

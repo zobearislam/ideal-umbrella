@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Finance Wireless</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--wood:#2a1810;--wood2:#3d2416;--brass:#c49a45;--brass-d:#7a5a22;--copper:#a65a32;--glass:#120c07;--amber:#ffb84d;--amber-d:#a8742a;--green:#9ad17a;--red:#e8765a;color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0}
+body{background:radial-gradient(ellipse at 50% 0,#4a2c1a 0,#1c0f08 70%);color:var(--amber);font-family:'VT323',monospace;font-size:20px;min-height:100vh;padding:56px 14px 28px}
+.tv{position:relative;max-width:980px;margin:0 auto;padding:46px 26px 26px;border-radius:26px;background:linear-gradient(160deg,var(--wood2),var(--wood));border:6px solid var(--brass);box-shadow:inset 0 0 0 3px var(--brass-d),0 14px 40px #000a}
+.rivet{position:absolute;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f2d890,var(--brass-d));box-shadow:0 1px 2px #000}
+.r1{top:12px;left:14px}.r2{top:12px;right:14px}.r3{bottom:12px;left:14px}.r4{bottom:12px;right:14px}
+.badge{position:absolute;left:50%;top:-52px;transform:translateX(-50%);width:170px;z-index:3;filter:drop-shadow(0 4px 6px #000a)}
+.tab{position:absolute;top:-6px;right:60px;background:var(--brass);color:#2a1810;font-family:'IM Fell English SC',serif;font-size:22px;padding:4px 22px 6px;border-radius:0 0 10px 10px;border:2px solid var(--brass-d);border-top:0}
+.screen{position:relative;background:var(--glass);border-radius:18px / 22px;border:5px solid #1a0f08;box-shadow:inset 0 0 50px #000,0 0 0 3px var(--brass-d);padding:62px 18px 18px;overflow:hidden}
+.screen::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,#0000 0 2px,#0004 2px 3px);border-radius:inherit}
+.grid{display:grid;grid-template-columns:1fr 1.05fr;gap:22px}
+h2{margin:0 0 4px;font:400 26px 'IM Fell English SC',serif;color:var(--amber);letter-spacing:.5px;display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--amber-d)}
+h2 b{font:400 24px 'VT323',monospace}
+.up{color:var(--green)}.down{color:var(--red)}
+.panel{margin-bottom:14px}
+svg.ch{display:block;width:100%;height:auto;text-shadow:0 0 6px var(--amber)}
+.contracts{border:1px solid var(--amber-d);padding:10px 12px;background:#ffb84d0d}
+.contracts ul{list-style:none;margin:8px 0 0;padding:0}
+.contracts li{display:grid;grid-template-columns:34px 1fr auto;gap:6px 10px;align-items:center;padding:9px 6px;border-bottom:1px dashed var(--amber-d);cursor:pointer;min-height:48px}
+.contracts li:hover,.contracts li.on{background:#ffb84d22}
+.contracts .l{width:30px;height:30px;border:2px solid var(--amber);border-radius:50%;display:grid;place-items:center;font-size:22px}
+.contracts small{display:block;color:var(--amber-d);font-size:18px}
+.contracts .pay{font-size:24px}
+.contracts li.on .l{background:var(--amber);color:var(--glass)}
+.status{margin-top:10px;min-height:26px;color:var(--green)}
+.glow{text-shadow:0 0 8px var(--amber)}
+.base{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding:0 10px}
+.knob{width:50px;height:50px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f2d890,var(--brass-d) 70%);border:3px solid #2a1810;position:relative;box-shadow:0 3px 6px #000}
+.knob::after{content:"";position:absolute;left:50%;top:5px;width:3px;height:16px;background:#2a1810;transform:translateX(-50%) rotate(var(--a,20deg));transform-origin:50% 20px}
+.grille{flex:1;margin:0 22px;height:34px;background:repeating-linear-gradient(90deg,#0009 0 3px,#c49a4533 3px 8px);border-radius:8px;border:2px solid var(--brass-d)}
+@media(max-width:700px){.grid{grid-template-columns:1fr}body{font-size:18px}.tv{padding:40px 12px 18px}.badge{width:140px;top:-46px}.tab{right:20px;font-size:18px}.screen{padding-top:56px}.grille{margin:0 10px}}
+@media(prefers-reduced-motion:no-preference){.cur{animation:b 1s steps(2) infinite}@keyframes b{50%{opacity:0}}}
+</style>
+</head>
+<body>
+<main class="tv">
+<i class="rivet r1"></i><i class="rivet r2"></i><i class="rivet r3"></i><i class="rivet r4"></i>
+<svg class="badge" viewBox="0 0 170 130" aria-label="Sun tier: S, T, G">
+<polygon points="45,6 125,6 165,65 125,124 45,124 5,65" fill="#c49a45" stroke="#7a5a22" stroke-width="5"/>
+<polygon points="50,14 120,14 154,65 120,116 50,116 16,65" fill="#2a1810" stroke="#7a5a22" stroke-width="2"/>
+<g stroke="#ffb84d" stroke-width="3" fill="none" stroke-linecap="round"><circle cx="85" cy="38" r="10"/><path d="M85 18v6M85 52v6M65 38h6M99 38h6M71 24l4 4M99 24l-4 4"/></g>
+<g stroke="#7a5a22" stroke-width="2"><line x1="18" y1="62" x2="152" y2="62"/><line x1="18" y1="92" x2="152" y2="92"/></g>
+<g fill="#ffb84d" font-family="IM Fell English SC,serif" font-size="30" text-anchor="middle"><text x="52" y="86">S</text><text x="85" y="86">T</text><text x="118" y="86">G</text></g>
+</svg>
+<div class="tab">Finance</div>
+<section class="screen">
+<div class="grid">
+<div>
+<div class="panel"><h2>Income <b class="up" id="inT"></b></h2><svg class="ch" id="c1" viewBox="0 0 400 190" role="img" aria-label="Income over time"></svg></div>
+<div class="panel"><h2>Expenditure <b class="down" id="exT"></b></h2><svg class="ch" id="c2" viewBox="0 0 400 190" role="img" aria-label="Expenditure over time"></svg></div>
+</div>
+<div>
+<div class="contracts">
+<h2>Available contracts <b id="net"></b></h2>
+<ul id="list"></ul>
+<div class="status glow" id="st">Select a contract to accept<span class="cur">_</span></div>
+</div>
+</div>
+</div>
+</section>
+<div class="base"><div class="knob" style="--a:-35deg"></div><div class="grille"></div><div class="knob"></div></div>
+</main>
+<script>
+var inc=[40,52,48,66,60,58,84,70,92,78,74,110,96,88,126,118],
+    exp=[30,38,34,44,40,52,48,60,56,150,92,70,78,66,74,62];
+var contracts=[
+ ['A','Coal to the foundry','Dock 4 to Ironworks',480],
+ ['B','Brass fittings','Gearton to Port Vale',360],
+ ['C','Mail by airship','Skyquay to Harrow',620],
+ ['D','Steam engine parts','Boilerside to Aldgate',275]];
+function pound(n){return '£'+n.toLocaleString('en-GB')}
+function draw(id,d,col){
+ var s=document.getElementById(id),W=400,H=190,p=30,m=Math.max.apply(null,d)*1.1,h='';
+ for(var g=0;g<=4;g++){var y=p/2+(H-p-p/2)*g/4;
+  h+='<line x1="'+p+'" x2="'+(W-6)+'" y1="'+y+'" y2="'+y+'" stroke="#a8742a" stroke-opacity=".35" stroke-dasharray="3 4"/>';
+  h+='<text x="2" y="'+(y+5)+'" fill="#a8742a" font-size="15">'+Math.round(m*(1-g/4))+'</text>'}
+ var pts=d.map(function(v,i){return [(p+(W-p-6)*i/(d.length-1)).toFixed(1),(p/2+(H-p-p/2)*(1-v/m)).toFixed(1)]});
+ var line=pts.map(function(q){return q.join(',')}).join(' ');
+ h+='<polygon points="'+p+','+(H-p)+' '+line+' '+(W-6)+','+(H-p)+'" fill="'+col+'" fill-opacity=".14"/>';
+ h+='<polyline points="'+line+'" fill="none" stroke="'+col+'" stroke-width="2.5" stroke-linejoin="round"/>';
+ h+='<line x1="'+p+'" x2="'+(W-6)+'" y1="'+(H-p)+'" y2="'+(H-p)+'" stroke="#ffb84d" stroke-width="2"/>';
+ h+='<text x="'+p+'" y="'+(H-8)+'" fill="#a8742a" font-size="15">Day 1</text><text x="'+(W-6)+'" y="'+(H-8)+'" text-anchor="end" fill="#a8742a" font-size="15">Day '+d.length+'</text>';
+ s.innerHTML=h}
+function sum(a){return a.reduce(function(x,y){return x+y},0)}
+var I=sum(inc)*10,E=sum(exp)*10;
+draw('c1',inc,'#9ad17a');draw('c2',exp,'#e8765a');
+document.getElementById('inT').textContent=pound(I);
+document.getElementById('exT').textContent=pound(E);
+function net(){document.getElementById('net').innerHTML='Net <span class="'+(I-E>=0?'up':'down')+'">'+pound(I-E)+'</span>'}
+net();
+var ul=document.getElementById('list'),st=document.getElementById('st');
+contracts.forEach(function(c){
+ var li=document.createElement('li');li.tabIndex=0;
+ li.innerHTML='<span class="l">'+c[0]+'</span><span>'+c[1]+'<small>'+c[2]+'</small></span><span class="pay up">'+pound(c[3])+'</span>';
+ function pick(){var on=li.classList.toggle('on');
+  st.textContent=on?'Contract '+c[0]+' accepted: '+c[1]:'Contract '+c[0]+' withdrawn'}
+ li.onclick=pick;li.onkeydown=function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();pick()}};
+ ul.appendChild(li)});
+</script>
+</body>
+</html>

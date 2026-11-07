@@ -27,7 +27,14 @@ const FACTIONS = {
   solfed: { name: "Sol Federation", color: 0x4aa3d8, desc: "Earth-led alliance" },
   alphaco: { name: "Alpha Cooperative", color: 0xffaa66, desc: "Alpha Centauri trade group" },
   siriusmin: { name: "Sirius Mining Corp", color: 0xaaccff, desc: "Resource extraction" },
-  independent: { name: "Independent", color: 0xcccccc, desc: "Unaffiliated" }
+  independent: { name: "Independent", color: 0xcccccc, desc: "Unaffiliated" },
+  // From Diplomacy Wireless
+  terran: { name: "Terran Confederation", color: 0x4da3ff, desc: "Earth’s unified government. Runs the inner-system ports." },
+  pirate: { name: "Pirate Clans", color: 0xe8765a, desc: "Raiders of the lanes. They respect strength and coin." },
+  martian: { name: "Martian Republic", color: 0xc8593a, desc: "Terraforming colonies with their own ports and laws." },
+  belt: { name: "Belt Miners’ Union", color: 0xaaaaaa, desc: "Asteroid prospectors who ship ore and need haulers." },
+  jovian: { name: "Jovian Syndicate", color: 0xd2a77c, desc: "A corporate bloc building ships around the gas giants." },
+  outer: { name: "Outer Colonies League", color: 0x8fd8e0, desc: "Distant settlements beyond the belt, short on supplies." }
 };
 
 // ===================== Resources Module =====================
@@ -526,6 +533,37 @@ function updateScreen(plane) {
   plane.userData.texture.needsUpdate = true;
 }
 
+
+// Steampunk hull screen overlays
+let currentOverlay = null;
+function openHullScreen(type) {
+  if (currentOverlay) currentOverlay.remove();
+  const urls = {
+    finances: "ui/finance.html",
+    company: "ui/company.html",
+    diplomacy: "ui/diplomacy.html",
+    status: null
+  };
+  if (!urls[type]) { msg("Screen: " + type); return; }
+  const frame = document.createElement("iframe");
+  frame.src = urls[type];
+  frame.style.cssText = "position:fixed;inset:40px;z-index:200;border:6px solid #c49a45;border-radius:18px;background:#120c07;box-shadow:0 0 40px #000";
+  const close = document.createElement("button");
+  close.textContent = "Close Screen";
+  close.style.cssText = "position:fixed;top:48px;right:48px;z-index:201;background:#c49a45;color:#2a1810;border:none;padding:8px 16px;border-radius:8px;font-weight:bold;cursor:pointer";
+  close.onclick = () => { frame.remove(); close.remove(); currentOverlay = null; };
+  document.body.appendChild(frame);
+  document.body.appendChild(close);
+  currentOverlay = { remove: () => { frame.remove(); close.remove(); } };
+  msg("Opened " + type + " screen");
+}
+
+// Allow clicking near screens in walk mode (simple proximity for now)
+function checkScreenInteract() {
+  if (mode !== "walk" || !shipG) return;
+  // Simple: press E or a button to cycle / open
+}
+
 function updateAllScreens() {
   if (!shipG) return;
   shipG.traverse(obj => {
@@ -708,7 +746,7 @@ function setModel(b, o) {
 // Economy & Reputation
 let credits = 50000;
 let reputation = 50; // global fallback
-const factionRep = { solfed: 50, alphaco: 40, siriusmin: 45, independent: 50 };
+const factionRep = { solfed: 50, alphaco: 40, siriusmin: 45, independent: 50, terran: 25, pirate: -55, martian: 10, belt: -10, jovian: 40, outer: 0 };
 
 // Initialize advanced Economy and IAG systems
 if (window.Economy) {
@@ -1035,8 +1073,27 @@ $("tm").onclick = () => {
   $("tm").textContent = "Time x" + ts;
 };
 
+
+// Hull screen buttons (visible in walk mode)
+const screenBtns = document.createElement("div");
+screenBtns.id = "hullScreens";
+screenBtns.style.cssText = "position:fixed;bottom:80px;left:50%;transform:translateX(-50%);display:none;gap:8px;z-index:100";
+["Finances","Company","Diplomacy","Status"].forEach(name => {
+  const b = document.createElement("button");
+  b.textContent = name;
+  b.onclick = () => openHullScreen(name.toLowerCase());
+  b.style.cssText = "background:#c49a45;color:#2a1810;border:none;padding:8px 12px;border-radius:8px;font-weight:bold;cursor:pointer";
+  screenBtns.appendChild(b);
+});
+document.body.appendChild(screenBtns);
+
+function updateHullButtons() {
+  screenBtns.style.display = (mode === "walk") ? "flex" : "none";
+}
+
 function setMode(m) {
   mode = m;
+  if (typeof updateHullButtons === 'function') updateHullButtons();
   ac.textContent = m === "fly" ? "Stand up" : m === "walk" ? "Seat / Airlock" : "Enter ship";
 }
 
