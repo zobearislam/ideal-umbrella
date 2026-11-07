@@ -161,61 +161,118 @@ const GATES = [
 ];
 
 
-// ===================== Tethers Module =====================
-// Equatorial space elevators / tethers. Earth has 4 equidistant.
-// Luna has 3. Jupiter has 5 at ~1500 km. Others get 2-4 by default.
+// ===================== Tethers Module (Improved) =====================
+// Based on real space tether science:
+// - Electrodynamic Tethers (EDTs): conducting wires in magnetic fields → power or propellant-free thrust
+// - Momentum-Exchange Tethers / Skyhooks: transfer momentum, catch and fling ships
+// Applications: orbit raising/lowering, debris removal, artificial gravity, fuel savings
+
 const TETHER_CONFIG = {
-  earth:  { count: 4, altitude: 36000, name: "Earth Tether" },
-  moon:   { count: 3, altitude: 10000, name: "Luna Tether" },
-  phobos: { count: 2, altitude: 3000,  name: "Phobos Tether" },   // low moon orbit style
-  jupiter:{ count: 5, altitude: 1500,  name: "Jupiter Tether" },
-  mars:   { count: 3, altitude: 8000,  name: "Mars Tether" },
-  saturn: { count: 4, altitude: 20000, name: "Saturn Tether" },
-  venus:  { count: 2, altitude: 5000,  name: "Venus Tether" },
-  "vega-b": { count: 3, altitude: 6000, name: "Vega b Tether" },
-  "altair-b": { count: 2, altitude: 4000, name: "Altair b Tether" },
-  "rigel-b": { count: 4, altitude: 10000, name: "Rigel b Tether" },
-  "kepler-c": { count: 3, altitude: 7000, name: "Kepler c Tether" }
+  // Earth: mix of EDT (magnetic) and Skyhook
+  earth: [
+    { type: "edt", count: 2, altitude: 400, name: "Earth EDT" },      // LEO electrodynamic
+    { type: "skyhook", count: 2, altitude: 36000, name: "Earth Skyhook" }
+  ],
+  moon: [{ type: "skyhook", count: 3, altitude: 10000, name: "Luna Skyhook" }],
+  phobos: [{ type: "skyhook", count: 2, altitude: 3000, name: "Phobos Skyhook" }],
+  // Gas giants: strong magnetic fields → excellent EDTs
+  jupiter: [{ type: "edt", count: 5, altitude: 1500, name: "Jupiter EDT" }],
+  saturn: [{ type: "edt", count: 3, altitude: 8000, name: "Saturn EDT" }, { type: "skyhook", count: 1, altitude: 20000, name: "Saturn Skyhook" }],
+  mars: [{ type: "skyhook", count: 3, altitude: 8000, name: "Mars Skyhook" }],
+  venus: [{ type: "edt", count: 2, altitude: 5000, name: "Venus EDT" }],
+  "vega-b": [{ type: "skyhook", count: 3, altitude: 6000, name: "Vega b Skyhook" }],
+  "altair-b": [{ type: "edt", count: 2, altitude: 4000, name: "Altair b EDT" }],
+  "rigel-b": [{ type: "skyhook", count: 4, altitude: 10000, name: "Rigel b Skyhook" }],
+  "kepler-c": [{ type: "edt", count: 2, altitude: 5000, name: "Kepler c EDT" }, { type: "skyhook", count: 1, altitude: 12000, name: "Kepler c Skyhook" }]
 };
 
-const TETHER_MODEL = [
-  ["cyl", [0.6, 60, 0.6], [0, 30, 0], 0x88aacc],   // long cable
-  ["box", [5, 2.5, 5], [0, 62, 0], 0xccccdd],       // top station
-  ["box", [3.5, 2, 3.5], [0, 2, 0], 0x556677],      // base / hook
-  ["torus", [3, 0.4, 12], [0, 58, 0], 0x66ccff]     // ring at top
-];
+const TETHER_MODELS = {
+  edt: [
+    ["cyl", [0.4, 80, 0.4], [0, 40, 0], 0x44aaff],   // long conducting cable
+    ["box", [3, 1.5, 3], [0, 82, 0], 0x88ccff],      // electron collector
+    ["box", [2.5, 1.5, 2.5], [0, 1, 0], 0x3366aa],   // base anode
+    ["sphere", [1.2], [0, 78, 0], 0x66ddff]          // plasma contact
+  ],
+  skyhook: [
+    ["cyl", [0.7, 50, 0.7], [0, 25, 0], 0xccaa66],   // high-strength cable
+    ["box", [5, 2.5, 5], [0, 52, 0], 0xddcc88],      // grapple station
+    ["box", [3, 1.5, 3], [0, 1, 0], 0x886644],       // counterweight / hook
+    ["torus", [2.5, 0.3, 10], [0, 48, 0], 0xffcc66]  // capture ring
+  ]
+};
 
 function generateTethers() {
   const tethers = [];
-  for (const [bodyId, cfg] of Object.entries(TETHER_CONFIG)) {
+  for (const [bodyId, configs] of Object.entries(TETHER_CONFIG)) {
     const body = PACK.objects.find(o => o.id === bodyId);
     if (!body) continue;
-    const count = cfg.count;
-    const alt = cfg.altitude; // km above surface roughly
-    const baseA = (body.r || 1000) + alt;
-    for (let i = 0; i < count; i++) {
-      const phase = (i / count) * Math.PI * 2;
-      tethers.push(O(
-        bodyId + "-tether-" + (i + 1),
-        cfg.name + " " + (i + 1),
-        "tether",
-        bodyId,
-        0.06,
-        baseA,
-        (body.P || 1) * 0.05,
-        0x66aaff,
-        {
-          model: TETHER_MODEL,
-          tether: true,
-          phase: phase,
-          equatorial: true,
-          faction: body.parent === "alpha-cen" ? "alphaco" : "solfed"
-        }
-      ));
+    let idx = 1;
+    for (const cfg of configs) {
+      const count = cfg.count;
+      const alt = cfg.altitude;
+      const baseA = (body.r || 1000) + alt;
+      const model = TETHER_MODELS[cfg.type] || TETHER_MODELS.skyhook;
+      const color = cfg.type === "edt" ? 0x44aaff : 0xccaa66;
+      for (let i = 0; i < count; i++) {
+        const phase = (i / count) * Math.PI * 2;
+        tethers.push(O(
+          bodyId + "-tether-" + idx,
+          cfg.name + " " + idx,
+          "tether",
+          bodyId,
+          0.05,
+          baseA,
+          (body.P || 1) * 0.04,
+          color,
+          {
+            model: model,
+            tether: true,
+            tetherType: cfg.type,
+            phase: phase,
+            equatorial: true,
+            faction: body.parent === "alpha-cen" ? "alphaco" : "solfed",
+            // Gameplay properties
+            canBoost: cfg.type === "edt",
+            canFling: cfg.type === "skyhook",
+            powerGen: cfg.type === "edt" ? 0.5 : 0,
+            debrisBonus: cfg.type === "edt" ? 1 : 0
+          }
+        ));
+        idx++;
+      }
     }
   }
   return tethers;
 }
+
+// Tether interaction helpers
+function useTetherBoost(tether) {
+  if (!tether || tether.tetherType !== "edt") { msg("Not an electrodynamic tether"); return false; }
+  if (fuel < 5) { msg("Need a little fuel to initiate current"); return false; }
+  fuel = Math.min(100, fuel + 8);
+  spd = Math.min((cur && cur.specs.maxSpeed) || 1e6, spd * 1.15);
+  msg("EDT boost: Lorentz thrust applied — fuel saved, speed up");
+  if (typeof changeRep === "function") changeRep(1, tether.faction);
+  return true;
+}
+
+function useSkyhookFling(tether) {
+  if (!tether || tether.tetherType !== "skyhook") { msg("Not a momentum-exchange tether"); return false; }
+  // Fling toward a higher orbit or nearby body
+  const bonus = 15000;
+  credits += bonus;
+  msg("Skyhook fling! Momentum exchanged — +" + bonus.toLocaleString() + " cr (fuel saved)");
+  if (typeof changeRep === "function") changeRep(2, tether.faction);
+  return true;
+}
+
+function tetherInteract(tether) {
+  if (!tether || tether.kind !== "tether") return;
+  if (tether.tetherType === "edt") useTetherBoost(tether);
+  else if (tether.tetherType === "skyhook") useSkyhookFling(tether);
+  else msg("Tether docked");
+}
+
 
 
 // ===================== Contracts / Routes (Transport Tycoon) =====================
@@ -1218,6 +1275,7 @@ dockBtn.onclick = () => {
   if (near && (near.kind === "station" || near.kind === "tether")) {
     dockAtStation(near.id);
     tryDeliver();
+    if (near.kind === "tether") tetherInteract(near);
   }
   else msg("No station nearby");
 };
