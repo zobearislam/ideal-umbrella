@@ -33,12 +33,27 @@ const FACTIONS = {
 // ===================== Resources Module =====================
 // Add new resources here: id, name, icon
 const RESOURCES = {
+  // Basic / previous
   iron:    { id: "iron",    name: "Iron Ore",    icon: "🪨" },
   fuel:    { id: "fuel",    name: "Fuel Cell",   icon: "⛽" },
   crystal: { id: "crystal", name: "Crystal",     icon: "💎" },
   alloy:   { id: "alloy",   name: "Alloy",       icon: "⚙️" },
   circuit: { id: "circuit", name: "Circuit",     icon: "🔌" },
-  ice:     { id: "ice",     name: "Ice",         icon: "🧊" }
+  ice:     { id: "ice",     name: "Ice",         icon: "🧊" },
+
+  // Tape: Resource (refined & advanced)
+  refined_iron:      { id: "refined_iron",      name: "Refined Iron",       icon: "🔲" },
+  refined_gold:      { id: "refined_gold",      name: "Refined Gold",       icon: "🟡" },
+  refined_titanium:  { id: "refined_titanium",  name: "Refined Titanium",   icon: "🔷" },
+  refined_uranium:   { id: "refined_uranium",   name: "Refined Uranium",    icon: "🟢" },
+  refined_copper:    { id: "refined_copper",    name: "Refined Copper",     icon: "🟠" },
+  refined_aluminium: { id: "refined_aluminium", name: "Refined Aluminium",  icon: "⚪" },
+  pure_silicon:      { id: "pure_silicon",      name: "Pure Silicon",       icon: "🟣" },
+  liquid_oxygen:     { id: "liquid_oxygen",     name: "Liquid Oxygen",      icon: "🔵" },
+  liquid_hydrogen:   { id: "liquid_hydrogen",   name: "Liquid Hydrogen",    icon: "🔵" },
+  cellulose_quartz:  { id: "cellulose_quartz",  name: "Cellulose (Quartz)", icon: "💜" },
+  fertilizer:        { id: "fertilizer",        name: "Fertilizer",         icon: "🟣" },
+  plastic:           { id: "plastic",           name: "Plastic",            icon: "⬜" }
 };
 
 // Crafting table: list of recipes
@@ -46,7 +61,10 @@ const RESOURCES = {
 const CRAFTING_RECIPES = [
   { id: "smelt-alloy",    name: "Smelt Alloy",     inputs: ["iron", "fuel"],    output: "alloy" },
   { id: "make-circuit",   name: "Build Circuit",   inputs: ["crystal", "iron"], output: "circuit" },
-  { id: "refine-fuel",    name: "Refine Fuel",     inputs: ["ice", "crystal"],  output: "fuel" }
+  { id: "refine-fuel",    name: "Refine Fuel",     inputs: ["ice", "crystal"],  output: "fuel" },
+  { id: "refine-iron",    name: "Refine Iron",     inputs: ["iron", "fuel"],    output: "refined_iron" },
+  { id: "make-plastic",   name: "Make Plastic",    inputs: ["cellulose_quartz", "fuel"], output: "plastic" },
+  { id: "silicon-circuit",name: "Silicon Circuit", inputs: ["pure_silicon", "refined_copper"], output: "circuit" }
 ];
 
 // Player inventory (resource id → amount)
@@ -54,7 +72,11 @@ const inventory = {
   iron: 8,
   fuel: 12,
   crystal: 3,
-  ice: 5
+  ice: 5,
+  refined_iron: 2,
+  refined_gold: 1,
+  pure_silicon: 1,
+  plastic: 3
 };
 
 function getResource(id) {
