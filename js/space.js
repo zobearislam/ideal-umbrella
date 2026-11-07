@@ -453,7 +453,86 @@ function buildShip(T, g, lamp) {
     L.position.set(0, h - 0.4, 0);
     g.add(L);
   }
+  addInteriorScreens(g, T);
 }
+
+// Interior screens for walkable ships
+function addInteriorScreens(g, T) {
+  const w = T.hull[0], h = T.hull[1], l = T.hull[2];
+  const screens = [
+    { name: "Finances", x: -w/2 + 0.3, z: 0, rotY: Math.PI/2, content: "finances" },
+    { name: "Company", x: w/2 - 0.3, z: 2, rotY: -Math.PI/2, content: "company" },
+    { name: "Diplomacy", x: 0, z: -l/2 + 1.2, rotY: 0, content: "diplomacy" },
+    { name: "Status", x: 0, z: l/2 - 1.5, rotY: Math.PI, content: "status" }
+  ];
+
+  screens.forEach(s => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 512; canvas.height = 320;
+    const ctx = canvas.getContext("2d");
+    const texture = new THREE.CanvasTexture(canvas);
+    const mat = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.4), mat);
+    plane.position.set(s.x, h * 0.55, s.z);
+    plane.rotation.y = s.rotY;
+    plane.userData.screen = s.content;
+    plane.userData.canvas = canvas;
+    plane.userData.ctx = ctx;
+    plane.userData.texture = texture;
+    g.add(plane);
+    updateScreen(plane);
+  });
+}
+
+function updateScreen(plane) {
+  const ctx = plane.userData.ctx;
+  const type = plane.userData.screen;
+  const canvas = plane.userData.canvas;
+  ctx.fillStyle = "#0a1220";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#66ccff";
+  ctx.font = "bold 28px system-ui";
+  ctx.fillText(type.toUpperCase(), 20, 40);
+
+  ctx.fillStyle = "#e0e8f0";
+  ctx.font = "20px system-ui";
+  let lines = [];
+  if (type === "finances") {
+    lines = [
+      "Credits: " + (credits || 0).toLocaleString(),
+      "Fuel: " + Math.round(fuel || 0) + "%",
+      "Active contracts: " + (activeContracts ? activeContracts.length : 0),
+      "Completed: " + (completedContracts || 0)
+    ];
+  } else if (type === "company") {
+    lines = [
+      "Owned ships: " + (ownedShips ? ownedShips.length : 1),
+      "Pilots: " + (pilots ? pilots.length : 0),
+      "Current: " + (cur ? cur.name : "—")
+    ];
+  } else if (type === "diplomacy") {
+    lines = Object.entries(factionRep || {}).map(([k, v]) =>
+      (FACTIONS[k] ? FACTIONS[k].name : k) + ": " + Math.round(v)
+    );
+    if (!lines.length) lines = ["No faction data"];
+  } else {
+    lines = [
+      "Mode: " + (mode || "fly").toUpperCase(),
+      "Near: " + (typeof near !== "undefined" && near ? near.name : "—"),
+      "Reputation: " + Math.round(reputation || 50)
+    ];
+  }
+  lines.forEach((line, i) => ctx.fillText(line, 20, 80 + i * 32));
+  plane.userData.texture.needsUpdate = true;
+}
+
+function updateAllScreens() {
+  if (!shipG) return;
+  shipG.traverse(obj => {
+    if (obj.userData && obj.userData.screen) updateScreen(obj);
+  });
+}
+
 
 list.forEach(b => {
   const real = b.kind === "station" || b.kind === "ship" || b.kind === "tether";
@@ -1327,6 +1406,7 @@ function frame(now) {
   }
 
   drawRadar();
+  if (mode === "walk" && Math.random() < 0.05) updateAllScreens();
   requestAnimationFrame(frame);
 }
 
