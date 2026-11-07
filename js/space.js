@@ -131,8 +131,66 @@ const GATES = [
   { id: "gate-earth-sirius", name: "Earth–Sirius Gate", parent: "earth", a: 15000, P: 0.6, dest: "gate-sirius-earth", faction: "solfed" },
   { id: "gate-sirius-earth", name: "Sirius–Earth Gate", parent: "sirius", a: 90000, P: 1.2, dest: "gate-earth-sirius", faction: "siriusmin" },
   { id: "gate-mars-jupiter", name: "Mars–Jupiter Gate", parent: "mars", a: 8000, P: 0.4, dest: "gate-jupiter-mars", faction: "solfed" },
-  { id: "gate-jupiter-mars", name: "Jupiter–Mars Gate", parent: "jupiter", a: 200000, P: 2.0, dest: "gate-mars-jupiter", faction: "independent" }
+  { id: "gate-jupiter-mars", name: "Jupiter–Mars Gate", parent: "jupiter", a: 200000, P: 2.0, dest: "gate-mars-jupiter", faction: "independent" },
+
+  // Five gates orbiting Sol at ~40 AU (Transport Tycoon style outer gates)
+  { id: "sol-gate-1", name: "Sol Gate 1", parent: "sun", a: 40 * 149.6e6, P: 365 * 40, dest: "sol-gate-2", faction: "solfed" },
+  { id: "sol-gate-2", name: "Sol Gate 2", parent: "sun", a: 40 * 149.6e6, P: 365 * 40, dest: "sol-gate-3", faction: "solfed" },
+  { id: "sol-gate-3", name: "Sol Gate 3", parent: "sun", a: 40 * 149.6e6, P: 365 * 40, dest: "sol-gate-4", faction: "independent" },
+  { id: "sol-gate-4", name: "Sol Gate 4", parent: "sun", a: 40 * 149.6e6, P: 365 * 40, dest: "sol-gate-5", faction: "siriusmin" },
+  { id: "sol-gate-5", name: "Sol Gate 5", parent: "sun", a: 40 * 149.6e6, P: 365 * 40, dest: "sol-gate-1", faction: "alphaco" },
 ];
+
+
+// ===================== Tethers Module =====================
+// Equatorial space elevators / tethers. Earth has 4 equidistant.
+// Luna has 3. Jupiter has 5 at ~1500 km. Others get 2-4 by default.
+const TETHER_CONFIG = {
+  earth:  { count: 4, altitude: 36000, name: "Earth Tether" },   // GEO-ish
+  moon:   { count: 3, altitude: 10000, name: "Luna Tether" },
+  jupiter:{ count: 5, altitude: 1500,  name: "Jupiter Tether" }, // as noted ~1500 km
+  mars:   { count: 3, altitude: 8000,  name: "Mars Tether" },
+  saturn: { count: 4, altitude: 20000, name: "Saturn Tether" },
+  venus:  { count: 2, altitude: 5000,  name: "Venus Tether" }
+};
+
+const TETHER_MODEL = [
+  ["cyl", [0.8, 40, 0.8], [0, 20, 0], 0x88aacc],   // cable
+  ["box", [4, 2, 4], [0, 42, 0], 0xccccdd],         // top station
+  ["box", [3, 1.5, 3], [0, 0, 0], 0x556677]         // base / hook
+];
+
+function generateTethers() {
+  const tethers = [];
+  for (const [bodyId, cfg] of Object.entries(TETHER_CONFIG)) {
+    const body = PACK.objects.find(o => o.id === bodyId);
+    if (!body) continue;
+    const count = cfg.count;
+    const alt = cfg.altitude; // km above surface roughly
+    const baseA = (body.r || 1000) + alt;
+    for (let i = 0; i < count; i++) {
+      const phase = (i / count) * Math.PI * 2;
+      tethers.push(O(
+        bodyId + "-tether-" + (i + 1),
+        cfg.name + " " + (i + 1),
+        "tether",
+        bodyId,
+        0.06,
+        baseA,
+        (body.P || 1) * 0.05,
+        0x66aaff,
+        {
+          model: TETHER_MODEL,
+          tether: true,
+          phase: phase,
+          equatorial: true,
+          faction: body.parent === "alpha-cen" ? "alphaco" : "solfed"
+        }
+      ));
+    }
+  }
+  return tethers;
+}
 
 const GATE_MODEL = [
   ["torus", [8, 0.6, 16], [0, 0, 0], 0x66ccff],
@@ -253,6 +311,7 @@ function generateGates() {
   ));
 }
 PACK.objects.push(...generateStations());
+PACK.objects.push(...generateTethers());
 PACK.objects.push(...generateGates());
 
 // ---------------- engine ----------------
@@ -261,7 +320,7 @@ const B = {};
 const list = [];
 
 PACK.objects.forEach((o, i) => {
-  const real = o.kind === "station" || o.kind === "ship";
+  const real = o.kind === "station" || o.kind === "ship" || o.kind === "tether";
   const sh = o.ship && PACK.ships[o.ship];
   const b = Object.assign({ a: 0, P: 0, inc: 0, ph: (i * 2.399) % 6.283, pos: [0, 0, 0] }, o);
   if (o.offset) {
@@ -339,7 +398,7 @@ function buildShip(T, g, lamp) {
 }
 
 list.forEach(b => {
-  const real = b.kind === "station" || b.kind === "ship";
+  const real = b.kind === "station" || b.kind === "ship" || b.kind === "tether";
   const h = new THREE.Group();
   b.m = h;
   h.scale.setScalar(real ? 0.001 : b.r);
@@ -490,7 +549,7 @@ function loadModel(src, name, cb) {
 }
 
 function setModel(b, o) {
-  const real = b.kind === "station" || b.kind === "ship";
+  const real = b.kind === "station" || b.kind === "ship" || b.kind === "tether";
   if (b.def) { b.m.remove(b.def); b.def = null; }
   if (b.cm) b.m.remove(b.cm);
   if (real) {
@@ -551,7 +610,7 @@ function fireWeapon() {
 // Station actions
 function dockAtStation(stationId) {
   const st = B[stationId];
-  if (!st || st.kind !== "station") return;
+  if (!st || (st.kind !== "station" && st.kind !== "tether")) return;
   const d = Math.hypot(st.pos[0] - ship[0], st.pos[1] - ship[1], st.pos[2] - ship[2]);
   if (d > st.r * 12) { msg("Too far from station"); return; }
   openStationMenu(stationId);
@@ -890,7 +949,7 @@ dockBtn.id = "dock";
 dockBtn.textContent = "Dock";
 dockBtn.onclick = () => {
   const near = list.reduce((a, b) => (b.dist < a.dist ? b : a), list[0]);
-  if (near && near.kind === "station") dockAtStation(near.id);
+  if (near && (near.kind === "station" || near.kind === "tether")) dockAtStation(near.id);
   else msg("No station nearby");
 };
 document.querySelector("#top .row").appendChild(dockBtn);
@@ -1019,7 +1078,7 @@ function drawRadar() {
     radCtx.fillStyle = b.kind === "star" ? "#ffd36b" :
       b.kind === "planet" ? "#4aa3d8" :
       b.kind === "moon" ? "#aaa" :
-      b.kind === "station" ? "#ffcc66" : "#fff";
+      b.kind === "station" ? "#ffcc66" : (b.kind === "tether" ? "#66ccff" : "#fff");
     radCtx.beginPath();
     radCtx.arc(px, py, b.kind === "star" ? 4 : 2.5, 0, 6.28);
     radCtx.fill();
