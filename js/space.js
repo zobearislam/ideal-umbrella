@@ -34,7 +34,9 @@ const FACTIONS = {
   martian: { name: "Martian Republic", color: 0xc8593a, desc: "Terraforming colonies with their own ports and laws." },
   belt: { name: "Belt Miners’ Union", color: 0xaaaaaa, desc: "Asteroid prospectors who ship ore and need haulers." },
   jovian: { name: "Jovian Syndicate", color: 0xd2a77c, desc: "A corporate bloc building ships around the gas giants." },
-  outer: { name: "Outer Colonies League", color: 0x8fd8e0, desc: "Distant settlements beyond the belt, short on supplies." }
+  outer: { name: "Outer Colonies League", color: 0x8fd8e0, desc: "Distant settlements beyond the belt, short on supplies." },
+  vega_co: { name: "Vega Consortium", color: 0xffcc66, desc: "Trade guild of the Vega system" },
+  rigel_sci: { name: "Rigel Science Union", color: 0x66ccff, desc: "Research-focused alliance" }
 };
 
 // ===================== Resources Module =====================
@@ -60,7 +62,15 @@ const RESOURCES = {
   liquid_hydrogen:   { id: "liquid_hydrogen",   name: "Liquid Hydrogen",    icon: "assets/resources/liquid_hydrogen.png" },
   cellulose_quartz:  { id: "cellulose_quartz",  name: "Cellulose (Quartz)", icon: "assets/resources/cellulose_quartz.png" },
   fertilizer:        { id: "fertilizer",        name: "Fertilizer",         icon: "assets/resources/fertilizer.png" },
-  plastic:           { id: "plastic",           name: "Plastic",            icon: "assets/resources/plastic.png" }
+  plastic:           { id: "plastic",           name: "Plastic",            icon: "assets/resources/plastic.png" },
+  // Additional resources
+  water:     { id: "water",     name: "Water",        icon: "💧" },
+  food:      { id: "food",      name: "Food",         icon: "🍞" },
+  rare_earth:{ id: "rare_earth",name: "Rare Earth",   icon: "✨" },
+  helium3:   { id: "helium3",   name: "Helium-3",     icon: "⚛️" },
+  organics:  { id: "organics",  name: "Organics",     icon: "🌱" },
+  alloys:    { id: "alloys",    name: "Advanced Alloy", icon: "🔩" },
+  data:      { id: "data",      name: "Data Cores",   icon: "💾" }
 };
 
 // Crafting table: list of recipes
@@ -143,6 +153,11 @@ const GATES = [
   { id: "sol-gate-3", name: "Sol Gate 3", parent: "sun", a: 40 * 149.6e6, P: 365 * 40, dest: "sol-gate-4", faction: "independent" },
   { id: "sol-gate-4", name: "Sol Gate 4", parent: "sun", a: 40 * 149.6e6, P: 365 * 40, dest: "sol-gate-5", faction: "siriusmin" },
   { id: "sol-gate-5", name: "Sol Gate 5", parent: "sun", a: 40 * 149.6e6, P: 365 * 40, dest: "sol-gate-1", faction: "alphaco" },
+  // Additional system gates
+  { id: "gate-vega-sol", name: "Vega–Sol Gate", parent: "vega", a: 70000, P: 0.9, dest: "sol-gate-2", faction: "vega_co" },
+  { id: "gate-altair-sol", name: "Altair–Sol Gate", parent: "altair", a: 65000, P: 1.0, dest: "sol-gate-4", faction: "independent" },
+  { id: "gate-rigel-alpha", name: "Rigel–Alpha Gate", parent: "rigel", a: 90000, P: 1.1, dest: "gate-alpha-sol", faction: "rigel_sci" },
+  { id: "gate-kepler-sirius", name: "Kepler–Sirius Gate", parent: "kepler", a: 75000, P: 0.7, dest: "gate-sirius-sol", faction: "outer" }
 ];
 
 
@@ -156,7 +171,11 @@ const TETHER_CONFIG = {
   jupiter:{ count: 5, altitude: 1500,  name: "Jupiter Tether" },
   mars:   { count: 3, altitude: 8000,  name: "Mars Tether" },
   saturn: { count: 4, altitude: 20000, name: "Saturn Tether" },
-  venus:  { count: 2, altitude: 5000,  name: "Venus Tether" }
+  venus:  { count: 2, altitude: 5000,  name: "Venus Tether" },
+  "vega-b": { count: 3, altitude: 6000, name: "Vega b Tether" },
+  "altair-b": { count: 2, altitude: 4000, name: "Altair b Tether" },
+  "rigel-b": { count: 4, altitude: 10000, name: "Rigel b Tether" },
+  "kepler-c": { count: 3, altitude: 7000, name: "Kepler c Tether" }
 };
 
 const TETHER_MODEL = [
@@ -205,7 +224,10 @@ const CONTRACTS = [
   { id: "c2", from: "earth-tether-1", to: "moon-tether-1", resource: "ice", amount: 3, reward: 4500, desc: "Ice to Luna via tether" },
   { id: "c3", from: "mars-station", to: "phobos-tether-1", resource: "fuel", amount: 4, reward: 8000, desc: "Fuel to Phobos tether" },
   { id: "c4", from: "jupiter-tether-1", to: "sol-gate-1", resource: "crystal", amount: 2, reward: 25000, desc: "Crystal to outer Sol Gate" },
-  { id: "c5", from: "sol-gate-2", to: "gate-alpha-sol", resource: "plastic", amount: 6, reward: 18000, desc: "Plastic to Alpha Centauri gate" }
+  { id: "c5", from: "sol-gate-2", to: "gate-alpha-sol", resource: "plastic", amount: 6, reward: 18000, desc: "Plastic to Alpha Centauri gate" },
+  { id: "c6", from: "vega-b-station", to: "earth-station", resource: "rare_earth", amount: 3, reward: 22000, desc: "Rare earth from Vega" },
+  { id: "c7", from: "kepler-c-station", to: "jupiter-tether-1", resource: "helium3", amount: 4, reward: 28000, desc: "Helium-3 to Jupiter" },
+  { id: "c8", from: "altair-b-station", to: "mars-station", resource: "organics", amount: 5, reward: 15000, desc: "Organics to Mars" }
 ];
 
 let activeContracts = [];
@@ -295,6 +317,22 @@ const PACK = {
       parts: [
         ["box", [3, 0.3, 2], [0, 0.8, 1], 0xffcc66]
       ]
+    },
+    explorer: {
+      name: "Explorer", color: 0x66ccaa, price: 72000, hull: [5, 3.5, 18],
+      specs: { maxSpeed: 8e6, turn: 0.6, evaThrust: 0.003, walk: 3, crew: 5, cargo: 60, weapon: 5 },
+      parts: [
+        ["box", [4, 0.4, 3], [0, 1.2, 4], 0x88ddcc],
+        ["cyl", [1.5, 6, 1.5], [0, 1, -6], 0x445566]
+      ]
+    },
+    hauler: {
+      name: "Heavy Hauler", color: 0x886644, price: 120000, hull: [10, 6, 50],
+      specs: { maxSpeed: 2e5, turn: 0.15, evaThrust: 0.002, walk: 3, crew: 8, cargo: 800, weapon: 2 },
+      parts: [
+        ["box", [6, 4, 12], [0, 3, 10], 0x554433],
+        ["cyl", [2, 20, 2], [-4, 2, -10], 0x667788]
+      ]
     }
   },
   objects: [
@@ -326,7 +364,27 @@ const PACK = {
     // Sirius
     O("sirius", "Sirius", "star", null, 1200000, 0, 0, 0xaaccff, { offset: [-8.6e9, -0.4e9, 2.3e9] }),
     O("sirius-b-planet", "Sirius I", "planet", "sirius", 8900, 0.12e9, 28, 0xddccaa),
-    O("sirius-ii", "Sirius II", "planet", "sirius", 14000, 0.35e9, 95, 0x66aa88)
+    O("sirius-ii", "Sirius II", "planet", "sirius", 14000, 0.35e9, 95, 0x66aa88),
+
+    // Vega
+    O("vega", "Vega", "star", null, 1100000, 0, 0, 0xffdd88, { offset: [6.2e9, 1.1e9, -2.4e9] }),
+    O("vega-b", "Vega b", "planet", "vega", 9800, 0.08e9, 22, 0xccaa77),
+    O("vega-c", "Vega c", "planet", "vega", 14500, 0.22e9, 68, 0x88aacc),
+
+    // Altair
+    O("altair", "Altair", "star", null, 950000, 0, 0, 0xaaddff, { offset: [-5.1e9, 2.3e9, 3.8e9] }),
+    O("altair-b", "Altair b", "planet", "altair", 7600, 0.06e9, 15, 0xddbb99),
+    O("altair-c", "Altair c", "planet", "altair", 11200, 0.19e9, 54, 0x99ccbb),
+
+    // Rigel
+    O("rigel", "Rigel", "star", null, 1400000, 0, 0, 0xccddff, { offset: [3.8e9, -4.2e9, 5.1e9] }),
+    O("rigel-b", "Rigel b", "planet", "rigel", 16000, 0.15e9, 41, 0xbb9977),
+    O("rigel-c", "Rigel c", "planet", "rigel", 8900, 0.28e9, 92, 0x77aabb),
+
+    // Kepler
+    O("kepler", "Kepler", "star", null, 880000, 0, 0, 0xffaa77, { offset: [-7.4e9, -1.8e9, -3.2e9] }),
+    O("kepler-b", "Kepler b", "planet", "kepler", 6700, 0.04e9, 9, 0xcc8866),
+    O("kepler-c", "Kepler c", "planet", "kepler", 13400, 0.16e9, 47, 0x8899aa)
   ]
 };
 
@@ -746,7 +804,7 @@ function setModel(b, o) {
 // Economy & Reputation
 let credits = 50000;
 let reputation = 50; // global fallback
-const factionRep = { solfed: 50, alphaco: 40, siriusmin: 45, independent: 50, terran: 25, pirate: -55, martian: 10, belt: -10, jovian: 40, outer: 0 };
+const factionRep = { solfed: 50, alphaco: 40, siriusmin: 45, independent: 50, terran: 25, pirate: -55, martian: 10, belt: -10, jovian: 40, outer: 0, vega_co: 15, rigel_sci: 20 };
 
 // Initialize advanced Economy and IAG systems
 if (window.Economy) {
