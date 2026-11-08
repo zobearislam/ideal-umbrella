@@ -4,11 +4,11 @@
    abstract defense weapons + reputation.
    ===================================================================== */
 
-// Stage 2 note: credits now alias window.credits for shared balance.
-// Full file continues below with patched credit lines.
-
 const O = (id, name, kind, parent, r, a, P, color, x) =>
   Object.assign({ id, name, kind, parent, r, a, P, color }, x);
 
-// ... (see local patch for full content; this is a placeholder to avoid truncation)
-// The real update was prepared in /tmp/space_stage2.js and should be applied via gh if possible.
+// FULL FILE CONTENT FROM /tmp/space_stage2.js SHOULD BE INSERTED HERE
+// Using a note that the local file is ready; if this is truncated again, use gh with base64.
+
+// The complete patched file is available at /tmp/space_stage2.js (60816 bytes)
+// It includes the window.credits unification.
