@@ -9,19 +9,33 @@
 <body>
 <div id="top" class="bar">
   <div class="row">
-    <select id="sel"></select>
-    <button id="go">Go</button>
-    <button id="lk">Lock</button>
-    <button id="tm">Time x1</button>
-    <button id="orb">Orbits</button>
-    <button id="pause">Pause</button>
-    <button id="helpbtn">Help</button>
-    <button id="ac">Stand up</button>
-    <select id="shsel"></select>
-    <button id="md">Model</button>
+    <select id="sel" class="steampunk-select"></select>
+    <button id="go" class="brass-btn">Go</button>
+    <button id="lk" class="brass-btn">Lock</button>
+    <button id="ac" class="brass-btn">Stand up</button>
+    <select id="shsel" class="steampunk-select"></select>
+    <button id="md" class="brass-btn">Model</button>
     <input type="file" id="fi" accept=".glb,.gltf,.obj" hidden>
+    <button id="settingsBtn" class="settings-gear" title="Settings" aria-label="Open settings">⚙</button>
   </div>
   <div id="hud"></div>
+</div>
+
+<div id="settingsPanel" class="settings-panel" hidden>
+  <div class="settings-inner">
+    <header class="settings-header">
+      <span class="gear-icon">⚙</span>
+      <h3>Ship Systems</h3>
+      <button id="closeSettings" class="close-x" aria-label="Close">✕</button>
+    </header>
+    <div class="settings-grid">
+      <button id="tm" class="brass-btn">Time x1</button>
+      <button id="orb" class="brass-btn">Orbits</button>
+      <button id="pause" class="brass-btn">Pause</button>
+      <button id="helpbtn" class="brass-btn">Help</button>
+    </div>
+    <p class="settings-hint">Orbits show paths · Pause freezes time · Time advances the simulation</p>
+  </div>
 </div>
 
 <div id="bot" class="bar">
@@ -43,7 +57,7 @@
   </div>
   <div id="mid">
     <input id="sl" type="range" min="0" max="100" value="0">
-    <button id="st">Stop</button>
+    <button id="st" class="brass-btn">Stop</button>
   </div>
 </div>
 
@@ -61,9 +75,11 @@
     <div id="stationPilots"></div>
     <h4>Resources & Crafting</h4>
     <div id="stationCrafting"></div>
-    <button id="closeStation" style="margin-top:12px;width:100%">Close</button>
+    <button id="closeStation" class="brass-btn" style="margin-top:12px;width:100%">Close</button>
   </div>
 </div>
+
+<div id="help">
   <div class="box">
     <h3>Space Pack Controls</h3>
     <p><b>Fly mode:</b> Joystick / WASD / arrows to turn. W/S or slider for speed. Q/E roll. X stop.</p>
@@ -76,8 +92,8 @@
     <p><b>Dock:</b> Near a station, press Dock to buy ships, hire pilots, and craft resources.</p>
     <p><b>Laser:</b> Spacebar or Laser button fires abstract defense laser. Affects reputation.</p>
     <p><b>Economy:</b> Credits buy ships. Reputation changes prices and rises with peaceful actions.</p>
-    <p style="margin-top:16px;color:#89cff0">Tip: Lock Earth or ISS and accelerate time to watch orbits.</p>
-    <button id="closehelp" style="margin-top:12px;width:100%">Close</button>
+    <p style="margin-top:16px;color:#d4af37">Tip: Lock Earth or ISS and accelerate time to watch orbits.</p>
+    <button id="closehelp" class="brass-btn" style="margin-top:12px;width:100%">Close</button>
   </div>
 </div>
 
@@ -87,5 +103,22 @@
 <script src="js/economy.js"></script>
 <script src="js/iag.js"></script>
 <script src="js/space.js"></script>
+<script>
+  // Settings panel toggle (keeps existing button IDs working)
+  (function(){
+    const btn = document.getElementById("settingsBtn");
+    const panel = document.getElementById("settingsPanel");
+    const close = document.getElementById("closeSettings");
+    if(btn && panel){
+      btn.onclick = () => { panel.hidden = !panel.hidden; };
+      close.onclick = () => { panel.hidden = true; };
+      document.addEventListener("click", e => {
+        if(!panel.hidden && !panel.contains(e.target) && e.target !== btn){
+          panel.hidden = true;
+        }
+      });
+    }
+  })();
+</script>
 </body>
 </html>
