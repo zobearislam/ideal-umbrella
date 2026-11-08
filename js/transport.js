@@ -120,7 +120,7 @@
     }
     drawMap(); save();
   }
-  function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&","<":"<",">":">",'"':""","'":"&#39;"}[c]));}
+  function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 
   function drawMap(){
     const canvas=$("galaxyMap"); if (!canvas) return;
