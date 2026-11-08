@@ -5,6 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Space Pack — Enhanced</title>
 <link rel="stylesheet" href="css/style.css">
+<style>
+  /* Fallback styles for control buttons when images are missing */
+  .ctrl-btn {
+    width: 64px; height: 64px;
+    background: linear-gradient(180deg, var(--brass-light), var(--brass-dark));
+    border: 2px solid #4a3a10;
+    border-radius: 8px;
+    color: #1a120b;
+    font-weight: bold;
+    font-size: 12px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    touch-action: none;
+    box-shadow: inset 0 1px 0 rgba(255,220,140,0.6), 0 2px 6px rgba(0,0,0,0.5);
+  }
+  .ctrl-btn:active { transform: translateY(1px); filter: brightness(1.2); }
+  #joy {
+    background: radial-gradient(circle, #2a2010 40%, #1a120b);
+    border: 3px solid var(--brass);
+    border-radius: 50%;
+    position: relative;
+  }
+  #knob {
+    position: absolute;
+    width: 40px; height: 40px;
+    background: var(--brass);
+    border-radius: 50%;
+    left: 65px; top: 65px;
+    box-shadow: 0 2px 6px #000;
+  }
+</style>
 </head>
 <body>
 <div id="top" class="bar">
@@ -17,6 +48,7 @@
     <button id="md" class="brass-btn">Model</button>
     <input type="file" id="fi" accept=".glb,.gltf,.obj" hidden>
     <a href="galaxy.html" class="brass-btn" style="text-decoration:none;display:inline-flex;align-items:center">Galaxy</a>
+    <a href="transport.html" class="brass-btn" style="text-decoration:none;display:inline-flex;align-items:center">Transport</a>
     <button id="settingsBtn" class="settings-gear" title="Settings" aria-label="Open settings">⚙</button>
   </div>
   <div id="hud"></div>
@@ -42,18 +74,17 @@
 <div id="bot" class="bar">
   <div class="cl">
     <div class="pair">
-      <img class="bi" data-k="tu" src="assets/btn_thrust_up.png" alt="thrust up">
-      <img class="bi" data-k="td" src="assets/btn_thrust_down.png" alt="thrust down">
+      <button class="ctrl-btn bi" data-k="tu" title="Thrust Up">▲</button>
+      <button class="ctrl-btn bi" data-k="td" title="Thrust Down">▼</button>
     </div>
   </div>
   <div id="joy">
-    <img id="jb" src="assets/joy_base.png" alt="joystick">
-    <img id="knob" src="assets/joy_knob.png" alt="knob">
+    <div id="knob"></div>
   </div>
   <div class="cl">
     <div class="pair">
-      <img class="bi" data-k="pu" src="assets/btn_pitch_up.png" alt="pitch up">
-      <img class="bi" data-k="pd" src="assets/btn_pitch_down.png" alt="pitch down">
+      <button class="ctrl-btn bi" data-k="pu" title="Pitch Up">↑</button>
+      <button class="ctrl-btn bi" data-k="pd" title="Pitch Down">↓</button>
     </div>
   </div>
   <div id="mid">
@@ -123,8 +154,7 @@
 </script>
 
 <div id="walkJoy" class="walk-joy" style="display:none">
-  <img id="wjb" src="assets/joy_base.png" alt="walk joystick">
-  <img id="wknob" src="assets/joy_knob.png" alt="walk knob">
+  <div id="wknob" style="width:40px;height:40px;background:var(--brass);border-radius:50%;position:absolute;left:55px;top:55px;"></div>
 </div>
 
 </body>
