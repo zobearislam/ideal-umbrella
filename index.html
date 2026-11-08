@@ -19,6 +19,8 @@
     <button id="ac">Stand up</button>
     <select id="shsel"></select>
     <button id="md">Model</button>
+    <button id="savebtn" title="Save progress to this browser">Save</button>
+    <button id="loadbtn" title="Load last save">Load</button>
     <input type="file" id="fi" accept=".glb,.gltf,.obj" hidden>
   </div>
   <div id="hud"></div>
@@ -27,23 +29,24 @@
 <div id="bot" class="bar">
   <div class="cl">
     <div class="pair">
-      <img class="bi" data-k="tu" src="assets/btn_thrust_up.png" alt="thrust up">
-      <img class="bi" data-k="td" src="assets/btn_thrust_down.png" alt="thrust down">
+      <button class="bi bi-btn" data-k="tu" title="Thrust up">▲ Thrust</button>
+      <button class="bi bi-btn" data-k="td" title="Thrust down">▼ Thrust</button>
     </div>
   </div>
   <div id="joy">
-    <img id="jb" src="assets/joy_base.png" alt="joystick">
-    <img id="knob" src="assets/joy_knob.png" alt="knob">
+    <div id="jb" class="joy-base"></div>
+    <div id="knob" class="joy-knob"></div>
   </div>
   <div class="cl">
     <div class="pair">
-      <img class="bi" data-k="pu" src="assets/btn_pitch_up.png" alt="pitch up">
-      <img class="bi" data-k="pd" src="assets/btn_pitch_down.png" alt="pitch down">
+      <button class="bi bi-btn" data-k="pu" title="Pitch up">▲ Pitch</button>
+      <button class="bi bi-btn" data-k="pd" title="Pitch down">▼ Pitch</button>
     </div>
   </div>
   <div id="mid">
     <input id="sl" type="range" min="0" max="100" value="0">
     <button id="st">Stop</button>
+    <button id="laserbtn">Laser</button>
   </div>
 </div>
 
@@ -59,11 +62,15 @@
     <div id="stationShips"></div>
     <h4>Pilots</h4>
     <div id="stationPilots"></div>
-    <h4>Resources & Crafting</h4>
+    <h4>Resources &amp; Crafting</h4>
     <div id="stationCrafting"></div>
+    <h4>Contracts</h4>
+    <div id="stationContracts"></div>
     <button id="closeStation" style="margin-top:12px;width:100%">Close</button>
   </div>
 </div>
+
+<div id="help">
   <div class="box">
     <h3>Space Pack Controls</h3>
     <p><b>Fly mode:</b> Joystick / WASD / arrows to turn. W/S or slider for speed. Q/E roll. X stop.</p>
@@ -72,10 +79,12 @@
     <p><b>Lock:</b> Follows a body. Go jumps near selected object.</p>
     <p><b>Orbits:</b> Toggle orbital paths. Pause freezes time.</p>
     <p><b>Gates:</b> Fly into the cyan ring gates to jump to the connected gate.</p>
-    <p><b>Factions:</b> Stations belong to Sol Federation, Alpha Cooperative, Sirius Mining Corp, or Independent. Reputation is tracked per faction.</p>
-    <p><b>Dock:</b> Near a station, press Dock to buy ships, hire pilots, and craft resources.</p>
+    <p><b>Tethers:</b> Approach EDTs for boosts or Skyhooks for momentum exchange (credits + fuel savings).</p>
+    <p><b>Factions:</b> Stations belong to Sol Federation, Alpha Cooperative, Sirius Mining Corp, and others. Reputation is tracked per faction.</p>
+    <p><b>Dock:</b> Near a station, press <b>Dock</b> to buy ships, hire pilots, craft resources, and accept contracts.</p>
     <p><b>Laser:</b> Spacebar or Laser button fires abstract defense laser. Affects reputation.</p>
     <p><b>Economy:</b> Credits buy ships. Reputation changes prices and rises with peaceful actions.</p>
+    <p><b>Save / Load:</b> Progress (credits, inventory, reputation, ships, contracts) is saved in this browser.</p>
     <p style="margin-top:16px;color:#89cff0">Tip: Lock Earth or ISS and accelerate time to watch orbits.</p>
     <button id="closehelp" style="margin-top:12px;width:100%">Close</button>
   </div>
