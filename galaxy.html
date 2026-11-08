@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Space Transport Tycoon — Galaxy Map</title>
+  <link rel="stylesheet" href="css/galaxy.css">
+</head>
+<body>
+  <header><h1>Galaxy Map</h1><a href="index.html">Return to Simulator</a></header>
+  <main>
+    <section class="panel">
+      <h2>Star Systems</h2>
+      <input id="systemSearch" placeholder="Search systems...">
+      <div id="systemList"></div>
+    </section>
+    <section class="panel">
+      <h2>Selected System</h2>
+      <div id="systemDetails">Select a system to see details.</div>
+      <button id="routeButton" disabled>Find Route</button>
+      <div id="routeResult"></div>
+    </section>
+  </main>
+  <script type="module" src="js/galaxy/galaxy-map.js"></script>
+</body>
+</html>
