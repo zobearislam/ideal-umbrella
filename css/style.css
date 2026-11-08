@@ -2,8 +2,11 @@
   color-scheme: dark;
   --bg: #000;
   --fg: #e8ecf4;
-  --panel: rgba(14, 18, 30, 0.8);
+  --panel: rgba(14, 18, 30, 0.85);
   --line: #38507a;
+  --accent: #89cff0;
+  --good: #58cc02;
+  --warn: #c82828;
 }
 
 html, body {
@@ -11,7 +14,7 @@ html, body {
   margin: 0;
   background: var(--bg);
   color: var(--fg);
-  font: 14px system-ui, sans-serif;
+  font: 14px system-ui, -apple-system, sans-serif;
   overflow: hidden;
   user-select: none;
   -webkit-user-select: none;
@@ -63,16 +66,23 @@ button, select {
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 10px 14px;
-  font-size: 16px;
+  font-size: 15px;
   touch-action: none;
+  cursor: pointer;
+}
+
+button:active, .bi-btn:active {
+  filter: brightness(1.35);
 }
 
 #hud {
   background: var(--panel);
   border-radius: 8px;
-  padding: 5px 9px;
+  padding: 6px 10px;
   font-size: 13px;
   min-width: 280px;
+  max-width: min(520px, 92vw);
+  line-height: 1.35;
 }
 
 #sl {
@@ -93,43 +103,59 @@ button, select {
   gap: 8px;
 }
 
-.bi {
-  width: 64px;
-  display: block;
+/* Fallback controls when PNG assets are missing */
+.bi, .bi-btn {
+  width: 72px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   touch-action: none;
   -webkit-user-drag: none;
-  filter: drop-shadow(0 0 6px rgba(0, 180, 255, 0.5));
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 4px;
+  text-align: center;
+  filter: drop-shadow(0 0 6px rgba(0, 180, 255, 0.35));
 }
 
-.bi:active {
-  filter: brightness(1.6) drop-shadow(0 0 8px #3cf);
+.bi:active, .bi-btn:active {
+  filter: brightness(1.5) drop-shadow(0 0 8px #3cf);
 }
 
 #joy {
   position: relative;
-  width: 170px;
-  height: 170px;
+  width: 160px;
+  height: 160px;
   touch-action: none;
   flex: none;
 }
 
-#joy img {
+.joy-base {
   position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #1a2438 0%, #0c1220 70%);
+  border: 2px solid var(--line);
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+}
+
+.joy-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46%;
+  height: 46%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #6ab0e0, #2a5a8a);
+  border: 2px solid #89cff0;
+  box-shadow: 0 0 12px rgba(100, 200, 255, 0.4);
   pointer-events: none;
-  -webkit-user-drag: none;
-}
-
-#jb {
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-#knob {
-  left: 27.3%;
-  top: 27.3%;
-  width: 45.4%;
 }
 
 #mid {
@@ -137,13 +163,26 @@ button, select {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-width: 150px;
+  min-width: 140px;
+}
+
+#laserbtn {
+  background: rgba(180, 40, 40, 0.35);
+  border-color: #a44;
 }
 
 @media (max-width: 560px) {
   #mid {
     order: -1;
     flex-basis: 100%;
+  }
+  .bi, .bi-btn {
+    width: 64px;
+    font-size: 11px;
+  }
+  #joy {
+    width: 140px;
+    height: 140px;
   }
 }
 
@@ -159,7 +198,7 @@ button, select {
   text-shadow: 0 0 3px #000;
 }
 
-#help {
+#help, #stationPanel {
   position: fixed;
   z-index: 20;
   inset: 0;
@@ -170,30 +209,49 @@ button, select {
   padding: 20px;
 }
 
-#help .box {
+#help .box, #stationPanel .box {
   background: #0e121e;
-  border: 1px solid #38507a;
+  border: 1px solid var(--line);
   border-radius: 16px;
-  max-width: 480px;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
   padding: 20px;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.45;
+}
+
+#help h3, #stationPanel h3, #stationPanel h4 {
+  margin: 8px 0;
+  color: var(--accent);
 }
 
 #help h3 {
   margin: 0 0 12px;
-  color: #89cff0;
+}
+
+.shop-item {
+  background: rgba(56, 80, 122, 0.3);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin: 6px 0;
+}
+
+.shop-item button {
+  margin-top: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
 }
 
 #radar {
   position: fixed;
   z-index: 4;
-  bottom: 90px;
+  bottom: 100px;
   right: 12px;
   width: 140px;
   height: 140px;
-  background: rgba(14, 18, 30, 0.7);
-  border: 1px solid #38507a;
+  background: rgba(14, 18, 30, 0.75);
+  border: 1px solid var(--line);
   border-radius: 50%;
   overflow: hidden;
 }
@@ -209,7 +267,7 @@ button, select {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(200, 40, 40, 0.85);
+  background: rgba(200, 40, 40, 0.88);
   color: #fff;
   padding: 12px 20px;
   border-radius: 12px;
@@ -223,51 +281,22 @@ button, select {
   background: #222;
   border-radius: 4px;
   overflow: hidden;
-  margin-top: 4px;
+  margin-top: 5px;
 }
 
-#stationPanel {
-  position: fixed;
-  z-index: 20;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.85);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-#stationPanel .box {
-  background: #0e121e;
-  border: 1px solid #38507a;
-  border-radius: 16px;
-  max-width: 520px;
-  max-height: 80vh;
-  overflow-y: auto;
-  padding: 20px;
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-#stationPanel h3, #stationPanel h4 {
-  margin: 8px 0;
-  color: #89cff0;
-}
-
-.shop-item {
-  background: rgba(56, 80, 122, 0.3);
-  border-radius: 8px;
-  padding: 8px 10px;
-  margin: 6px 0;
-}
-
-.shop-item button {
-  margin-top: 4px;
-  padding: 6px 12px;
-  font-size: 13px;
-}
+.fuelbar > div {
   height: 100%;
-  background: #58cc02;
+  background: linear-gradient(90deg, #c82828, #e8a200, var(--good));
   width: 100%;
   transition: width 0.2s;
+}
+
+#dock {
+  background: rgba(40, 120, 80, 0.4);
+  border-color: #3a8;
+}
+
+#savebtn, #loadbtn {
+  font-size: 13px;
+  padding: 8px 12px;
 }
