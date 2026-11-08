@@ -1214,6 +1214,9 @@ function setMode(m) {
   // Hide flight controls when not seated (fly mode)
   const bot = document.getElementById("bot");
   if (bot) bot.style.display = (m === "fly") ? "" : "none";
+  // Show walk thumbstick only in walk mode
+  const wj = document.getElementById("walkJoy");
+  if (wj) wj.style.display = (m === "walk") ? "block" : "none";
 }
 
 function shipVel(a) {
@@ -1353,6 +1356,59 @@ renderer.domElement.onpointermove = e => {
   el.onpointerup = up;
   el.onpointercancel = up;
 })();
+
+
+// Walk-mode thumbstick
+(function () {
+  const el = document.getElementById("walkJoy");
+  if (!el) return;
+  const kn = document.getElementById("wknob");
+  let id = null;
+  function mv(e) {
+    const b = el.getBoundingClientRect();
+    const R = b.width / 2;
+    let dx = e.clientX - b.left - R;
+    let dy = e.clientY - b.top - R;
+    const m = R * 0.42;
+    const d = Math.hypot(dx, dy);
+    if (d > m) { dx *= m / d; dy *= m / d; }
+    if (kn) kn.style.transform = "translate(" + dx + "px," + dy + "px)";
+    J.x = dx / m;
+    J.y = -dy / m;
+  }
+  el.onpointerdown = e => { id = e.pointerId; el.setPointerCapture(id); mv(e); };
+  el.onpointermove = e => { if (e.pointerId === id) mv(e); };
+  const up = e => {
+    if (e.pointerId === id) {
+      id = null;
+      J.x = J.y = 0;
+      if (kn) kn.style.transform = "";
+    }
+  };
+  el.onpointerup = up;
+  el.onpointercancel = up;
+})();
+
+// Raycast click/tap on wall screens in walk mode
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+renderer.domElement.addEventListener("pointerdown", e => {
+  if (mode !== "walk" || !shipG) return;
+  // Ignore if clicking UI
+  if (e.target.closest && e.target.closest("#walkJoy, #bot, #top, button, select")) return;
+  const rect = renderer.domElement.getBoundingClientRect();
+  pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+  const hits = raycaster.intersectObjects(shipG.children, true);
+  for (const hit of hits) {
+    if (hit.object.userData && hit.object.userData.screen) {
+      openHullScreen(hit.object.userData.screen);
+      e.preventDefault();
+      break;
+    }
+  }
+});
 
 // Enhanced UI
 $("orb").onclick = () => {
