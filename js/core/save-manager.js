@@ -9,7 +9,9 @@
 
   const SAVE_KEY = "spaceTransportTycoonSave";
   const SAVE_VERSION = 2;
-  const CLOUD_SLOT = "default";
+  // Cloud row uses slot_name (primary key is user_id + slot_name). Prefer "primary".
+  const CLOUD_SLOT = "primary";
+  const SCHEMA_VERSION = 2;
 
   function isMeaningfulData(data) {
     if (!data || typeof data !== "object") return false;
@@ -145,7 +147,8 @@
 
       const row = {
         user_id: user.id,
-        slot: CLOUD_SLOT,
+        slot_name: CLOUD_SLOT,
+        schema_version: SCHEMA_VERSION,
         save_data: {
           version: SAVE_VERSION,
           savedAt: Date.now(),
@@ -157,7 +160,7 @@
       try {
         const { data, error: upsertErr } = await client
           .from("game_saves")
-          .upsert(row, { onConflict: "user_id,slot" })
+          .upsert(row, { onConflict: "user_id,slot_name" })
           .select("updated_at")
           .maybeSingle();
 
@@ -187,9 +190,9 @@
       try {
         const { data, error: selErr } = await client
           .from("game_saves")
-          .select("save_data, updated_at")
+          .select("save_data, updated_at, schema_version")
           .eq("user_id", user.id)
-          .eq("slot", CLOUD_SLOT)
+          .eq("slot_name", CLOUD_SLOT)
           .maybeSingle();
 
         if (selErr) {
