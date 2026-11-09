@@ -1,39 +1,34 @@
 (() => {
   "use strict";
 
-  const SAVE_KEY = "spacePack.transportPrototype.v1";
+  const SAVE_KEY = "spacePack.transportPrototype.v2";
   const DAY = 24 * 60 * 60 * 1000;
 
-  // Expanded systems (subset of js/data/systems-expanded.js for immediate use)
+  // Expanded systems matching universe.js
   const SYSTEMS = [
-    {id:"sol",name:"Sol",x:.18,y:.48,stations:["Earth Orbital Port","Luna Depot"]},
-    {id:"alpha-cen",name:"Alpha Centauri",x:.39,y:.22,stations:["New Horizon"]},
+    {id:"sol",name:"Sol",x:.18,y:.48,stations:["Earth Orbital Port","Luna Depot","Mars Highport","Ceres Hub"]},
+    {id:"alpha-cen",name:"Alpha Centauri",x:.39,y:.22,stations:["New Horizon","Proxima Relay"]},
+    {id:"proxima",name:"Proxima Centauri",x:.32,y:.15,stations:["Proxima Research"]},
     {id:"sirius",name:"Sirius",x:.61,y:.42,stations:["Sirius Exchange"]},
     {id:"vega",name:"Vega",x:.78,y:.18,stations:["Vega Trade Hub"]},
     {id:"altair",name:"Altair",x:.48,y:.76,stations:["Altair Foundry"]},
     {id:"rigel",name:"Rigel",x:.85,y:.72,stations:["Rigel Research Port"]},
     {id:"kepler",name:"Kepler",x:.22,y:.82,stations:["Kepler Colony"]},
-    {id:"proxima",name:"Proxima",x:.32,y:.28,stations:["Proxima Research"]},
-    {id:"tau-ceti",name:"Tau Ceti",x:.55,y:.35,stations:["Tau Ceti Port"]},
-    {id:"epsilon-eridani",name:"Epsilon Eridani",x:.42,y:.55,stations:["Eridani Mines"]},
-    {id:"trappist",name:"TRAPPIST",x:.15,y:.65,stations:["TRAPPIST Colony"]},
-    {id:"barnard",name:"Barnard's Star",x:.28,y:.38,stations:["Barnard Depot"]},
-    {id:"wolf-359",name:"Wolf 359",x:.68,y:.28,stations:["Wolf Outpost"]},
-    {id:"ross-128",name:"Ross 128",x:.72,y:.55,stations:["Ross Trade"]},
-    {id:"gliese-581",name:"Gliese 581",x:.82,y:.35,stations:["Gliese Science"]},
-    {id:"kepler-442",name:"Kepler-442",x:.12,y:.35,stations:["Kepler-442 Colony"]}
+    {id:"tau-ceti",name:"Tau Ceti",x:.55,y:.55,stations:["Tau Colony One"]},
+    {id:"epsilon-eri",name:"Epsilon Eridani",x:.70,y:.60,stations:["Epsilon Mining"]},
+    {id:"trappist",name:"TRAPPIST-1",x:.15,y:.30,stations:["TRAPPIST Survey Base"]},
+    {id:"barnard",name:"Barnard's Star",x:.42,y:.35,stations:["Barnard Station"]} 
   ];
 
-  // Expanded ship types
   const SHIP_TYPES = {
-    scout:{name:"Scout",price:8500,capacity:5,speed:1.8,maintenance:25},
+    scout:{name:"Scout",price:8000,capacity:5,speed:1.6,maintenance:20},
     courier:{name:"Courier",price:12000,capacity:12,speed:1.4,maintenance:35},
-    hauler:{name:"Hauler",price:25000,capacity:40,speed:1.0,maintenance:65},
-    freighter:{name:"Freighter",price:55000,capacity:120,speed:0.75,maintenance:120},
-    interceptor:{name:"Interceptor",price:32000,capacity:8,speed:2.1,maintenance:55},
-    miner:{name:"Miner",price:38000,capacity:60,speed:0.85,maintenance:80},
-    science:{name:"Science Vessel",price:75000,capacity:15,speed:1.2,maintenance:95},
-    titan:{name:"Titan Freighter",price:180000,capacity:300,speed:0.55,maintenance:280}
+    interceptor:{name:"Interceptor",price:28000,capacity:8,speed:1.8,maintenance:55},
+    hauler:{name:"Hauler",price:25000,capacity:40,speed:1,maintenance:65},
+    freighter:{name:"Freighter",price:55000,capacity:120,speed:0.75,maintenance:110},
+    miner:{name:"Mining Rig",price:42000,capacity:60,speed:0.9,maintenance:90},
+    liner:{name:"Passenger Liner",price:90000,capacity:30,speed:1.1,maintenance:140},
+    capital:{name:"Capital Ship",price:250000,capacity:200,speed:0.6,maintenance:300}
   };
 
   function getSharedCredits() {
@@ -45,22 +40,23 @@
   }
 
   const starter = () => ({
-    credits: getSharedCredits() || 50000,
-    completed:0, nextShip:2, nextJourney:1,
-    ships:[{id:"ship-1",name:"Wayfarer",type:"hauler",location:"sol",status:"Idle"}],
+    credits: getSharedCredits() || 75000,
+    completed:0, nextShip:3, nextJourney:1,
+    ships:[
+      {id:"ship-1",name:"Wayfarer",type:"hauler",location:"sol",status:"Idle"},
+      {id:"ship-2",name:"Swift Courier",type:"courier",location:"sol",status:"Idle"}
+    ],
     contracts:[
       {id:"C-101",from:"sol",to:"alpha-cen",cargo:"Machine parts",quantity:8,reward:5200},
       {id:"C-102",from:"sirius",to:"vega",cargo:"Research supplies",quantity:6,reward:6800},
       {id:"C-103",from:"altair",to:"rigel",cargo:"Refined metals",quantity:25,reward:11200},
       {id:"C-104",from:"kepler",to:"sol",cargo:"Ice containers",quantity:30,reward:9000},
-      {id:"C-105",from:"proxima",to:"tau-ceti",cargo:"Scientific samples",quantity:4,reward:8500},
-      {id:"C-106",from:"epsilon-eridani",to:"sol",cargo:"Iron ore",quantity:45,reward:7200},
-      {id:"C-107",from:"trappist",to:"kepler-442",cargo:"Food rations",quantity:35,reward:9800},
-      {id:"C-108",from:"barnard",to:"sirius",cargo:"Titanium ore",quantity:28,reward:11000},
-      {id:"C-109",from:"wolf-359",to:"ross-128",cargo:"Fuel cells",quantity:18,reward:6400},
-      {id:"C-110",from:"gliese-581",to:"rigel",cargo:"Data cores",quantity:3,reward:14500},
-      {id:"C-111",from:"tau-ceti",to:"proxima",cargo:"Medical supplies",quantity:12,reward:5600},
-      {id:"C-112",from:"kepler-442",to:"trappist",cargo:"Luxury goods",quantity:6,reward:16800}
+      {id:"C-105",from:"sol",to:"proxima",cargo:"Science kits",quantity:5,reward:7500},
+      {id:"C-106",from:"tau-ceti",to:"sol",cargo:"Agricultural samples",quantity:12,reward:8400},
+      {id:"C-107",from:"epsilon-eri",to:"altair",cargo:"Raw ore",quantity:40,reward:13500},
+      {id:"C-108",from:"trappist",to:"sol",cargo:"Survey data",quantity:2,reward:22000},
+      {id:"C-109",from:"barnard",to:"alpha-cen",cargo:"Medical supplies",quantity:10,reward:9800},
+      {id:"C-110",from:"sol",to:"kepler",cargo:"Fertilizer",quantity:35,reward:16000}
     ],
     journeys:[],transactions:[]
   });
@@ -80,13 +76,6 @@
       if(!raw) return starter();
       const parsed=JSON.parse(raw);
       if(!parsed || !Array.isArray(parsed.ships) || !Array.isArray(parsed.contracts)) return starter();
-      for (const c of parsed.contracts || []) {
-        if (c.from === "alpha") c.from = "alpha-cen";
-        if (c.to === "alpha") c.to = "alpha-cen";
-      }
-      for (const s of parsed.ships || []) {
-        if (s.location === "alpha") s.location = "alpha-cen";
-      }
       return parsed;
     } catch { return starter(); }
   }
@@ -98,7 +87,7 @@
   }
   function log(text){
     state.transactions.unshift({at:now(),text});
-    state.transactions=state.transactions.slice(0,30);
+    state.transactions=state.transactions.slice(0,40);
   }
   function distance(a,b){
     const A=SYSTEMS.find(s=>s.id===a),B=SYSTEMS.find(s=>s.id===b);
@@ -107,7 +96,7 @@
   }
   function travelMs(ship,contract){
     const d=distance(contract.from,contract.to);
-    return Math.max(60_000, d*120_000/SHIP_TYPES[ship.type].speed);
+    return Math.max(45_000, d*90_000/SHIP_TYPES[ship.type].speed);
   }
   function processArrivals(){
     const t=now();
@@ -128,7 +117,7 @@
     if ($("deliveries")) $("deliveries").textContent=state.completed;
     if ($("savedAt")) $("savedAt").textContent=state.savedAt?new Date(state.savedAt).toLocaleString():"Not saved yet";
     if ($("clock")) $("clock").textContent=new Date().toLocaleString();
-    if ($("fleetList")) $("fleetList").innerHTML=state.ships.map(s=>`<article class="item"><strong>${esc(s.name)} · ${SHIP_TYPES[s.type].name}</strong><small>${esc(systemName(s.location))} · ${esc(s.status)} · Capacity ${SHIP_TYPES[s.type].capacity}</small></article>`).join("") || `<p class="muted">No ships owned.</p>`;
+    if ($("fleetList")) $("fleetList").innerHTML=state.ships.map(s=>`<article class="item"><strong>${esc(s.name)} · ${SHIP_TYPES[s.type].name}</strong><small>${esc(systemName(s.location))} · ${esc(s.status)} · Cap ${SHIP_TYPES[s.type].capacity}</small></article>`).join("") || `<p class="muted">No ships owned.</p>`;
     if ($("contractList")) $("contractList").innerHTML=state.contracts.map(c=>`<article class="item"><strong>${esc(c.id)} · ${esc(c.cargo)}</strong><small>${esc(systemName(c.from))} → ${esc(systemName(c.to))}</small><p>${c.quantity} units · Reward ${money(c.reward)}</p></article>`).join("") || `<p class="muted">No contracts available.</p>`;
     if ($("journeyList")) $("journeyList").innerHTML=state.journeys.filter(j=>j.status==="In transit").map(j=>`<article class="item"><strong>${esc(j.shipName)} · ${esc(j.contractId)}</strong><small>${esc(systemName(j.from))} → ${esc(systemName(j.to))}</small><p>${esc(j.cargo)} · Arrives ${new Date(j.arrivesAt).toLocaleString()}</p></article>`).join("") || `<p class="muted">No ships currently travelling.</p>`;
     const c=$("contractSelect"), oldC=c&&c.value;
@@ -141,9 +130,14 @@
       s.innerHTML=state.ships.filter(x=>x.status==="Idle").map(x=>`<option value="${x.id}">${esc(x.name)} (${SHIP_TYPES[x.type].name}, ${esc(systemName(x.location))})</option>`).join("");
       if(state.ships.some(x=>x.id===oldS && x.status==="Idle")) s.value=oldS;
     }
+    // Update ship type select if present
+    const st = $("shipType");
+    if (st && st.options.length < Object.keys(SHIP_TYPES).length) {
+      st.innerHTML = Object.entries(SHIP_TYPES).map(([k,v]) => `<option value="${k}">${v.name} — ${money(v.price)}</option>`).join("");
+    }
     drawMap(); save();
   }
-  function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&","<":"<",">":">",'"':""","'":"&#39;"}[c]));}
+  function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
 
   function drawMap(){
     const canvas=$("galaxyMap"); if (!canvas) return;
@@ -153,9 +147,9 @@
     ctx.setTransform(dpr,0,0,dpr,0,0);
     const w=rect.width,h=rect.height;
     ctx.fillStyle="#071321";ctx.fillRect(0,0,w,h);
-    for(let i=0;i<90;i++){const x=(i*97%997)/997*w,y=(i*193%991)/991*h;ctx.fillStyle="#6685a3";ctx.globalAlpha=.35;ctx.fillRect(x,y,1.5,1.5);}
+    for(let i=0;i<120;i++){const x=(i*97%997)/997*w,y=(i*193%991)/991*h;ctx.fillStyle="#6685a3";ctx.globalAlpha=.35;ctx.fillRect(x,y,1.5,1.5);}
     ctx.globalAlpha=1;
-    const links=[["sol","alpha-cen"],["alpha-cen","sirius"],["sirius","vega"],["alpha-cen","altair"],["altair","rigel"],["sol","kepler"],["sirius","rigel"],["sol","proxima"],["proxima","tau-ceti"],["epsilon-eridani","sol"],["trappist","kepler-442"],["barnard","sirius"],["wolf-359","ross-128"],["gliese-581","rigel"]];
+    const links=[["sol","alpha-cen"],["alpha-cen","sirius"],["sirius","vega"],["alpha-cen","altair"],["altair","rigel"],["sol","kepler"],["sirius","rigel"],["sol","proxima"],["proxima","alpha-cen"],["sol","tau-ceti"],["sol","epsilon-eri"],["sol","trappist"],["sol","barnard"]];
     for(const [a,b] of links){
       const A=SYSTEMS.find(s=>s.id===a),B=SYSTEMS.find(s=>s.id===b);
       if (!A||!B) continue;
@@ -171,7 +165,7 @@
 
   if ($("galaxyMap")) $("galaxyMap").addEventListener("click",e=>{
     const r=e.currentTarget.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
-    let nearest=null,best=.035;
+    let nearest=null,best=.04;
     for(const s of SYSTEMS){const d=Math.hypot(s.x-x,s.y-y);if(d<best){best=d;nearest=s;}}
     if(nearest){selectedSystem=nearest.id;drawMap();}
   });
@@ -188,7 +182,7 @@
     const contract=state.contracts.find(c=>c.id===$("contractSelect").value);
     const ship=state.ships.find(s=>s.id===$("shipSelect").value && s.status==="Idle");
     if(!contract||!ship){alert("Choose an available contract and idle ship.");return;}
-    if(ship.location!==contract.from){alert(`${ship.name} is at ${systemName(ship.location)}. This contract starts at ${systemName(contract.from)}. Repositioning is not implemented yet.`);return;}
+    if(ship.location!==contract.from){alert(`${ship.name} is at ${systemName(ship.location)}. This contract starts at ${systemName(contract.from)}.`);return;}
     if(contract.quantity>SHIP_TYPES[ship.type].capacity){alert("This ship does not have enough cargo capacity.");return;}
     const duration=travelMs(ship,contract),arrivesAt=now()+duration;
     ship.status="In transit";
@@ -201,5 +195,5 @@
   });
   window.addEventListener("resize",drawMap);
   render();
-  setInterval(render,15000);
+  setInterval(render,12000);
 })();
