@@ -90,13 +90,41 @@
   ship.rotation.x = Math.PI / 2;
   scene.add(ship);
 
-  // Player state
+  // Player state — seed reputation from FACTIONS when available
   window.credits = window.credits || 75000;
   window.inventory = window.inventory || { iron: 5, ice: 8, fuel: 10, crystal: 2 };
-  window.factionRep = window.factionRep || {
-    terran: 50, martian: 40, belt: 30, jovian: 45, outer: 25, pirate: 10, independent: 50
-  };
+  if (!window.factionRep) {
+    window.factionRep = {};
+    if (FACTIONS && Object.keys(FACTIONS).length) {
+      for (const [id, f] of Object.entries(FACTIONS)) {
+        window.factionRep[id] = typeof f.startingRep === "number" ? f.startingRep : 50;
+      }
+    } else {
+      window.factionRep = {
+        terran: 50, martian: 40, belt: 30, jovian: 45, outer: 25, pirate: 10, independent: 50
+      };
+    }
+  }
   window.ownedShips = window.ownedShips || [{ id: "starter", type: "hauler", name: "Wayfarer" }];
+
+  // Shared reputation helper used by IAG and station actions
+  window.changeRep = function (delta, factionId) {
+    const amount = Number(delta) || 0;
+    if (factionId && window.factionRep) {
+      const cur = window.factionRep[factionId] ?? 50;
+      window.factionRep[factionId] = Math.max(0, Math.min(100, cur + amount));
+      if (window.Economy && window.Economy.changeReputation) {
+        try { window.Economy.changeReputation(factionId, amount); } catch (e) {}
+      }
+      return window.factionRep[factionId];
+    }
+    if (window.factionRep) {
+      for (const id of Object.keys(window.factionRep)) {
+        window.factionRep[id] = Math.max(0, Math.min(100, (window.factionRep[id] || 50) + amount));
+      }
+    }
+    return window.factionRep;
+  };
 
   // Player movement state
   let playerMode = "seated"; // seated | standing | walking | interacting
@@ -111,6 +139,7 @@
   let locked = false;
   let target = null;
   let economyAccum = 0;
+  let lastLaser = 0;
 
   // Orbit lines
   const orbitGroup = new THREE.Group();
@@ -217,7 +246,6 @@
       $("stationCredits").textContent = `Credits: ${window.credits.toLocaleString()} cr`;
       $("stationRep").textContent = Object.entries(window.factionRep || {}).map(([k,v]) => `${k}: ${v}`).join(" · ");
       $("stationPanel").style.display = "flex";
-      // Populate crafting if elements exist
       const craftDiv = $("stationCrafting");
       if (craftDiv && CRAFTING_RECIPES.length) {
         craftDiv.innerHTML = CRAFTING_RECIPES.map(r =>
@@ -228,7 +256,6 @@
       alert("No station in range. Fly closer to a planet or moon.");
     }
   }
-  // Bind dock if button exists, else create one
   if (!$("dock")) {
     const dockBtn = document.createElement("button");
     dockBtn.id = "dock";
@@ -250,7 +277,6 @@
     alert(`Crafted ${recipe.output}!`);
   };
 
-  // File loader stub
   if ($("fi")) $("fi").onchange = e => {
     alert("Custom model loading is not implemented in this version. Place .glb/.gltf/.obj in assets and wire GLTFLoader.");
   };
@@ -271,6 +297,17 @@
 
   if ($("st")) $("st").onclick = () => { thrust = 0; if ($("sl")) $("sl").value = 0; };
   if ($("sl")) $("sl").oninput = () => { thrust = parseFloat($("sl").value) / 100; };
+
+  function fireLaser() {
+    const t = performance.now();
+    if (t - lastLaser < 400) return;
+    lastLaser = t;
+    // Abstract defense laser: small reputation risk near stations (IAG may record)
+    if (window.IAG && Math.random() < 0.08) {
+      window.IAG.recordIncident({ lawId: "unsafeDischarge", system: "Sol" });
+    }
+    if (typeof window.msg === "function") window.msg("Defense laser fired.");
+  }
 
   // HUD
   const hud = $("hud");
@@ -320,7 +357,7 @@
       if (keys["q"]) ship.rotation.z += dt;
       if (keys["e"]) ship.rotation.z -= dt;
       if (keys["x"]) thrust = 0;
-      if (keys[" "]) { /* laser placeholder */ }
+      if (keys[" "]) fireLaser();
 
       // Apply movement
       const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(ship.quaternion);
@@ -328,19 +365,17 @@
       ship.rotation.y = yaw;
       ship.rotation.x = Math.PI / 2 + pitch;
     } else if (playerMode === "standing" || playerMode === "walking") {
-      // Simple walk inside ship relative to ship
       const walkSpeed = 2 * dt;
       if (keys["w"] || keys["arrowup"]) walkOffset.z -= walkSpeed;
       if (keys["s"] || keys["arrowdown"]) walkOffset.z += walkSpeed;
       if (keys["a"] || keys["arrowleft"]) walkOffset.x -= walkSpeed;
       if (keys["d"] || keys["arrowright"]) walkOffset.x += walkSpeed;
-      // Clamp to ship interior bounds (approx)
       walkOffset.x = Math.max(-1.5, Math.min(1.5, walkOffset.x));
       walkOffset.z = Math.max(-2, Math.min(2, walkOffset.z));
       playerMode = (keys["w"] || keys["s"] || keys["a"] || keys["d"]) ? "walking" : "standing";
     }
 
-    // Economy tick (approximate 1 game hour per real second at x1, scaled)
+    // Economy tick
     economyAccum += t;
     if (economyAccum >= 1 && window.Economy && window.Economy.update) {
       try { window.Economy.update(1); } catch(e) {}
@@ -362,19 +397,16 @@
     renderer.render(scene, camera);
   }
 
-  // Resize
   window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
   });
 
-  // Init
   updateOrbits();
   updateHUD();
   animate(performance.now());
 
-  // Expose globals
   window.msg = text => { if (hud) hud.innerHTML += `<br><small>${text}</small>`; };
   if (window.Economy && window.Economy.init) {
     try { window.Economy.init(null, { factions: FACTIONS }); } catch(e) {}

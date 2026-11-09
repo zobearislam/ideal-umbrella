@@ -18,12 +18,53 @@
     ? window.SHIP_TYPES
     : FALLBACK_SHIPS;
 
-  // Use central state if available
   const gs = window.GameState;
   const credits = window.Credits;
-  let localJourneys = [];
-  let completedContractIds = new Set();
-  let nextJourney = 1;
+
+  // Ensure company has a usable starting balance (GameState default is 75000)
+  function ensureCompanyCredits() {
+    if (!credits || !gs) return;
+    const company = gs.getCompany("company-1");
+    if (!company) return;
+    const bal = credits.getCompany(company.id);
+    if (bal === 0 && typeof company.credits === "number" && company.credits > 0) {
+      credits.setCompany(company.id, company.credits);
+    } else if (bal === 0) {
+      credits.setCompany(company.id, 75000);
+      company.credits = 75000;
+    }
+  }
+  ensureCompanyCredits();
+
+  function loadPersistedTransport() {
+    if (!gs) {
+      return { journeys: [], completed: new Set(), nextId: 1 };
+    }
+    const s = gs.getState();
+    if (!Array.isArray(s.journeys)) s.journeys = [];
+    if (!Array.isArray(s.completedContractIds)) s.completedContractIds = [];
+    if (typeof s.nextJourneyId !== "number" || s.nextJourneyId < 1) s.nextJourneyId = 1;
+    return {
+      journeys: s.journeys,
+      completed: new Set(s.completedContractIds),
+      nextId: s.nextJourneyId
+    };
+  }
+
+  const persisted = loadPersistedTransport();
+  // localJourneys is a live reference to state.journeys when GameState is present
+  let localJourneys = persisted.journeys;
+  let completedContractIds = persisted.completed;
+  let nextJourney = persisted.nextId;
+
+  function persistTransport() {
+    if (!gs) return;
+    const s = gs.getState();
+    s.journeys = localJourneys;
+    s.completedContractIds = Array.from(completedContractIds);
+    s.nextJourneyId = nextJourney;
+    gs.saveState();
+  }
 
   function getCompanyCredits() {
     if (credits && gs) {
@@ -82,6 +123,7 @@
   function processArrivals() {
     const t = now();
     const ships = getShips();
+    let changed = false;
     for (const j of localJourneys.filter(x => x.status === "In transit" && x.arrivesAt <= t)) {
       if (completedContractIds.has(j.contractId)) continue;
       const ship = ships.find(s => s.id === j.shipId);
@@ -95,14 +137,17 @@
       if (gs) {
         const s = gs.getState();
         s.player.progression.deliveries = (s.player.progression.deliveries || 0) + 1;
+        const contract = (s.contracts || []).find(c => c.id === j.contractId);
+        if (contract) contract.status = "delivered";
         if (gs.unloadCargo) gs.unloadCargo(j.from, j.cargo, j.quantity);
         if (gs.loadCargo) gs.loadCargo(j.to, j.cargo, j.quantity);
-        gs.saveState();
       }
+      changed = true;
       if (typeof window.msg === "function") {
         window.msg(`${ship.name} delivered ${j.cargo} to ${systemName(j.to)}. +${money(j.reward)}.`);
       }
     }
+    if (changed) persistTransport();
   }
 
   function render() {
@@ -296,6 +341,7 @@
       if (gs && gs.addShip) gs.addShip(newShip);
       else getShips().push(newShip);
       if (typeof window.msg === "function") window.msg(`Purchased ${def.name} for ${money(def.price)}.`);
+      persistTransport();
       render();
     });
 
@@ -323,6 +369,7 @@
       const duration = Math.max(45000, 90000 / (SHIP_TYPES[ship.type]?.speed || 1)),
         arrivesAt = now() + duration;
       ship.status = "In transit";
+      contract.status = "assigned";
       localJourneys.push({
         id: nextJourney++,
         contractId: contract.id,
@@ -337,6 +384,7 @@
         arrivesAt,
         status: "In transit"
       });
+      persistTransport();
       if (typeof window.msg === "function") window.msg(`${ship.name} dispatched on ${contract.id}.`);
       render();
     });

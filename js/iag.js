@@ -1,6 +1,5 @@
 // IAG (Interstellar Authority Group) reputation / incident system
 window.IAG = (() => {
-  
   const diplomacyFactions = [
     { id: "terran", name: "Terran Confederation", desc: "Earth’s unified government. Runs the inner-system ports." },
     { id: "pirate", name: "Pirate Clans", desc: "Raiders of the lanes. They respect strength and coin." },
@@ -20,6 +19,26 @@ window.IAG = (() => {
 
   let incidents = [];
   let nextId = 1;
+
+  function applyRepLoss(amount) {
+    // Prefer Economy when initialized; otherwise adjust factionRep globally
+    if (window.Economy && typeof window.Economy.changeReputation === "function") {
+      // Apply a general hit to terran (authority) standing when no specific faction is given
+      try {
+        window.Economy.changeReputation("terran", -Math.abs(amount));
+        return;
+      } catch (e) { /* not initialized */ }
+    }
+    if (typeof window.changeRep === "function") {
+      window.changeRep(-Math.abs(amount));
+      return;
+    }
+    if (window.factionRep) {
+      for (const id of Object.keys(window.factionRep)) {
+        window.factionRep[id] = Math.max(0, Math.min(100, (window.factionRep[id] || 50) - Math.abs(amount)));
+      }
+    }
+  }
 
   function recordIncident(data) {
     const law = laws[data.lawId];
@@ -44,7 +63,7 @@ window.IAG = (() => {
     if (!incident || incident.status !== "under investigation") return false;
     incident.status = "confirmed";
     if (window.credits !== undefined) window.credits = Math.max(0, window.credits - incident.fine);
-    if (window.changeRep) window.changeRep(-incident.reputationLoss);
+    applyRepLoss(incident.reputationLoss);
     if (typeof msg === "function") msg(`IAG fine: -${incident.fine} cr, rep -${incident.reputationLoss}`);
     return { fine: incident.fine, reputationLoss: incident.reputationLoss };
   }
