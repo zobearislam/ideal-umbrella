@@ -6,7 +6,6 @@
 <title>Space Pack — Enhanced</title>
 <link rel="stylesheet" href="css/style.css">
 <style>
-  /* Fallback styles for control buttons when images are missing */
   .ctrl-btn {
     width: 64px; height: 64px;
     background: linear-gradient(180deg, var(--brass-light), var(--brass-dark));
@@ -49,6 +48,9 @@
     <input type="file" id="fi" accept=".glb,.gltf,.obj" hidden>
     <a href="galaxy.html" class="brass-btn" style="text-decoration:none;display:inline-flex;align-items:center">Galaxy</a>
     <a href="transport.html" class="brass-btn" style="text-decoration:none;display:inline-flex;align-items:center">Transport</a>
+    <a href="missions.html" class="brass-btn" style="text-decoration:none;display:inline-flex;align-items:center">Missions</a>
+    <a href="ui/company.html" class="brass-btn" style="text-decoration:none;display:inline-flex;align-items:center">Company</a>
+    <a href="ui/diplomacy.html" class="brass-btn" style="text-decoration:none;display:inline-flex;align-items:center">Diplomacy</a>
     <button id="settingsBtn" class="settings-gear" title="Settings" aria-label="Open settings">⚙</button>
   </div>
   <div id="hud"></div>
@@ -119,12 +121,12 @@
     <p><b>EVA:</b> Free movement outside. Stay close to re-enter.</p>
     <p><b>Lock:</b> Follows a body. Go jumps near selected object.</p>
     <p><b>Orbits:</b> Toggle orbital paths. Pause freezes time.</p>
-    <p><b>Gates:</b> Fly into the cyan ring gates to jump to the connected gate.</p>
-    <p><b>Factions:</b> Stations belong to Sol Federation, Alpha Cooperative, Sirius Mining Corp, or Independent. Reputation is tracked per faction.</p>
-    <p><b>Dock:</b> Near a station, press Dock to buy ships, hire pilots, and craft resources.</p>
+    <p><b>Gates:</b> Fly into the cyan ring gates to jump to the connected system.</p>
+    <p><b>Factions:</b> Terran Confederation, Martian Republic, Belt Miners’ Union, Jovian Syndicate, Outer Colonies League, Pirate Clans. Reputation is tracked.</p>
+    <p><b>Dock:</b> Near a planet/moon, press Dock to access station services, crafting, and ships.</p>
     <p><b>Laser:</b> Spacebar or Laser button fires abstract defense laser. Affects reputation.</p>
     <p><b>Economy:</b> Credits buy ships. Reputation changes prices and rises with peaceful actions.</p>
-    <p style="margin-top:16px;color:#d4af37">Tip: Lock Earth or ISS and accelerate time to watch orbits.</p>
+    <p style="margin-top:16px;color:#d4af37">Tip: Lock Earth or a moon and accelerate time to watch orbits. Check Missions and Transport for more gameplay.</p>
     <button id="closehelp" class="brass-btn" style="margin-top:12px;width:100%">Close</button>
   </div>
 </div>
@@ -132,11 +134,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+<script src="js/data/resources.js"></script>
+<script src="js/data/missions.js"></script>
 <script src="js/economy.js"></script>
 <script src="js/iag.js"></script>
 <script src="js/space.js"></script>
 <script>
-  // Settings panel toggle (keeps existing button IDs working)
   (function(){
     const btn = document.getElementById("settingsBtn");
     const panel = document.getElementById("settingsPanel");
