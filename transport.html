@@ -28,6 +28,25 @@
       <p class="hint">Select a system to view its stations. Connected to shared universe data.</p>
     </section>
 
+    <section class="panel" id="authPanel">
+      <p class="eyebrow">ACCOUNT</p>
+      <h2>Cloud account</h2>
+      <div id="authStatus" class="balance-row"><span>Status</span><strong id="authUserLabel">Signed out</strong></div>
+      <div id="cloudStatusRow" class="balance-row"><span>Cloud save</span><strong id="cloudStatus">—</strong></div>
+      <form id="authForm" class="form-grid" style="margin-top:12px">
+        <label>Email<input type="email" id="authEmail" required autocomplete="username"></label>
+        <label>Password<input type="password" id="authPassword" required autocomplete="current-password" minlength="6"></label>
+        <button type="button" id="btnSignIn">Sign in</button>
+        <button type="button" id="btnRegister">Register</button>
+        <button type="button" id="btnSignOut" class="wide" style="display:none">Sign out</button>
+      </form>
+      <div class="inline-form" style="margin-top:12px">
+        <button type="button" id="btnCloudSave">Save to cloud</button>
+        <button type="button" id="btnCloudLoad">Load from cloud</button>
+      </div>
+      <p class="hint" id="authHint">Add your Supabase URL and anon key in js/core/supabase-config.js. Cloud save requires an account and working RLS on game_saves.</p>
+    </section>
+
     <section class="panel">
       <p class="eyebrow">FLEET MANAGEMENT</p>
       <h2>Your fleet</h2>
@@ -72,16 +91,166 @@
       <div class="balance-row"><span>Completed deliveries</span><strong id="deliveries">—</strong></div>
       <div class="balance-row"><span>Last saved</span><strong id="savedAt">—</strong></div>
       <button id="resetDemo" class="danger">Reset local demo data</button>
-      <p class="hint">This prototype stores data in this browser only. It is not multiplayer and is not secure against editing.</p>
+      <button type="button" id="btnRunTests" style="margin-top:10px">Run Core Tests</button>
+      <pre id="testResults" class="hint" style="white-space:pre-wrap;max-height:200px;overflow:auto;margin-top:10px"></pre>
+      <p class="hint">Local saves stay in this browser. Cloud saves use your Supabase account. A failed cloud save never erases a valid local save.</p>
     </section>
   </main>
 
-  <footer>Space Pack Transport Prototype · Local browser save · No server connection yet</footer>
+  <footer>Space Pack Transport Prototype · Local + optional cloud save</footer>
+
+  <!-- Supabase JS (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/core/supabase-config.js"></script>
   <script src="js/core/universe.js"></script>
   <script src="js/core/credits.js"></script>
   <script src="js/core/clock.js"></script>
   <script src="js/core/save-manager.js"></script>
   <script src="js/core/game-state.js"></script>
+  <script src="tests/core-integration.test.js"></script>
   <script src="js/transport.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      const $ = (id) => document.getElementById(id);
+      const cloudEl = $("cloudStatus");
+      const authLabel = $("authUserLabel");
+      const btnOut = $("btnSignOut");
+      const testOut = $("testResults");
+
+      function setCloudStatus(text, ok) {
+        if (!cloudEl) return;
+        cloudEl.textContent = text;
+        cloudEl.style.color = ok === true ? "var(--green)" : ok === false ? "var(--red)" : "";
+      }
+
+      async function refreshAuthUi() {
+        if (!window.SaveManager) return;
+        const { user, error } = await window.SaveManager.getSessionUser();
+        if (error && String(error).includes("not configured")) {
+          if (authLabel) authLabel.textContent = "Not configured";
+          setCloudStatus("Configure supabase-config.js", false);
+          return;
+        }
+        if (user) {
+          if (authLabel) authLabel.textContent = user.email || user.id;
+          if (btnOut) btnOut.style.display = "";
+        } else {
+          if (authLabel) authLabel.textContent = "Signed out";
+          if (btnOut) btnOut.style.display = "none";
+        }
+      }
+
+      async function doSignIn() {
+        const email = $("authEmail").value.trim();
+        const password = $("authPassword").value;
+        setCloudStatus("Signing in…");
+        const res = await window.SaveManager.signIn(email, password);
+        if (!res.ok) {
+          setCloudStatus("Sign-in failed: " + res.error, false);
+          return;
+        }
+        setCloudStatus("Signed in", true);
+        await refreshAuthUi();
+      }
+
+      async function doRegister() {
+        const email = $("authEmail").value.trim();
+        const password = $("authPassword").value;
+        setCloudStatus("Registering…");
+        const res = await window.SaveManager.signUp(email, password);
+        if (!res.ok) {
+          setCloudStatus("Register failed: " + res.error, false);
+          return;
+        }
+        setCloudStatus(res.session ? "Registered & signed in" : "Registered — check email if confirmations are on", true);
+        await refreshAuthUi();
+      }
+
+      async function doSignOut() {
+        const res = await window.SaveManager.signOut();
+        if (!res.ok) {
+          setCloudStatus("Sign-out failed: " + res.error, false);
+          return;
+        }
+        setCloudStatus("Signed out", true);
+        await refreshAuthUi();
+      }
+
+      async function doCloudSave() {
+        setCloudStatus("Saving to cloud…");
+        // Ensure local state is flushed first
+        if (window.GameState && window.GameState.saveState) window.GameState.saveState();
+        const res = await window.SaveManager.cloudSave();
+        if (!res.ok) {
+          setCloudStatus("Cloud save failed: " + res.error, false);
+          return;
+        }
+        setCloudStatus("Cloud save OK · " + (res.updatedAt || "now"), true);
+        if ($("savedAt")) $("savedAt").textContent = new Date().toLocaleString();
+      }
+
+      async function doCloudLoad() {
+        setCloudStatus("Loading from cloud…");
+        const res = await window.SaveManager.cloudLoad({ applyToLocal: true });
+        if (!res.ok) {
+          setCloudStatus("Cloud load failed: " + res.error, false);
+          return;
+        }
+        setCloudStatus("Cloud load OK · " + (res.updatedAt || "applied"), true);
+        // Reload game state from local (now holding cloud data)
+        if (window.GameState && window.GameState.loadState) {
+          window.GameState.loadState();
+        }
+        if (typeof window.renderTransport === "function") window.renderTransport();
+        else location.reload();
+      }
+
+      function runTests() {
+        if (!testOut) return;
+        testOut.textContent = "Running…";
+        if (typeof window.runCoreTests !== "function") {
+          testOut.textContent = "runCoreTests() not found. tests/core-integration.test.js may not have loaded.";
+          return;
+        }
+        const logs = [];
+        const origLog = console.log;
+        const origErr = console.error;
+        console.log = function () {
+          logs.push(Array.prototype.slice.call(arguments).join(" "));
+          origLog.apply(console, arguments);
+        };
+        console.error = function () {
+          logs.push("ERROR: " + Array.prototype.slice.call(arguments).join(" "));
+          origErr.apply(console, arguments);
+        };
+        let passed = false;
+        try {
+          passed = !!window.runCoreTests();
+        } catch (e) {
+          logs.push("EXCEPTION: " + (e && e.message ? e.message : String(e)));
+          passed = false;
+        }
+        console.log = origLog;
+        console.error = origErr;
+        testOut.textContent =
+          (passed ? "RESULT: PASSED\n" : "RESULT: FAILED\n") + logs.join("\n");
+      }
+
+      if ($("btnSignIn")) $("btnSignIn").addEventListener("click", doSignIn);
+      if ($("btnRegister")) $("btnRegister").addEventListener("click", doRegister);
+      if ($("btnSignOut")) $("btnSignOut").addEventListener("click", doSignOut);
+      if ($("btnCloudSave")) $("btnCloudSave").addEventListener("click", doCloudSave);
+      if ($("btnCloudLoad")) $("btnCloudLoad").addEventListener("click", doCloudLoad);
+      if ($("btnRunTests")) $("btnRunTests").addEventListener("click", runTests);
+
+      refreshAuthUi();
+      if (!window.SupabaseConfig || !window.SupabaseConfig.isConfigured()) {
+        setCloudStatus("Supabase not configured", false);
+      } else {
+        setCloudStatus("Ready (sign in to sync)", null);
+      }
+    })();
+  </script>
 </body>
 </html>

@@ -126,7 +126,11 @@
     }
     drawMap();
   }
-  function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&","<":"<",">":">",'"':""","'":"&#39;"}[c]));}
+  function esc(v){
+    return String(v).replace(/[&<>"']/g, function (c) {
+      return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c];
+    });
+  }
 
   function drawMap(){
     const canvas=$("galaxyMap"); if (!canvas) return;
@@ -191,6 +195,7 @@
     location.reload();
   });
   window.addEventListener("resize",drawMap);
+  window.renderTransport = render;
   render();
   setInterval(render,12000);
 })();
