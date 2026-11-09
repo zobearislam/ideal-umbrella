@@ -1,9 +1,10 @@
+// Galaxy map UI — uses shared universe data exposed on window.UNIVERSE
+// (universe.js is a classic script, not an ES module)
 
-import {
-  starSystems,
-  getSystem,
-  findRoute
-} from "./star-systems.js";
+const U = window.UNIVERSE || {};
+const starSystems = U.SYSTEMS || [];
+const getSystem = U.getSystem || (() => null);
+const findRoute = U.findRoute || (() => null);
 
 let selectedSystem = null;
 
@@ -14,6 +15,7 @@ const routeButton = document.getElementById("routeButton");
 const routeResult = document.getElementById("routeResult");
 
 function renderSystems(filter = "") {
+  if (!systemList) return;
   systemList.innerHTML = "";
 
   starSystems
@@ -32,7 +34,7 @@ function renderSystems(filter = "") {
 
 function selectSystem(id) {
   selectedSystem = getSystem(id);
-  if (!selectedSystem) return;
+  if (!selectedSystem || !systemDetails) return;
 
   systemDetails.innerHTML = "";
 
@@ -40,29 +42,42 @@ function selectSystem(id) {
   heading.textContent = selectedSystem.name;
 
   const description = document.createElement("p");
-  description.textContent = selectedSystem.description;
+  description.textContent = selectedSystem.description || "";
 
-  systemDetails.append(heading, description);
+  const meta = document.createElement("p");
+  meta.className = "muted";
+  meta.textContent = [
+    selectedSystem.faction ? `Faction: ${selectedSystem.faction}` : null,
+    selectedSystem.population != null ? `Pop: ${Number(selectedSystem.population).toLocaleString()}` : null
+  ].filter(Boolean).join(" · ");
 
-  routeButton.disabled = false;
-  routeResult.textContent = "";
+  systemDetails.append(heading, description, meta);
+
+  if (routeButton) routeButton.disabled = false;
+  if (routeResult) routeResult.textContent = "";
 }
 
-searchInput.addEventListener("input", event => {
-  renderSystems(event.target.value);
-});
+if (searchInput) {
+  searchInput.addEventListener("input", event => {
+    renderSystems(event.target.value);
+  });
+}
 
-routeButton.addEventListener("click", () => {
-  if (!selectedSystem) return;
+if (routeButton) {
+  routeButton.addEventListener("click", () => {
+    if (!selectedSystem) return;
 
-  const destination = prompt("Enter destination system ID:");
-  if (!destination) return;
+    const destination = prompt("Enter destination system ID (e.g. alpha-cen, sirius, trappist):");
+    if (!destination) return;
 
-  const route = findRoute(selectedSystem.id, destination);
+    const route = findRoute(selectedSystem.id, destination.trim());
 
-  routeResult.textContent = route
-    ? route.map(id => getSystem(id).name).join(" → ")
-    : "No route found.";
-});
+    if (routeResult) {
+      routeResult.textContent = route
+        ? route.map(id => (getSystem(id) && getSystem(id).name) || id).join(" → ")
+        : "No route found.";
+    }
+  });
+}
 
 renderSystems();
