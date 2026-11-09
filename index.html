@@ -5,61 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Space Pack — Enhanced</title>
 <link rel="stylesheet" href="css/style.css">
-<style>
-  .ctrl-btn {
-    width: 64px; height: 64px;
-    background: linear-gradient(180deg, var(--brass-light), var(--brass-dark));
-    border: 2px solid #4a3a10;
-    border-radius: 8px;
-    color: #1a120b;
-    font-weight: bold;
-    font-size: 12px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    touch-action: none;
-    box-shadow: inset 0 1px 0 rgba(255,220,140,0.6), 0 2px 6px rgba(0,0,0,0.5);
-  }
-  .ctrl-btn:active { transform: translateY(1px); filter: brightness(1.2); }
-  #joy {
-    background: radial-gradient(circle, #2a2010 40%, #1a120b);
-    border: 3px solid var(--brass);
-    border-radius: 50%;
-    position: relative;
-  }
-  #knob {
-    position: absolute;
-    width: 40px; height: 40px;
-    background: var(--brass);
-    border-radius: 50%;
-    left: 65px; top: 65px;
-    box-shadow: 0 2px 6px #000;
-  }
-  #stationPanel .box { max-height: 80vh; overflow-y: auto; }
-  #stationPanel h4 { margin: 12px 0 6px; color: #d4af37; }
-  #stationPanel .stat-row { margin: 4px 0; font-size: 14px; }
-  #stationPanel .cargo-line, #stationPanel .mission-line {
-    display: flex; justify-content: space-between; align-items: center;
-    gap: 8px; margin: 4px 0; flex-wrap: wrap;
-  }
-  #stationPanel .hint { color: #8ab; font-size: 13px; margin-top: 8px; }
-</style>
 </head>
 <body>
-<div id="top" class="bar">
-  <div class="row">
-    <select id="sel" class="steampunk-select"></select>
-    <button id="go" class="brass-btn">Go</button>
-    <button id="lk" class="brass-btn">Lock</button>
-    <button id="ac" class="brass-btn">Stand up</button>
-    <select id="shsel" class="steampunk-select"></select>
-    <button id="md" class="brass-btn">Model</button>
-    <input type="file" id="fi" accept=".glb,.gltf,.obj" hidden>
-    <a href="galaxy.html" class="brass-btn" style="text-decoration:none;display:inline-flex;align-items:center">Galaxy</a>
-    <a href="transport.html" class="brass-btn" style="text-decoration:none;display:inline-flex;align-items:center">Transport</a>
-    <a href="missions.html" class="brass-btn" style="text-decoration:none;display:inline-flex;align-items:center">Missions</a>
-    <a href="ui/company.html" class="brass-btn" style="text-decoration:none;display:inline-flex;align-items:center">Company</a>
-    <a href="ui/diplomacy.html" class="brass-btn" style="text-decoration:none;display:inline-flex;align-items:center">Diplomacy</a>
-    <button id="settingsBtn" class="settings-gear" title="Settings" aria-label="Open settings">⚙</button>
+<div id="top">
+  <div class="toolbar">
+    <div class="toolbar-group">
+      <select id="sel" class="steampunk-select" title="Target body"></select>
+      <button type="button" id="go" class="brass-btn">Go</button>
+      <button type="button" id="lk" class="brass-btn">Lock</button>
+      <button type="button" id="ac" class="brass-btn">Stand</button>
+    </div>
+    <div class="toolbar-group">
+      <select id="shsel" class="steampunk-select" title="Ship type"></select>
+      <button type="button" id="dock" class="brass-btn">Dock</button>
+    </div>
+    <div class="toolbar-group" style="margin-left:auto">
+      <div class="nav-menu" id="navMenu">
+        <button type="button" id="navBtn" class="brass-btn" aria-haspopup="true" aria-expanded="false">Menu ▾</button>
+        <div class="nav-dropdown" role="menu">
+          <a href="galaxy.html">Galaxy map</a>
+          <a href="transport.html">Transport</a>
+          <a href="missions.html">Missions</a>
+          <a href="ui/company.html">Company</a>
+          <a href="ui/diplomacy.html">Diplomacy</a>
+          <a href="ui/finance.html">Finance</a>
+        </div>
+      </div>
+      <button type="button" id="settingsBtn" class="settings-gear" title="Settings" aria-label="Open settings">⚙</button>
+    </div>
   </div>
   <div id="hud"></div>
 </div>
@@ -69,37 +42,35 @@
     <header class="settings-header">
       <span class="gear-icon">⚙</span>
       <h3>Ship Systems</h3>
-      <button id="closeSettings" class="close-x" aria-label="Close">✕</button>
+      <button type="button" id="closeSettings" class="close-x" aria-label="Close">✕</button>
     </header>
     <div class="settings-grid">
-      <button id="tm" class="brass-btn">Time x1</button>
-      <button id="orb" class="brass-btn">Orbits</button>
-      <button id="pause" class="brass-btn">Pause</button>
-      <button id="helpbtn" class="brass-btn">Help</button>
+      <button type="button" id="tm" class="brass-btn">Time x1</button>
+      <button type="button" id="orb" class="brass-btn">Orbits</button>
+      <button type="button" id="pause" class="brass-btn">Pause</button>
+      <button type="button" id="helpbtn" class="brass-btn">Help</button>
+      <button type="button" id="md" class="brass-btn">Model</button>
     </div>
-    <p class="settings-hint">Orbits show paths · Pause freezes time · Time advances the simulation</p>
+    <input type="file" id="fi" accept=".glb,.gltf,.obj" hidden>
+    <p class="settings-hint">Orbits · Pause · Time scale · Help · Custom model</p>
   </div>
 </div>
 
-<div id="bot" class="bar">
-  <div class="cl">
-    <div class="pair">
-      <button class="ctrl-btn bi" data-k="tu" title="Thrust Up">▲</button>
-      <button class="ctrl-btn bi" data-k="td" title="Thrust Down">▼</button>
-    </div>
+<div id="bot">
+  <div id="thrustControls" class="pair">
+    <button type="button" class="ctrl-btn bi" data-k="tu" title="Thrust Up">▲</button>
+    <button type="button" class="ctrl-btn bi" data-k="td" title="Thrust Down">▼</button>
   </div>
-  <div id="joy">
+  <div id="joy" aria-label="Flight stick">
     <div id="knob"></div>
   </div>
-  <div class="cl">
-    <div class="pair">
-      <button class="ctrl-btn bi" data-k="pu" title="Pitch Up">↑</button>
-      <button class="ctrl-btn bi" data-k="pd" title="Pitch Down">↓</button>
-    </div>
+  <div id="pitchControls" class="pair">
+    <button type="button" class="ctrl-btn bi" data-k="pu" title="Pitch Up">↑</button>
+    <button type="button" class="ctrl-btn bi" data-k="pd" title="Pitch Down">↓</button>
   </div>
   <div id="mid">
-    <input id="sl" type="range" min="0" max="100" value="0">
-    <button id="st" class="brass-btn">Stop</button>
+    <input id="sl" type="range" min="0" max="100" value="0" aria-label="Throttle">
+    <button type="button" id="st" class="brass-btn">Stop</button>
   </div>
 </div>
 
@@ -119,21 +90,19 @@
     <h4>Crafting</h4>
     <div id="stationCrafting"></div>
     <p class="hint">Credits, cargo, and reputation are shared with Transport. Deliver contracts there, then sell warehouse goods or complete missions here.</p>
-    <button id="closeStation" class="brass-btn" style="margin-top:12px;width:100%">Close</button>
+    <button type="button" id="closeStation" class="brass-btn" style="margin-top:12px;width:100%">Close</button>
   </div>
 </div>
 
 <div id="help">
   <div class="box">
     <h3>Space Pack Controls</h3>
-    <p><b>Fly mode:</b> Joystick / WASD / arrows to turn. W/S or slider for speed. Q/E roll. X stop.</p>
-    <p><b>Walk mode:</b> Move inside ship. Green door = airlock. Front = seat.</p>
-    <p><b>Dock:</b> Near a planet/moon, press Dock for station services, sell cargo, craft, and complete missions.</p>
-    <p><b>Shared economy:</b> Personal &amp; company credits, inventory, and reputation sync with Transport and Missions pages.</p>
-    <p><b>Loop:</b> Accept a mission → gather or craft cargo → dock and complete · or run Transport deliveries → goods land in system warehouses → sell at a station.</p>
-    <p><b>Laser:</b> Spacebar fires abstract defense laser (can affect reputation via IAG).</p>
-    <p style="margin-top:16px;color:#d4af37">Tip: Start near Earth, Dock, sell iron, then open Transport for fleet contracts.</p>
-    <button id="closehelp" class="brass-btn" style="margin-top:12px;width:100%">Close</button>
+    <p><b>Fly:</b> Joystick / WASD · slider or ▲▼ thrust · ↑↓ pitch · Q/E roll · X or Stop.</p>
+    <p><b>Dock:</b> Near a planet/moon, press Dock for market, craft, and missions.</p>
+    <p><b>Menu:</b> Galaxy, Transport, Missions, and other pages.</p>
+    <p><b>Shared economy:</b> Same credits and cargo as Transport and Missions.</p>
+    <p style="margin-top:12px;color:#d4af37">Tip: Dock at Earth, sell iron, then open Transport from Menu.</p>
+    <button type="button" id="closehelp" class="brass-btn" style="margin-top:12px;width:100%">Close</button>
   </div>
 </div>
 
@@ -151,24 +120,45 @@
 <script src="js/iag.js"></script>
 <script src="js/space.js"></script>
 <script>
-  (function(){
-    const btn = document.getElementById("settingsBtn");
-    const panel = document.getElementById("settingsPanel");
-    const close = document.getElementById("closeSettings");
-    if(btn && panel){
-      btn.onclick = () => { panel.hidden = !panel.hidden; };
-      close.onclick = () => { panel.hidden = true; };
-      document.addEventListener("click", e => {
-        if(!panel.hidden && !panel.contains(e.target) && e.target !== btn){
-          panel.hidden = true;
-        }
-      });
+(function () {
+  const settingsBtn = document.getElementById("settingsBtn");
+  const settingsPanel = document.getElementById("settingsPanel");
+  const closeSettings = document.getElementById("closeSettings");
+  const navMenu = document.getElementById("navMenu");
+  const navBtn = document.getElementById("navBtn");
+
+  if (settingsBtn && settingsPanel) {
+    settingsBtn.onclick = function (e) {
+      e.stopPropagation();
+      settingsPanel.hidden = !settingsPanel.hidden;
+      if (navMenu) navMenu.classList.remove("open");
+    };
+    if (closeSettings) closeSettings.onclick = function () { settingsPanel.hidden = true; };
+  }
+
+  if (navBtn && navMenu) {
+    navBtn.onclick = function (e) {
+      e.stopPropagation();
+      const open = navMenu.classList.toggle("open");
+      navBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      if (settingsPanel) settingsPanel.hidden = true;
+    };
+  }
+
+  document.addEventListener("click", function (e) {
+    if (settingsPanel && !settingsPanel.hidden && !settingsPanel.contains(e.target) && e.target !== settingsBtn) {
+      settingsPanel.hidden = true;
     }
-  })();
+    if (navMenu && navMenu.classList.contains("open") && !navMenu.contains(e.target)) {
+      navMenu.classList.remove("open");
+      if (navBtn) navBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+})();
 </script>
 
 <div id="walkJoy" class="walk-joy" style="display:none">
-  <div id="wknob" style="width:40px;height:40px;background:var(--brass);border-radius:50%;position:absolute;left:55px;top:55px;"></div>
+  <div id="wknob" style="width:36px;height:36px;background:var(--brass);border-radius:50%;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);"></div>
 </div>
 
 </body>

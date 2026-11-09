@@ -6,7 +6,7 @@
   --brass-light: #e6c35c;
   --brass-dark: #8a6d1f;
   --copper: #b87333;
-  --panel: rgba(26, 18, 11, 0.88);
+  --panel: rgba(26, 18, 11, 0.9);
   --panel-border: #6b5420;
   --line: #5a4520;
   --shadow: 0 4px 16px rgba(0,0,0,0.6);
@@ -32,33 +32,44 @@ canvas {
   touch-action: none;
 }
 
-.bar {
-  position: fixed;
-  z-index: 5;
-  left: 8px; right: 8px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
+/* —— Top toolbar —— */
 #top {
-  top: calc(env(safe-area-inset-top, 0px) + 8px);
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-#bot {
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
-  align-items: flex-end;
-  justify-content: space-between;
-}
-
-.row {
+  position: fixed;
+  z-index: 10;
+  top: calc(env(safe-area-inset-top, 0px) + 6px);
+  left: 6px;
+  right: 6px;
   display: flex;
+  flex-direction: column;
+  align-items: stretch;
   gap: 6px;
+  pointer-events: none;
+}
+#top > * { pointer-events: auto; }
+
+.toolbar {
+  display: flex;
   flex-wrap: wrap;
   align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  background: var(--panel);
+  border: 2px solid var(--brass);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  max-width: 100%;
+}
+
+.toolbar-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+}
+.toolbar-group + .toolbar-group {
+  border-left: 1px solid var(--line);
+  padding-left: 8px;
+  margin-left: 2px;
 }
 
 .brass-btn, button, select {
@@ -66,22 +77,25 @@ canvas {
   color: #1a120b;
   border: 2px solid #4a3a10;
   border-radius: 6px;
-  padding: 9px 14px;
-  font-size: 15px;
+  padding: 7px 11px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.3px;
-  touch-action: none;
+  letter-spacing: 0.2px;
+  touch-action: manipulation;
   box-shadow: inset 0 1px 0 rgba(255,220,140,0.6), 0 2px 6px rgba(0,0,0,0.5);
   cursor: pointer;
   text-shadow: 0 1px 0 rgba(255,230,180,0.4);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
 }
 .brass-btn:hover, button:hover, select:hover {
-  filter: brightness(1.12);
-  box-shadow: inset 0 1px 0 rgba(255,220,140,0.8), 0 3px 8px rgba(201,162,39,0.4);
+  filter: brightness(1.1);
 }
 .brass-btn:active, button:active {
   transform: translateY(1px);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
 }
 
 .steampunk-select, select {
@@ -89,38 +103,78 @@ canvas {
   color: var(--fg);
   border: 2px solid var(--brass);
   border-radius: 6px;
-  padding: 9px 12px;
+  padding: 7px 10px;
   font-weight: 600;
-  box-shadow: inset 0 1px 0 rgba(201,162,39,0.3);
+  max-width: 120px;
 }
 
 .settings-gear {
-  width: 46px;
-  height: 46px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, var(--brass-light), var(--brass) 50%, var(--brass-dark));
   color: #1a120b;
-  border: 3px solid #4a3a10;
-  font-size: 22px;
+  border: 2px solid #4a3a10;
+  font-size: 18px;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 0 2px #8a6d1f, 0 4px 10px rgba(0,0,0,0.6);
   padding: 0;
+  flex-shrink: 0;
 }
-.settings-gear:hover { filter: brightness(1.15); }
+
+/* Nav menu (pages) */
+.nav-menu {
+  position: relative;
+}
+.nav-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 160px;
+  background: linear-gradient(160deg, #2a2014, #1a120b);
+  border: 2px solid var(--brass);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 6px;
+  z-index: 40;
+  flex-direction: column;
+  gap: 4px;
+}
+.nav-menu.open .nav-dropdown {
+  display: flex;
+}
+.nav-dropdown a {
+  display: block;
+  padding: 8px 12px;
+  color: var(--fg);
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 14px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  text-align: left;
+}
+.nav-dropdown a:hover {
+  background: rgba(201, 162, 39, 0.2);
+  color: var(--brass-light);
+  filter: none;
+}
 
 .settings-panel {
   position: fixed;
   z-index: 30;
-  top: calc(env(safe-area-inset-top, 0px) + 62px);
+  top: calc(env(safe-area-inset-top, 0px) + 70px);
   right: 12px;
-  width: min(320px, 92vw);
+  width: min(300px, 92vw);
   background: linear-gradient(160deg, #2a2014 0%, #1a120b 70%);
   border: 3px solid var(--brass);
   border-radius: 12px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(201,162,39,0.3);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.7);
   color: var(--fg);
 }
 .settings-inner { padding: 14px 16px 16px; }
@@ -135,12 +189,11 @@ canvas {
 .settings-header h3 {
   margin: 0;
   flex: 1;
-  font-size: 16px;
+  font-size: 15px;
   letter-spacing: 1px;
   color: var(--brass-light);
   text-transform: uppercase;
 }
-.gear-icon { font-size: 18px; color: var(--brass); }
 .close-x {
   background: transparent;
   border: none;
@@ -166,113 +219,143 @@ canvas {
   background: var(--panel);
   border: 2px solid var(--brass);
   border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 13px;
-  min-width: 260px;
+  padding: 6px 10px;
+  font-size: 12px;
+  line-height: 1.35;
+  max-width: min(340px, 92vw);
   color: var(--fg);
   box-shadow: var(--shadow);
-  letter-spacing: 0.2px;
+  pointer-events: none;
 }
 
-#sl {
-  width: 100%;
-  height: 36px;
-  margin: 0;
-  accent-color: var(--brass);
+/* —— Bottom flight controls (no overlap) —— */
+#bot {
+  position: fixed;
+  z-index: 8;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 0;
+  pointer-events: none;
 }
 
-.cl { display: flex; gap: 8px; align-items: flex-end; }
-.pair { display: flex; flex-direction: column; gap: 8px; }
-
-.bi {
-  width: 64px;
-  display: block;
-  touch-action: none;
-  -webkit-user-drag: none;
-  filter: drop-shadow(0 0 6px rgba(201,162,39,0.55)) sepia(0.4);
+.ctrl-btn {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(180deg, var(--brass-light), var(--brass-dark));
+  border: 2px solid #4a3a10;
+  border-radius: 8px;
+  color: #1a120b;
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  box-shadow: inset 0 1px 0 rgba(255,220,140,0.6), 0 2px 6px rgba(0,0,0,0.5);
+  padding: 0;
+  pointer-events: auto;
 }
-.bi:active { filter: brightness(1.4) drop-shadow(0 0 10px #e6c35c); }
+.ctrl-btn:active { transform: translateY(1px); filter: brightness(1.15); }
 
-#joy {
-  position: relative;
-  width: 170px; height: 170px;
-  touch-action: none;
-  flex: none;
-}
-#joy img { position: absolute; pointer-events: none; -webkit-user-drag: none; }
-#jb { top: 0; left: 0; width: 100%; height: 100%; filter: sepia(0.5) saturate(1.4); }
-#knob { left: 27.3%; top: 27.3%; width: 45.4%; }
-
-#mid {
-  flex: 1;
+.pair {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-width: 150px;
+  pointer-events: auto;
 }
 
-@media (max-width: 560px) {
-  #mid { order: -1; flex-basis: 100%; }
-  .settings-panel { right: 6px; left: 6px; width: auto; }
-}
-
-.lb {
+/* Thrust: above joystick, left */
+#thrustControls {
   position: fixed;
-  z-index: 2;
-  left: 0; top: 0;
-  font-size: 11px;
-  color: #f0e6d2;
-  pointer-events: none;
-  white-space: nowrap;
-  text-shadow: 0 0 4px #000, 0 0 2px #c9a227;
+  left: 16px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 168px);
+  z-index: 9;
+  pointer-events: auto;
 }
 
-#help, #stationPanel {
+/* Joystick: bottom-left corner */
+#joy {
   position: fixed;
-  z-index: 20;
-  inset: 0;
-  background: rgba(10, 6, 2, 0.88);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-#help .box, #stationPanel .box {
-  background: linear-gradient(160deg, #2a2014, #1a120b);
-  border: 3px solid var(--brass);
-  border-radius: 14px;
-  max-width: 520px;
-  max-height: 80vh;
-  overflow-y: auto;
-  padding: 22px;
-  font-size: 14px;
-  line-height: 1.5;
-  box-shadow: 0 16px 50px rgba(0,0,0,0.7), inset 0 0 0 1px rgba(201,162,39,0.25);
-  color: var(--fg);
-}
-#help h3, #stationPanel h3, #stationPanel h4 {
-  margin: 0 0 12px;
-  color: var(--brass-light);
-  letter-spacing: 0.5px;
-}
-
-#radar {
-  position: fixed;
-  z-index: 4;
-  bottom: 100px;
-  right: 14px;
-  width: 140px; height: 140px;
-  background: rgba(26, 18, 11, 0.75);
+  left: 12px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, #2a2010 40%, #1a120b);
   border: 3px solid var(--brass);
   border-radius: 50%;
-  overflow: hidden;
-  box-shadow: 0 0 0 1px #4a3a10, 0 4px 16px rgba(0,0,0,0.6);
+  z-index: 9;
+  touch-action: none;
+  pointer-events: auto;
+  box-sizing: border-box;
 }
-#radar canvas { width: 100%; height: 100%; }
+#knob {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  background: var(--brass);
+  border-radius: 50%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 6px #000;
+  pointer-events: none;
+}
+
+/* Pitch: bottom-right, clear of radar */
+#pitchControls {
+  position: fixed;
+  right: 16px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 168px);
+  z-index: 9;
+  pointer-events: auto;
+}
+
+/* Speed + stop: bottom center */
+#mid {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(240px, 42vw);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 9;
+  pointer-events: auto;
+}
+#sl {
+  width: 100%;
+  height: 28px;
+  margin: 0;
+  accent-color: var(--brass);
+}
+#mid .brass-btn {
+  width: 100%;
+  padding: 8px;
+}
+
+/* Radar — smaller, top-right of bottom area */
+#radar {
+  position: fixed;
+  z-index: 7;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+  right: 12px;
+  width: 100px;
+  height: 100px;
+  background: rgba(26, 18, 11, 0.8);
+  border: 2px solid var(--brass);
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  pointer-events: none;
+}
+#radar canvas { width: 100%; height: 100%; display: block; }
 
 #warn {
   position: fixed;
-  z-index: 6;
+  z-index: 15;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   background: linear-gradient(180deg, #8b3a2a, #5a1f15);
@@ -283,83 +366,87 @@ canvas {
   font-weight: bold;
   display: none;
   pointer-events: none;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.5);
 }
 
 .fuelbar {
-  height: 8px;
+  height: 6px;
   background: #2a2010;
-  border-radius: 4px;
+  border-radius: 3px;
   overflow: hidden;
-  margin-top: 4px;
+  margin-top: 3px;
   border: 1px solid #5a4520;
 }
-.fuelbar > div, .fuelbar::after {
+.fuelbar > div {
   height: 100%;
   background: linear-gradient(90deg, #8a6d1f, #c9a227);
-  width: 100%;
   transition: width 0.2s;
 }
 
-.shop-item {
-  background: rgba(90, 69, 32, 0.35);
-  border: 1px solid #5a4520;
-  border-radius: 8px;
-  padding: 8px 10px;
+#help, #stationPanel {
+  position: fixed;
+  z-index: 25;
+  inset: 0;
+  background: rgba(10, 6, 2, 0.88);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+#help .box, #stationPanel .box {
+  background: linear-gradient(160deg, #2a2014, #1a120b);
+  border: 3px solid var(--brass);
+  border-radius: 14px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 78vh;
+  overflow-y: auto;
+  padding: 18px;
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: 0 16px 50px rgba(0,0,0,0.7);
+  color: var(--fg);
+}
+#help h3, #stationPanel h3, #stationPanel h4 {
+  margin: 0 0 10px;
+  color: var(--brass-light);
+}
+#stationPanel .stat-row { margin: 4px 0; font-size: 13px; }
+#stationPanel .cargo-line, #stationPanel .mission-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
   margin: 6px 0;
+  flex-wrap: wrap;
 }
-.shop-item button {
-  margin-top: 4px;
-  padding: 6px 12px;
-  font-size: 13px;
-}
+#stationPanel .hint { color: #8ab; font-size: 12px; margin-top: 8px; }
 
-/* Walk-mode thumbstick */
 #walkJoy {
   position: fixed;
-  z-index: 6;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
-  left: 20px;
-  width: 150px;
-  height: 150px;
+  z-index: 9;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+  left: 12px;
+  width: 140px;
+  height: 140px;
   touch-action: none;
 }
-#walkJoy img {
-  position: absolute;
-  pointer-events: none;
-}
-#wjb { width: 100%; height: 100%; filter: sepia(0.5) saturate(1.4); }
-#wknob { left: 27%; top: 27%; width: 46%; }
 
-/* Cleaner fly-mode layout: controls on edges, middle free */
-#bot {
-  pointer-events: none; /* let middle pass through */
+/* Narrow screens: tighter controls, hide radar if needed */
+@media (max-width: 720px) {
+  .toolbar { gap: 4px; padding: 5px 6px; }
+  .brass-btn, button, select { padding: 6px 8px; font-size: 12px; }
+  .steampunk-select, select { max-width: 96px; }
+  .toolbar-group + .toolbar-group { padding-left: 6px; }
+  #joy, #walkJoy { width: 120px; height: 120px; }
+  #thrustControls { bottom: calc(env(safe-area-inset-bottom, 0px) + 145px); left: 10px; }
+  #pitchControls { bottom: calc(env(safe-area-inset-bottom, 0px) + 145px); right: 10px; }
+  #radar { width: 80px; height: 80px; }
+  #mid { width: min(200px, 38vw); }
+  .ctrl-btn { width: 44px; height: 44px; }
 }
-#bot > * { pointer-events: auto; }
 
-#bot .cl:first-child { /* thrust */
-  position: fixed;
-  left: 12px;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 180px);
-  z-index: 6;
-}
-#bot .cl:last-of-type { /* pitch - the second .cl */
-  position: fixed;
-  right: 12px;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 180px);
-  z-index: 6;
-}
-#joy {
-  position: fixed !important;
-  left: 20px;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
-  z-index: 6;
-}
-#mid {
-  position: fixed;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(280px, 50vw);
-  z-index: 6;
+@media (max-width: 480px) {
+  #radar { display: none; }
+  #hud { font-size: 11px; max-width: 100%; }
+  #mid { width: min(160px, 36vw); bottom: calc(env(safe-area-inset-bottom, 0px) + 8px); }
 }
