@@ -98,6 +98,10 @@
   };
   window.ownedShips = window.ownedShips || [{ id: "starter", type: "hauler", name: "Wayfarer" }];
 
+  // Player movement state
+  let playerMode = "seated"; // seated | standing | walking | interacting
+  let walkOffset = new THREE.Vector3();
+
   // Controls state
   let thrust = 0;
   let yaw = 0, pitch = 0;
@@ -106,6 +110,7 @@
   let showOrbits = false;
   let locked = false;
   let target = null;
+  let economyAccum = 0;
 
   // Orbit lines
   const orbitGroup = new THREE.Group();
@@ -174,7 +179,18 @@
       target = v === "ship" ? ship : (bodies.find(pl => pl.userData.name.toLowerCase() === v) || sun);
     }
   };
-  if ($("ac")) $("ac").onclick = () => { alert("Stand up / Walk / EVA mode: full interiors coming soon. For now use free flight."); };
+  if ($("ac")) $("ac").onclick = () => {
+    if (playerMode === "seated") {
+      playerMode = "standing";
+      if ($("ac")) $("ac").textContent = "Sit down";
+      if (typeof window.msg === "function") window.msg("Stood up. Use WASD to walk inside the ship.");
+    } else {
+      playerMode = "seated";
+      if ($("ac")) $("ac").textContent = "Stand up";
+      walkOffset.set(0, 0, 0);
+      if (typeof window.msg === "function") window.msg("Sat down. Ready for flight.");
+    }
+  };
   if ($("md")) $("md").onclick = () => { $("fi").click(); };
   if ($("tm")) $("tm").onclick = () => {
     timeScale = timeScale === 1 ? 10 : timeScale === 10 ? 60 : timeScale === 60 ? 3600 : 1;
@@ -262,9 +278,10 @@
     if (!hud) return;
     const speed = thrust * 25;
     const inv = Object.entries(window.inventory || {}).filter(([,v]) => v > 0).map(([k,v]) => `${k}:${v}`).join(" ") || "empty";
+    const modeText = playerMode === "seated" ? "Seated" : "Standing";
     hud.innerHTML = `
       Speed: ${speed.toFixed(1)} · Credits: ${(window.credits || 0).toLocaleString()} cr<br>
-      Time: x${timeScale} ${paused ? "(Paused)" : ""}<br>
+      Mode: ${modeText} · Time: x${timeScale} ${paused ? "(Paused)" : ""}<br>
       Inventory: ${inv}<br>
       Fuel: <div class="fuelbar"><div style="width:78%"></div></div>
     `;
@@ -292,23 +309,43 @@
       p.position.y = parentPos.y;
     });
 
-    // Ship controls
-    if (keys["w"] || keys["arrowup"] || keys["tu"]) thrust = Math.min(1, thrust + dt);
-    if (keys["s"] || keys["arrowdown"] || keys["td"]) thrust = Math.max(0, thrust - dt);
-    if (keys["a"] || keys["arrowleft"]) yaw -= 1.5 * dt;
-    if (keys["d"] || keys["arrowright"]) yaw += 1.5 * dt;
-    if (keys["pu"]) pitch += 1.2 * dt;
-    if (keys["pd"]) pitch -= 1.2 * dt;
-    if (keys["q"]) ship.rotation.z += dt;
-    if (keys["e"]) ship.rotation.z -= dt;
-    if (keys["x"]) thrust = 0;
-    if (keys[" "]) { /* laser placeholder */ }
+    // Ship / player controls
+    if (playerMode === "seated") {
+      if (keys["w"] || keys["arrowup"] || keys["tu"]) thrust = Math.min(1, thrust + dt);
+      if (keys["s"] || keys["arrowdown"] || keys["td"]) thrust = Math.max(0, thrust - dt);
+      if (keys["a"] || keys["arrowleft"]) yaw -= 1.5 * dt;
+      if (keys["d"] || keys["arrowright"]) yaw += 1.5 * dt;
+      if (keys["pu"]) pitch += 1.2 * dt;
+      if (keys["pd"]) pitch -= 1.2 * dt;
+      if (keys["q"]) ship.rotation.z += dt;
+      if (keys["e"]) ship.rotation.z -= dt;
+      if (keys["x"]) thrust = 0;
+      if (keys[" "]) { /* laser placeholder */ }
 
-    // Apply movement
-    const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(ship.quaternion);
-    ship.position.add(forward.multiplyScalar(thrust * 18 * t));
-    ship.rotation.y = yaw;
-    ship.rotation.x = Math.PI / 2 + pitch;
+      // Apply movement
+      const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(ship.quaternion);
+      ship.position.add(forward.multiplyScalar(thrust * 18 * t));
+      ship.rotation.y = yaw;
+      ship.rotation.x = Math.PI / 2 + pitch;
+    } else if (playerMode === "standing" || playerMode === "walking") {
+      // Simple walk inside ship relative to ship
+      const walkSpeed = 2 * dt;
+      if (keys["w"] || keys["arrowup"]) walkOffset.z -= walkSpeed;
+      if (keys["s"] || keys["arrowdown"]) walkOffset.z += walkSpeed;
+      if (keys["a"] || keys["arrowleft"]) walkOffset.x -= walkSpeed;
+      if (keys["d"] || keys["arrowright"]) walkOffset.x += walkSpeed;
+      // Clamp to ship interior bounds (approx)
+      walkOffset.x = Math.max(-1.5, Math.min(1.5, walkOffset.x));
+      walkOffset.z = Math.max(-2, Math.min(2, walkOffset.z));
+      playerMode = (keys["w"] || keys["s"] || keys["a"] || keys["d"]) ? "walking" : "standing";
+    }
+
+    // Economy tick (approximate 1 game hour per real second at x1, scaled)
+    economyAccum += t;
+    if (economyAccum >= 1 && window.Economy && window.Economy.update) {
+      try { window.Economy.update(1); } catch(e) {}
+      economyAccum -= 1;
+    }
 
     // Camera follow if locked
     if (locked && target) {
@@ -316,9 +353,9 @@
       camera.position.copy(target.position).add(offset);
       camera.lookAt(target.position);
     } else {
-      const desired = ship.position.clone().add(new THREE.Vector3(0, 15, 40));
+      const desired = ship.position.clone().add(new THREE.Vector3(0, 15, 40).add(walkOffset));
       camera.position.lerp(desired, 0.05);
-      camera.lookAt(ship.position);
+      camera.lookAt(ship.position.clone().add(walkOffset));
     }
 
     updateHUD();

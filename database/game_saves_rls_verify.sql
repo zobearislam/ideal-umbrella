@@ -1,0 +1,21 @@
+-- Verification / reference for public.game_saves RLS
+-- Do NOT run blindly if the table already exists with data.
+-- User instruction: do not weaken RLS or recreate the table.
+-- Confirm in Supabase SQL Editor that every policy uses: auth.uid() = user_id
+--
+-- Actual table shape used by the client (do not recreate):
+--   user_id uuid
+--   slot_name text
+--   schema_version integer
+--   save_data jsonb
+--   created_at timestamptz
+--   updated_at timestamptz
+--   primary key (user_id, slot_name)
+--
+-- Client uses CLOUD_SLOT = 'primary' and onConflict: 'user_id,slot_name'
+
+-- Quick check (run in SQL editor while authenticated as a test user, or inspect policies in Dashboard):
+-- select polname, polcmd, pg_get_expr(polqual, polrelid) as using_expr,
+--        pg_get_expr(polwithcheck, polrelid) as with_check_expr
+-- from pg_policy
+-- where polrelid = 'public.game_saves'::regclass;
