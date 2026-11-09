@@ -1,6 +1,6 @@
 // Shared credit system – personal + company balances
 
-let personalCredits = 50000;
+let personalCredits = 75000;
 let companyCredits = {}; // companyId -> balance
 let transactions = [];
 let nextTxId = 1;
