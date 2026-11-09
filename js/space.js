@@ -110,6 +110,7 @@
   let showOrbits = false;
   let locked = false;
   let target = null;
+  let economyAccum = 0;
 
   // Orbit lines
   const orbitGroup = new THREE.Group();
@@ -337,6 +338,13 @@
       walkOffset.x = Math.max(-1.5, Math.min(1.5, walkOffset.x));
       walkOffset.z = Math.max(-2, Math.min(2, walkOffset.z));
       playerMode = (keys["w"] || keys["s"] || keys["a"] || keys["d"]) ? "walking" : "standing";
+    }
+
+    // Economy tick (approximate 1 game hour per real second at x1, scaled)
+    economyAccum += t;
+    if (economyAccum >= 1 && window.Economy && window.Economy.update) {
+      try { window.Economy.update(1); } catch(e) {}
+      economyAccum -= 1;
     }
 
     // Camera follow if locked
