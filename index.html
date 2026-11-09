@@ -34,6 +34,14 @@
     left: 65px; top: 65px;
     box-shadow: 0 2px 6px #000;
   }
+  #stationPanel .box { max-height: 80vh; overflow-y: auto; }
+  #stationPanel h4 { margin: 12px 0 6px; color: #d4af37; }
+  #stationPanel .stat-row { margin: 4px 0; font-size: 14px; }
+  #stationPanel .cargo-line, #stationPanel .mission-line {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 8px; margin: 4px 0; flex-wrap: wrap;
+  }
+  #stationPanel .hint { color: #8ab; font-size: 13px; margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -101,14 +109,16 @@
 <div id="stationPanel" style="display:none">
   <div class="box">
     <h3 id="stationTitle">Station</h3>
-    <div id="stationCredits"></div>
-    <div id="stationRep"></div>
-    <h4>Ships</h4>
-    <div id="stationShips"></div>
-    <h4>Pilots</h4>
-    <div id="stationPilots"></div>
-    <h4>Resources & Crafting</h4>
+    <div id="stationCredits" class="stat-row"></div>
+    <div id="stationRep" class="stat-row"></div>
+    <div id="stationWarehouse" class="stat-row"></div>
+    <h4>Ship hold</h4>
+    <div id="stationInventory"></div>
+    <h4>Active missions</h4>
+    <div id="stationMissions"></div>
+    <h4>Crafting</h4>
     <div id="stationCrafting"></div>
+    <p class="hint">Credits, cargo, and reputation are shared with Transport. Deliver contracts there, then sell warehouse goods or complete missions here.</p>
     <button id="closeStation" class="brass-btn" style="margin-top:12px;width:100%">Close</button>
   </div>
 </div>
@@ -118,15 +128,11 @@
     <h3>Space Pack Controls</h3>
     <p><b>Fly mode:</b> Joystick / WASD / arrows to turn. W/S or slider for speed. Q/E roll. X stop.</p>
     <p><b>Walk mode:</b> Move inside ship. Green door = airlock. Front = seat.</p>
-    <p><b>EVA:</b> Free movement outside. Stay close to re-enter.</p>
-    <p><b>Lock:</b> Follows a body. Go jumps near selected object.</p>
-    <p><b>Orbits:</b> Toggle orbital paths. Pause freezes time.</p>
-    <p><b>Gates:</b> Fly into the cyan ring gates to jump to the connected system.</p>
-    <p><b>Factions:</b> Terran Confederation, Martian Republic, Belt Miners’ Union, Jovian Syndicate, Outer Colonies League, Pirate Clans. Reputation is tracked.</p>
-    <p><b>Dock:</b> Near a planet/moon, press Dock to access station services, crafting, and ships.</p>
-    <p><b>Laser:</b> Spacebar or Laser button fires abstract defense laser. Affects reputation.</p>
-    <p><b>Economy:</b> Credits buy ships. Reputation changes prices and rises with peaceful actions.</p>
-    <p style="margin-top:16px;color:#d4af37">Tip: Lock Earth or a moon and accelerate time to watch orbits. Check Missions and Transport for more gameplay.</p>
+    <p><b>Dock:</b> Near a planet/moon, press Dock for station services, sell cargo, craft, and complete missions.</p>
+    <p><b>Shared economy:</b> Personal &amp; company credits, inventory, and reputation sync with Transport and Missions pages.</p>
+    <p><b>Loop:</b> Accept a mission → gather or craft cargo → dock and complete · or run Transport deliveries → goods land in system warehouses → sell at a station.</p>
+    <p><b>Laser:</b> Spacebar fires abstract defense laser (can affect reputation via IAG).</p>
+    <p style="margin-top:16px;color:#d4af37">Tip: Start near Earth, Dock, sell iron, then open Transport for fleet contracts.</p>
     <button id="closehelp" class="brass-btn" style="margin-top:12px;width:100%">Close</button>
   </div>
 </div>
