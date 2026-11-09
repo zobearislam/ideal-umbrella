@@ -14,8 +14,8 @@
   "use strict";
 
   // --- Replace these two values with your project settings ---
-  window.SUPABASE_URL = window.SUPABASE_URL || "https://YOUR_PROJECT_REF.supabase.co";
-  window.SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || "YOUR_SUPABASE_ANON_KEY";
+  window.SUPABASE_URL = window.SUPABASE_URL || "https://qdviglvmnqhdamymfwhs.supabase.co";
+  window.SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || "sb_publishable_uS1vL0jWipIXHYhL68fm1A_gBAenhXv";
 
   window.SupabaseConfig = {
     url: window.SUPABASE_URL,
