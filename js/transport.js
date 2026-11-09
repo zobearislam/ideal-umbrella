@@ -4,7 +4,7 @@
   const SAVE_KEY = "spacePack.transportPrototype.v1";
   const DAY = 24 * 60 * 60 * 1000;
 
-  // Canonical system IDs (matches shared universe + simulator)
+  // Expanded systems (subset of js/data/systems-expanded.js for immediate use)
   const SYSTEMS = [
     {id:"sol",name:"Sol",x:.18,y:.48,stations:["Earth Orbital Port","Luna Depot"]},
     {id:"alpha-cen",name:"Alpha Centauri",x:.39,y:.22,stations:["New Horizon"]},
@@ -12,13 +12,28 @@
     {id:"vega",name:"Vega",x:.78,y:.18,stations:["Vega Trade Hub"]},
     {id:"altair",name:"Altair",x:.48,y:.76,stations:["Altair Foundry"]},
     {id:"rigel",name:"Rigel",x:.85,y:.72,stations:["Rigel Research Port"]},
-    {id:"kepler",name:"Kepler",x:.22,y:.82,stations:["Kepler Colony"]}
+    {id:"kepler",name:"Kepler",x:.22,y:.82,stations:["Kepler Colony"]},
+    {id:"proxima",name:"Proxima",x:.32,y:.28,stations:["Proxima Research"]},
+    {id:"tau-ceti",name:"Tau Ceti",x:.55,y:.35,stations:["Tau Ceti Port"]},
+    {id:"epsilon-eridani",name:"Epsilon Eridani",x:.42,y:.55,stations:["Eridani Mines"]},
+    {id:"trappist",name:"TRAPPIST",x:.15,y:.65,stations:["TRAPPIST Colony"]},
+    {id:"barnard",name:"Barnard's Star",x:.28,y:.38,stations:["Barnard Depot"]},
+    {id:"wolf-359",name:"Wolf 359",x:.68,y:.28,stations:["Wolf Outpost"]},
+    {id:"ross-128",name:"Ross 128",x:.72,y:.55,stations:["Ross Trade"]},
+    {id:"gliese-581",name:"Gliese 581",x:.82,y:.35,stations:["Gliese Science"]},
+    {id:"kepler-442",name:"Kepler-442",x:.12,y:.35,stations:["Kepler-442 Colony"]}
   ];
 
+  // Expanded ship types
   const SHIP_TYPES = {
-    courier:{name:"Courier",price:12000,capacity:10,speed:1.25,maintenance:35},
-    hauler:{name:"Hauler",price:25000,capacity:35,speed:1,maintenance:65},
-    freighter:{name:"Freighter",price:50000,capacity:100,speed:.75,maintenance:110}
+    scout:{name:"Scout",price:8500,capacity:5,speed:1.8,maintenance:25},
+    courier:{name:"Courier",price:12000,capacity:12,speed:1.4,maintenance:35},
+    hauler:{name:"Hauler",price:25000,capacity:40,speed:1.0,maintenance:65},
+    freighter:{name:"Freighter",price:55000,capacity:120,speed:0.75,maintenance:120},
+    interceptor:{name:"Interceptor",price:32000,capacity:8,speed:2.1,maintenance:55},
+    miner:{name:"Miner",price:38000,capacity:60,speed:0.85,maintenance:80},
+    science:{name:"Science Vessel",price:75000,capacity:15,speed:1.2,maintenance:95},
+    titan:{name:"Titan Freighter",price:180000,capacity:300,speed:0.55,maintenance:280}
   };
 
   function getSharedCredits() {
@@ -37,7 +52,15 @@
       {id:"C-101",from:"sol",to:"alpha-cen",cargo:"Machine parts",quantity:8,reward:5200},
       {id:"C-102",from:"sirius",to:"vega",cargo:"Research supplies",quantity:6,reward:6800},
       {id:"C-103",from:"altair",to:"rigel",cargo:"Refined metals",quantity:25,reward:11200},
-      {id:"C-104",from:"kepler",to:"sol",cargo:"Ice containers",quantity:30,reward:9000}
+      {id:"C-104",from:"kepler",to:"sol",cargo:"Ice containers",quantity:30,reward:9000},
+      {id:"C-105",from:"proxima",to:"tau-ceti",cargo:"Scientific samples",quantity:4,reward:8500},
+      {id:"C-106",from:"epsilon-eridani",to:"sol",cargo:"Iron ore",quantity:45,reward:7200},
+      {id:"C-107",from:"trappist",to:"kepler-442",cargo:"Food rations",quantity:35,reward:9800},
+      {id:"C-108",from:"barnard",to:"sirius",cargo:"Titanium ore",quantity:28,reward:11000},
+      {id:"C-109",from:"wolf-359",to:"ross-128",cargo:"Fuel cells",quantity:18,reward:6400},
+      {id:"C-110",from:"gliese-581",to:"rigel",cargo:"Data cores",quantity:3,reward:14500},
+      {id:"C-111",from:"tau-ceti",to:"proxima",cargo:"Medical supplies",quantity:12,reward:5600},
+      {id:"C-112",from:"kepler-442",to:"trappist",cargo:"Luxury goods",quantity:6,reward:16800}
     ],
     journeys:[],transactions:[]
   });
@@ -120,7 +143,7 @@
     }
     drawMap(); save();
   }
-  function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+  function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&","<":"<",">":">",'"':""","'":"&#39;"}[c]));}
 
   function drawMap(){
     const canvas=$("galaxyMap"); if (!canvas) return;
@@ -132,7 +155,7 @@
     ctx.fillStyle="#071321";ctx.fillRect(0,0,w,h);
     for(let i=0;i<90;i++){const x=(i*97%997)/997*w,y=(i*193%991)/991*h;ctx.fillStyle="#6685a3";ctx.globalAlpha=.35;ctx.fillRect(x,y,1.5,1.5);}
     ctx.globalAlpha=1;
-    const links=[["sol","alpha-cen"],["alpha-cen","sirius"],["sirius","vega"],["alpha-cen","altair"],["altair","rigel"],["sol","kepler"],["sirius","rigel"]];
+    const links=[["sol","alpha-cen"],["alpha-cen","sirius"],["sirius","vega"],["alpha-cen","altair"],["altair","rigel"],["sol","kepler"],["sirius","rigel"],["sol","proxima"],["proxima","tau-ceti"],["epsilon-eridani","sol"],["trappist","kepler-442"],["barnard","sirius"],["wolf-359","ross-128"],["gliese-581","rigel"]];
     for(const [a,b] of links){
       const A=SYSTEMS.find(s=>s.id===a),B=SYSTEMS.find(s=>s.id===b);
       if (!A||!B) continue;
