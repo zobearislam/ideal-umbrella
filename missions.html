@@ -11,8 +11,12 @@
     .mission h3 { margin: 0 0 8px; color: #d4af37; }
     .meta { color: #8ab; font-size: 0.9em; }
     .reward { color: #6c6; font-weight: bold; }
+    .active { border-color: #6a6; }
+    .done { opacity: 0.55; }
     button { background: #c49a45; color: #1a120b; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
     nav a { color: #d4af37; margin-right: 16px; }
+    #status { margin: 12px 0; color: #9ad17a; }
   </style>
 </head>
 <body>
@@ -24,28 +28,69 @@
     <a href="ui/diplomacy.html">Diplomacy</a>
   </nav>
   <h1>Mission Board</h1>
-  <p>Accept contracts, deliveries, and exploration jobs. Progress is tracked locally.</p>
+  <p>Accept contracts here, gather cargo in the simulator (craft / start inventory), then <strong>Dock</strong> at a station and press <strong>Complete</strong>.</p>
+  <div id="status"></div>
   <div id="list"></div>
+
+  <script src="js/core/credits.js"></script>
+  <script src="js/core/save-manager.js"></script>
+  <script src="js/core/game-state.js"></script>
   <script src="js/data/missions.js"></script>
   <script>
     const list = document.getElementById("list");
+    const status = document.getElementById("status");
+
+    function stateInfo() {
+      if (!window.GameState) return "";
+      const s = window.GameState.getState();
+      const active = (s.activeMissions || []).length;
+      const done = (s.completedMissionIds || []).length;
+      const cr = window.Credits ? window.Credits.getPersonal() : "?";
+      return `Active: ${active} · Completed: ${done} · Personal credits: ${Number(cr).toLocaleString()} cr`;
+    }
+
     function render() {
-      list.innerHTML = window.MISSIONS.map(m => `
-        <div class="mission">
+      status.textContent = stateInfo();
+      const s = window.GameState ? window.GameState.getState() : { activeMissions: [], completedMissionIds: [] };
+      const activeIds = new Set((s.activeMissions || []).map(m => m.id));
+      const doneIds = new Set(s.completedMissionIds || []);
+
+      list.innerHTML = (window.MISSIONS || []).map(m => {
+        const isActive = activeIds.has(m.id);
+        const isDone = doneIds.has(m.id);
+        let cls = "mission";
+        if (isActive) cls += " active";
+        if (isDone) cls += " done";
+        let btn = `<button onclick="accept('${m.id}')">Accept</button>`;
+        if (isDone) btn = `<button disabled>Completed</button>`;
+        else if (isActive) btn = `<button disabled>In progress — dock in simulator to complete</button>`;
+        return `
+        <div class="${cls}">
           <h3>${m.title} <span class="meta">[${m.type}] Difficulty ${m.difficulty}</span></h3>
           <p>${m.description}</p>
           <p class="meta">${m.from || ""} → ${m.to || ""} ${m.cargo ? `· ${m.quantity} ${m.cargo}` : ""}</p>
           <p class="reward">Reward: ${m.reward.toLocaleString()} cr</p>
-          <button onclick="accept('${m.id}')">Accept</button>
-        </div>
-      `).join("");
+          ${btn}
+        </div>`;
+      }).join("");
     }
+
     window.accept = id => {
-      const m = window.MISSIONS.find(x => x.id === id);
+      const m = (window.MISSIONS || []).find(x => x.id === id);
       if (!m) return;
-      alert(`Mission accepted: ${m.title}\nReward on completion: ${m.reward} cr\n(Full integration with simulator coming soon)`);
-      // Could set localStorage here
+      if (!window.GameState || !window.GameState.acceptMission) {
+        alert("GameState not available.");
+        return;
+      }
+      const res = window.GameState.acceptMission(m);
+      if (!res.ok) {
+        alert(res.error || "Could not accept");
+        return;
+      }
+      alert(`Mission accepted: ${m.title}\n\nNext: open the Simulator, gather any required cargo, Dock at a station, and press Complete.`);
+      render();
     };
+
     render();
   </script>
 </body>
