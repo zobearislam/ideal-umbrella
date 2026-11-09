@@ -3,7 +3,7 @@ window.Economy = (() => {
   "use strict";
 
   const SETTINGS = {
-    HOURS_PER_YEAR: 356,
+    HOURS_PER_YEAR: 365,
     LEASE_GRACE_HOURS: 24,
     pilotWagePerHour: 2,
     vehicleMaintenancePerHour: 0.5,
