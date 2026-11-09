@@ -1,24 +1,7 @@
 (() => {
   "use strict";
 
-  const SAVE_KEY = "spacePack.transportPrototype.v2";
-  const DAY = 24 * 60 * 60 * 1000;
-
-  // Use shared universe if available
-  const SYSTEMS = (window.UNIVERSE && window.UNIVERSE.SYSTEMS) ? window.UNIVERSE.SYSTEMS : [
-    {id:"sol",name:"Sol",x:.18,y:.48},
-    {id:"alpha-cen",name:"Alpha Centauri",x:.39,y:.22},
-    {id:"proxima",name:"Proxima Centauri",x:.32,y:.15},
-    {id:"sirius",name:"Sirius",x:.61,y:.42},
-    {id:"vega",name:"Vega",x:.78,y:.18},
-    {id:"altair",name:"Altair",x:.48,y:.76},
-    {id:"rigel",name:"Rigel",x:.85,y:.72},
-    {id:"kepler",name:"Kepler",x:.22,y:.82},
-    {id:"tau-ceti",name:"Tau Ceti",x:.55,y:.55},
-    {id:"epsilon-eri",name:"Epsilon Eridani",x:.70,y:.60},
-    {id:"trappist",name:"TRAPPIST-1",x:.15,y:.30},
-    {id:"barnard",name:"Barnard's Star",x:.42,y:.35}
-  ];
+  const SYSTEMS = (window.UNIVERSE && window.UNIVERSE.SYSTEMS) ? window.UNIVERSE.SYSTEMS : [];
 
   const SHIP_TYPES = {
     scout:{name:"Scout",price:8000,capacity:5,speed:1.6,maintenance:20},
@@ -31,38 +14,60 @@
     capital:{name:"Capital Ship",price:250000,capacity:200,speed:0.6,maintenance:300}
   };
 
-  function getSharedCredits() {
+  // Use central state if available
+  const gs = window.GameState;
+  const credits = window.Credits;
+  let localJourneys = [];
+  let completedContractIds = new Set();
+  let nextJourney = 1;
+
+  function getCompanyCredits() {
+    if (credits && gs) {
+      const company = gs.getCompany("company-1");
+      return company ? credits.getCompany(company.id) : 0;
+    }
     return window.credits || 0;
   }
-  function setSharedCredits(n) {
-    window.credits = Math.max(0, Math.round(n));
+
+  function addCompanyCredits(amount, reason) {
+    if (credits && gs) {
+      return credits.addCompany("company-1", amount, reason);
+    }
+    window.credits = (window.credits || 0) + amount;
     return window.credits;
   }
 
-  const starter = () => ({
-    credits: getSharedCredits() || 75000,
-    completed:0, nextShip:3, nextJourney:1,
-    ships:[
-      {id:"ship-1",name:"Wayfarer",type:"hauler",location:"sol",status:"Idle"},
-      {id:"ship-2",name:"Swift Courier",type:"courier",location:"sol",status:"Idle"}
-    ],
-    contracts:[
-      {id:"C-101",from:"sol",to:"alpha-cen",cargo:"Machine parts",quantity:8,reward:5200},
-      {id:"C-102",from:"sirius",to:"vega",cargo:"Research supplies",quantity:6,reward:6800},
-      {id:"C-103",from:"altair",to:"rigel",cargo:"Refined metals",quantity:25,reward:11200},
-      {id:"C-104",from:"kepler",to:"sol",cargo:"Ice containers",quantity:30,reward:9000},
-      {id:"C-105",from:"sol",to:"proxima",cargo:"Science kits",quantity:5,reward:7500},
-      {id:"C-106",from:"tau-ceti",to:"sol",cargo:"Agricultural samples",quantity:12,reward:8400},
-      {id:"C-107",from:"epsilon-eri",to:"altair",cargo:"Raw ore",quantity:40,reward:13500},
-      {id:"C-108",from:"trappist",to:"sol",cargo:"Survey data",quantity:2,reward:22000},
-      {id:"C-109",from:"barnard",to:"alpha-cen",cargo:"Medical supplies",quantity:10,reward:9800},
-      {id:"C-110",from:"sol",to:"kepler",cargo:"Fertilizer",quantity:35,reward:16000}
-    ],
-    journeys:[],transactions:[]
-  });
+  const starterContracts = [
+    {id:"C-101",from:"sol",to:"alpha-cen",cargo:"Machine parts",quantity:8,reward:5200,status:"available"},
+    {id:"C-102",from:"sirius",to:"vega",cargo:"Research supplies",quantity:6,reward:6800,status:"available"},
+    {id:"C-103",from:"altair",to:"rigel",cargo:"Refined metals",quantity:25,reward:11200,status:"available"},
+    {id:"C-104",from:"kepler",to:"sol",cargo:"Ice containers",quantity:30,reward:9000,status:"available"},
+    {id:"C-105",from:"sol",to:"proxima",cargo:"Science kits",quantity:5,reward:7500,status:"available"},
+    {id:"C-106",from:"tau-ceti",to:"sol",cargo:"Agricultural samples",quantity:12,reward:8400,status:"available"},
+    {id:"C-107",from:"epsilon-eri",to:"altair",cargo:"Raw ore",quantity:40,reward:13500,status:"available"},
+    {id:"C-108",from:"trappist",to:"sol",cargo:"Survey data",quantity:2,reward:22000,status:"available"},
+    {id:"C-109",from:"barnard",to:"alpha-cen",cargo:"Medical supplies",quantity:10,reward:9800,status:"available"},
+    {id:"C-110",from:"sol",to:"kepler",cargo:"Fertilizer",quantity:35,reward:16000,status:"available"}
+  ];
 
-  let state = load();
-  if (typeof window.credits === "number") state.credits = window.credits;
+  function getShips() {
+    if (gs) return gs.getState().ships || [];
+    return [
+      {id:"ship-1",name:"Wayfarer",type:"hauler",location:"sol",status:"Idle",owner:"company-1"},
+      {id:"ship-2",name:"Swift Courier",type:"courier",location:"sol",status:"Idle",owner:"company-1"}
+    ];
+  }
+
+  function getContracts() {
+    if (gs) {
+      const s = gs.getState();
+      if (!s.contracts || s.contracts.length === 0) {
+        s.contracts = starterContracts.map(c => ({...c}));
+      }
+      return s.contracts.filter(c => c.status === "available" && !completedContractIds.has(c.id));
+    }
+    return starterContracts.filter(c => !completedContractIds.has(c.id));
+  }
 
   let selectedSystem = "sol";
   const $ = id => document.getElementById(id);
@@ -70,72 +75,56 @@
   const systemName = id => SYSTEMS.find(s=>s.id===id)?.name || id;
   const now = () => Date.now();
 
-  function load(){
-    try {
-      const raw=localStorage.getItem(SAVE_KEY);
-      if(!raw) return starter();
-      const parsed=JSON.parse(raw);
-      if(!parsed || !Array.isArray(parsed.ships) || !Array.isArray(parsed.contracts)) return starter();
-      return parsed;
-    } catch { return starter(); }
-  }
-  function save(){
-    state.savedAt=new Date().toISOString();
-    setSharedCredits(state.credits);
-    localStorage.setItem(SAVE_KEY,JSON.stringify(state));
-    if ($("savedAt")) $("savedAt").textContent=new Date(state.savedAt).toLocaleString();
-  }
-  function log(text){
-    state.transactions.unshift({at:now(),text});
-    state.transactions=state.transactions.slice(0,40);
-  }
-  function distance(a,b){
-    const A=SYSTEMS.find(s=>s.id===a),B=SYSTEMS.find(s=>s.id===b);
-    if (!A || !B) return 50;
-    return Math.hypot((A.x-B.x)*100,(A.y-B.y)*100);
-  }
-  function travelMs(ship,contract){
-    const d=distance(contract.from,contract.to);
-    return Math.max(45_000, d*90_000/SHIP_TYPES[ship.type].speed);
-  }
   function processArrivals(){
     const t=now();
-    for(const j of state.journeys.filter(x=>x.status==="In transit" && x.arrivesAt<=t)){
-      const ship=state.ships.find(s=>s.id===j.shipId);
+    const ships = getShips();
+    for(const j of localJourneys.filter(x=>x.status==="In transit" && x.arrivesAt<=t)){
+      if (completedContractIds.has(j.contractId)) continue; // prevent duplicate
+      const ship=ships.find(s=>s.id===j.shipId);
       if(!ship) continue;
       ship.location=j.to; ship.status="Idle";
       j.status="Delivered"; j.deliveredAt=t;
-      state.credits+=j.reward; state.completed++;
-      setSharedCredits(state.credits);
-      log(`${ship.name} delivered ${j.cargo} to ${systemName(j.to)}. +${money(j.reward)}.`);
-      state.contracts=state.contracts.filter(c=>c.id!==j.contractId);
+      addCompanyCredits(j.reward, `Delivery ${j.contractId}`);
+      completedContractIds.add(j.contractId);
+      if (gs) {
+        const s = gs.getState();
+        s.player.progression.deliveries = (s.player.progression.deliveries || 0) + 1;
+        // Simple cargo transfer
+        if (gs.unloadCargo) gs.unloadCargo(j.from, j.cargo, j.quantity);
+        if (gs.loadCargo) gs.loadCargo(j.to, j.cargo, j.quantity);
+        gs.saveState();
+      }
+      if (typeof window.msg === "function") window.msg(`${ship.name} delivered ${j.cargo} to ${systemName(j.to)}. +${money(j.reward)}.`);
     }
   }
+
   function render(){
     processArrivals();
-    if ($("credits")) $("credits").textContent=money(state.credits);
-    if ($("deliveries")) $("deliveries").textContent=state.completed;
-    if ($("savedAt")) $("savedAt").textContent=state.savedAt?new Date(state.savedAt).toLocaleString():"Not saved yet";
+    const ships = getShips();
+    const contracts = getContracts();
+    const companyBal = getCompanyCredits();
+    if ($("credits")) $("credits").textContent=money(companyBal);
+    if ($("deliveries")) $("deliveries").textContent = gs ? (gs.getState().player.progression.deliveries || 0) : completedContractIds.size;
+    if ($("savedAt")) $("savedAt").textContent = new Date().toLocaleString();
     if ($("clock")) $("clock").textContent=new Date().toLocaleString();
-    if ($("fleetList")) $("fleetList").innerHTML=state.ships.map(s=>`<article class="item"><strong>${esc(s.name)} · ${SHIP_TYPES[s.type].name}</strong><small>${esc(systemName(s.location))} · ${esc(s.status)} · Cap ${SHIP_TYPES[s.type].capacity}</small></article>`).join("") || `<p class="muted">No ships owned.</p>`;
-    if ($("contractList")) $("contractList").innerHTML=state.contracts.map(c=>`<article class="item"><strong>${esc(c.id)} · ${esc(c.cargo)}</strong><small>${esc(systemName(c.from))} → ${esc(systemName(c.to))}</small><p>${c.quantity} units · Reward ${money(c.reward)}</p></article>`).join("") || `<p class="muted">No contracts available.</p>`;
-    if ($("journeyList")) $("journeyList").innerHTML=state.journeys.filter(j=>j.status==="In transit").map(j=>`<article class="item"><strong>${esc(j.shipName)} · ${esc(j.contractId)}</strong><small>${esc(systemName(j.from))} → ${esc(systemName(j.to))}</small><p>${esc(j.cargo)} · Arrives ${new Date(j.arrivesAt).toLocaleString()}</p></article>`).join("") || `<p class="muted">No ships currently travelling.</p>`;
+    if ($("fleetList")) $("fleetList").innerHTML=ships.map(s=>`<article class="item"><strong>${esc(s.name)} · ${SHIP_TYPES[s.type]?.name || s.type}</strong><small>${esc(systemName(s.location))} · ${esc(s.status)} · Cap ${SHIP_TYPES[s.type]?.capacity || "?"}</small></article>`).join("") || `<p class="muted">No ships owned.</p>`;
+    if ($("contractList")) $("contractList").innerHTML=contracts.map(c=>`<article class="item"><strong>${esc(c.id)} · ${esc(c.cargo)}</strong><small>${esc(systemName(c.from))} → ${esc(systemName(c.to))}</small><p>${c.quantity} units · Reward ${money(c.reward)}</p></article>`).join("") || `<p class="muted">No contracts available.</p>`;
+    if ($("journeyList")) $("journeyList").innerHTML=localJourneys.filter(j=>j.status==="In transit").map(j=>`<article class="item"><strong>${esc(j.shipName)} · ${esc(j.contractId)}</strong><small>${esc(systemName(j.from))} → ${esc(systemName(j.to))}</small><p>${esc(j.cargo)} · Arrives ${new Date(j.arrivesAt).toLocaleString()}</p></article>`).join("") || `<p class="muted">No ships currently travelling.</p>`;
     const c=$("contractSelect"), oldC=c&&c.value;
     if (c) {
-      c.innerHTML=state.contracts.map(x=>`<option value="${x.id}">${x.id}: ${esc(systemName(x.from))} → ${esc(systemName(x.to))}</option>`).join("");
-      if(state.contracts.some(x=>x.id===oldC)) c.value=oldC;
+      c.innerHTML=contracts.map(x=>`<option value="${x.id}">${x.id}: ${esc(systemName(x.from))} → ${esc(systemName(x.to))}</option>`).join("");
+      if(contracts.some(x=>x.id===oldC)) c.value=oldC;
     }
     const s=$("shipSelect"),oldS=s&&s.value;
     if (s) {
-      s.innerHTML=state.ships.filter(x=>x.status==="Idle").map(x=>`<option value="${x.id}">${esc(x.name)} (${SHIP_TYPES[x.type].name}, ${esc(systemName(x.location))})</option>`).join("");
-      if(state.ships.some(x=>x.id===oldS && x.status==="Idle")) s.value=oldS;
+      s.innerHTML=ships.filter(x=>x.status==="Idle").map(x=>`<option value="${x.id}">${esc(x.name)} (${SHIP_TYPES[x.type]?.name || x.type}, ${esc(systemName(x.location))})</option>`).join("");
+      if(ships.some(x=>x.id===oldS && x.status==="Idle")) s.value=oldS;
     }
-    // Update ship type select if present
     const st = $("shipType");
     if (st && st.options.length < Object.keys(SHIP_TYPES).length) {
       st.innerHTML = Object.entries(SHIP_TYPES).map(([k,v]) => `<option value="${k}">${v.name} — ${money(v.price)}</option>`).join("");
     }
-    drawMap(); save();
+    drawMap();
   }
   function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&","<":"<",">":">",'"':""","'":"&#39;"}[c]));}
 
@@ -171,27 +160,35 @@
   });
   if ($("buyShipForm")) $("buyShipForm").addEventListener("submit",e=>{
     e.preventDefault();const type=$("shipType").value,def=SHIP_TYPES[type];
-    if(state.credits<def.price){alert("Not enough credits.");return;}
-    state.credits-=def.price;
-    setSharedCredits(state.credits);
-    state.ships.push({id:`ship-${state.nextShip++}`,name:`${def.name} ${state.nextShip-1}`,type,location:"sol",status:"Idle"});
-    log(`Purchased ${def.name} for ${money(def.price)}.`);render();
+    const bal = getCompanyCredits();
+    if(bal<def.price){alert("Not enough company credits.");return;}
+    addCompanyCredits(-def.price, `Purchased ${def.name}`);
+    const newShip = {id:`ship-${Date.now()}`,name:`${def.name} ${Math.floor(Math.random()*100)}`,type,location:"sol",status:"Idle",owner:"company-1",condition:100,cargo:[]};
+    if (gs && gs.addShip) gs.addShip(newShip);
+    else getShips().push(newShip);
+    if (typeof window.msg === "function") window.msg(`Purchased ${def.name} for ${money(def.price)}.`);
+    render();
   });
   if ($("routeForm")) $("routeForm").addEventListener("submit",e=>{
     e.preventDefault();
-    const contract=state.contracts.find(c=>c.id===$("contractSelect").value);
-    const ship=state.ships.find(s=>s.id===$("shipSelect").value && s.status==="Idle");
+    const contracts = getContracts();
+    const ships = getShips();
+    const contract=contracts.find(c=>c.id===$("contractSelect").value);
+    const ship=ships.find(s=>s.id===$("shipSelect").value && s.status==="Idle");
     if(!contract||!ship){alert("Choose an available contract and idle ship.");return;}
     if(ship.location!==contract.from){alert(`${ship.name} is at ${systemName(ship.location)}. This contract starts at ${systemName(contract.from)}.`);return;}
-    if(contract.quantity>SHIP_TYPES[ship.type].capacity){alert("This ship does not have enough cargo capacity.");return;}
-    const duration=travelMs(ship,contract),arrivesAt=now()+duration;
+    if(contract.quantity>(SHIP_TYPES[ship.type]?.capacity || 0)){alert("This ship does not have enough cargo capacity.");return;}
+    const duration=Math.max(45000, 90000 / (SHIP_TYPES[ship.type]?.speed || 1)),arrivesAt=now()+duration;
     ship.status="In transit";
-    state.journeys.push({id:state.nextJourney++,contractId:contract.id,shipId:ship.id,shipName:ship.name,from:contract.from,to:contract.to,cargo:contract.cargo,quantity:contract.quantity,reward:contract.reward,departedAt:now(),arrivesAt,status:"In transit"});
-    log(`${ship.name} dispatched on ${contract.id}.`);render();
+    localJourneys.push({id:nextJourney++,contractId:contract.id,shipId:ship.id,shipName:ship.name,from:contract.from,to:contract.to,cargo:contract.cargo,quantity:contract.quantity,reward:contract.reward,departedAt:now(),arrivesAt,status:"In transit"});
+    if (typeof window.msg === "function") window.msg(`${ship.name} dispatched on ${contract.id}.`);
+    render();
   });
   if ($("resetDemo")) $("resetDemo").addEventListener("click",()=>{
     if(!confirm("Reset this browser's transport demo save?"))return;
-    localStorage.removeItem(SAVE_KEY);state=starter();setSharedCredits(state.credits);render();
+    if (window.SaveManager) window.SaveManager.clear();
+    localStorage.removeItem("spacePack.transportPrototype.v2");
+    location.reload();
   });
   window.addEventListener("resize",drawMap);
   render();
