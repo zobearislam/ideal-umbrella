@@ -23,7 +23,11 @@ const defaultState = {
   cargo: {}, // systemId -> { type: quantity }
   contracts: [],
   transactions: [],
-  gameTime: 0
+  gameTime: 0,
+  // Transport persistence (survive refresh + cloud save/load)
+  journeys: [],
+  completedContractIds: [],
+  nextJourneyId: 1
 };
 
 let state = JSON.parse(JSON.stringify(defaultState));
@@ -47,7 +51,10 @@ function saveState() {
       contracts: state.contracts,
       personalCredits: window.Credits ? window.Credits.getPersonal() : window.credits,
       companyCredits: window.Credits ? window.Credits.getAllCompanyBalances() : {},
-      gameTime: state.gameTime
+      gameTime: state.gameTime,
+      journeys: state.journeys || [],
+      completedContractIds: state.completedContractIds || [],
+      nextJourneyId: state.nextJourneyId || 1
     };
     window.SaveManager.save(toSave);
   }
@@ -58,6 +65,10 @@ function loadState() {
   const loaded = window.SaveManager.load();
   if (loaded && loaded.data) {
     state = { ...defaultState, ...loaded.data };
+    // Ensure arrays exist after older saves
+    if (!Array.isArray(state.journeys)) state.journeys = [];
+    if (!Array.isArray(state.completedContractIds)) state.completedContractIds = [];
+    if (typeof state.nextJourneyId !== "number") state.nextJourneyId = 1;
     // Restore credits
     if (window.Credits && loaded.data.personalCredits != null) {
       window.Credits.setPersonal(loaded.data.personalCredits);
@@ -66,6 +77,10 @@ function loadState() {
       for (const [id, bal] of Object.entries(loaded.data.companyCredits)) {
         window.Credits.setCompany(id, bal);
       }
+    }
+    // Restore game clock if present
+    if (window.gameClock && typeof window.gameClock.load === "function" && loaded.data.clock) {
+      window.gameClock.load(loaded.data.clock);
     }
     console.log("Game state loaded");
   } else {
