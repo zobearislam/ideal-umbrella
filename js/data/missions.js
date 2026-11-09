@@ -125,8 +125,8 @@ window.MISSIONS = [
   }
 ];
 
-window.getAvailableMissions = function(playerRep = {}, ownedShips = []) {
-  return window.MISSIONS.filter(m => {
+window.getAvailableMissions = function(_playerRep = {}, _ownedShips = []) {
+  return window.MISSIONS.filter(_m => {
     // Simple filter: show all for now, or filter by difficulty / reputation later
     return true;
   });

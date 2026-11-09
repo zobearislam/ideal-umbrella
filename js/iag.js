@@ -54,7 +54,7 @@ window.IAG = (() => {
       name: law.name
     };
     incidents.push(incident);
-    if (typeof msg === "function") msg("IAG incident recorded: " + law.name);
+    if (typeof window.msg === "function") window.msg("IAG incident recorded: " + law.name);
     return incident;
   }
 
@@ -64,7 +64,7 @@ window.IAG = (() => {
     incident.status = "confirmed";
     if (window.credits !== undefined) window.credits = Math.max(0, window.credits - incident.fine);
     applyRepLoss(incident.reputationLoss);
-    if (typeof msg === "function") msg(`IAG fine: -${incident.fine} cr, rep -${incident.reputationLoss}`);
+    if (typeof window.msg === "function") window.msg(`IAG fine: -${incident.fine} cr, rep -${incident.reputationLoss}`);
     return { fine: incident.fine, reputationLoss: incident.reputationLoss };
   }
 

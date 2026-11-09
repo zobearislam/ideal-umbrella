@@ -1,6 +1,8 @@
 // Greatly expanded star systems catalog
+// Note: Currently unused; main systems are in js/core/universe.js
+// Converted from ES modules for consistency with the rest of the project.
 
-export const EXPANDED_SYSTEMS = [
+window.EXPANDED_SYSTEMS = [
   // Core systems (existing)
   { id: "sol", name: "Sol", x: 0.18, y: 0.48, description: "Humanity's home system.", population: 12000000000, faction: "terran" },
   { id: "alpha-cen", name: "Alpha Centauri", x: 0.39, y: 0.22, description: "Nearby triple-star system.", population: 450000000, faction: "alpha" },
@@ -32,6 +34,6 @@ export const EXPANDED_SYSTEMS = [
   { id: "new-horizon-deep", name: "New Horizon Deep", x: 0.41, y: 0.19, description: "Deep space station beyond Alpha Centauri.", population: 1200000, faction: "alpha" }
 ];
 
-export function getExpandedSystem(id) {
-  return EXPANDED_SYSTEMS.find(s => s.id === id) || null;
-}
+window.getExpandedSystem = function(id) {
+  return window.EXPANDED_SYSTEMS.find(s => s.id === id) || null;
+};

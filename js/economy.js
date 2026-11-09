@@ -29,7 +29,7 @@ window.Economy = (() => {
   function record(message, type = "info") {
     state.events.push({ time: state.gameHours, message, type });
     if (state.events.length > 200) state.events.shift();
-    if (typeof msg === "function") msg(message);
+    if (typeof window.msg === "function") window.msg(message);
   }
 
   function charge(amount, reason = "Expense") {
