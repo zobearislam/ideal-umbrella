@@ -21,6 +21,8 @@
       <div id="routeResult"></div>
     </section>
   </main>
-  <script type="module" src="js/galaxy/galaxy-map.js"></script>
+  <!-- Classic scripts: universe first so window.UNIVERSE exists, then map UI -->
+  <script src="js/core/universe.js"></script>
+  <script src="js/galaxy/galaxy-map.js"></script>
 </body>
 </html>
