@@ -1,8 +1,7 @@
-
 const SAVE_KEY = "spaceTransportTycoonSave";
-const SAVE_VERSION = 1;
+const SAVE_VERSION = 2;
 
-export const SaveManager = {
+const SaveManager = {
   save(data) {
     const saveData = {
       version: SAVE_VERSION,
@@ -27,12 +26,21 @@ export const SaveManager = {
       const save = JSON.parse(raw);
 
       if (!save || !save.data || typeof save.data !== "object") {
+        console.warn("Invalid save data");
         return null;
       }
 
       if (save.version > SAVE_VERSION) {
         console.warn("Save was created by a newer game version.");
         return null;
+      }
+
+      // Basic migration stub
+      if (save.version < 2) {
+        console.log("Migrating save from v" + save.version);
+        // Ensure required fields exist
+        if (!save.data.companies) save.data.companies = [];
+        if (!save.data.cargo) save.data.cargo = {};
       }
 
       return save;
@@ -46,3 +54,5 @@ export const SaveManager = {
     localStorage.removeItem(SAVE_KEY);
   }
 };
+
+window.SaveManager = SaveManager;
