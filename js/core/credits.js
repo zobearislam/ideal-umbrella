@@ -1,23 +1,79 @@
-// Shared credit balance – single source of truth
-export function getCredits() {
-  return window.credits || 0;
+// Shared credit system – personal + company balances
+
+let personalCredits = 50000;
+let companyCredits = {}; // companyId -> balance
+let transactions = [];
+let nextTxId = 1;
+
+function getPersonalCredits() {
+  return personalCredits;
 }
 
-export function setCredits(amount) {
-  window.credits = Math.max(0, Math.round(amount));
-  // Notify any listeners
-  window.dispatchEvent(new CustomEvent("creditsChanged", { detail: window.credits }));
-  return window.credits;
+function setPersonalCredits(amount) {
+  personalCredits = Math.max(0, Math.round(amount));
+  window.dispatchEvent(new CustomEvent("creditsChanged", { detail: { type: "personal", amount: personalCredits } }));
+  return personalCredits;
 }
 
-export function addCredits(amount, reason = "") {
-  const next = getCredits() + Math.round(amount);
-  setCredits(next);
+function addPersonalCredits(amount, reason = "") {
+  const next = personalCredits + Math.round(amount);
+  setPersonalCredits(next);
+  recordTransaction("personal", amount, reason);
   if (reason && typeof window.msg === "function") window.msg(reason);
   return next;
 }
 
-// Initialize if missing
-if (typeof window.credits === "undefined") {
-  window.credits = 50000;
+function getCompanyCredits(companyId) {
+  return companyCredits[companyId] || 0;
 }
+
+function setCompanyCredits(companyId, amount) {
+  companyCredits[companyId] = Math.max(0, Math.round(amount));
+  window.dispatchEvent(new CustomEvent("creditsChanged", { detail: { type: "company", id: companyId, amount: companyCredits[companyId] } }));
+  return companyCredits[companyId];
+}
+
+function addCompanyCredits(companyId, amount, reason = "") {
+  const next = getCompanyCredits(companyId) + Math.round(amount);
+  setCompanyCredits(companyId, next);
+  recordTransaction(companyId, amount, reason);
+  return next;
+}
+
+function recordTransaction(account, amount, reason) {
+  const tx = {
+    id: `tx-${nextTxId++}`,
+    account,
+    amount: Math.round(amount),
+    reason: reason || "",
+    timestamp: Date.now()
+  };
+  transactions.unshift(tx);
+  if (transactions.length > 100) transactions.pop();
+  return tx;
+}
+
+function getTransactions() {
+  return transactions.slice();
+}
+
+// Backward compatibility
+if (typeof window.credits === "undefined") {
+  window.credits = personalCredits;
+}
+Object.defineProperty(window, "credits", {
+  get: () => personalCredits,
+  set: (v) => setPersonalCredits(v)
+});
+
+window.Credits = {
+  getPersonal: getPersonalCredits,
+  setPersonal: setPersonalCredits,
+  addPersonal: addPersonalCredits,
+  getCompany: getCompanyCredits,
+  setCompany: setCompanyCredits,
+  addCompany: addCompanyCredits,
+  record: recordTransaction,
+  getTransactions,
+  getAllCompanyBalances: () => ({ ...companyCredits })
+};
