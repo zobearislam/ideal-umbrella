@@ -4,20 +4,20 @@
   const SAVE_KEY = "spacePack.transportPrototype.v2";
   const DAY = 24 * 60 * 60 * 1000;
 
-  // Expanded systems matching universe.js
-  const SYSTEMS = [
-    {id:"sol",name:"Sol",x:.18,y:.48,stations:["Earth Orbital Port","Luna Depot","Mars Highport","Ceres Hub"]},
-    {id:"alpha-cen",name:"Alpha Centauri",x:.39,y:.22,stations:["New Horizon","Proxima Relay"]},
-    {id:"proxima",name:"Proxima Centauri",x:.32,y:.15,stations:["Proxima Research"]},
-    {id:"sirius",name:"Sirius",x:.61,y:.42,stations:["Sirius Exchange"]},
-    {id:"vega",name:"Vega",x:.78,y:.18,stations:["Vega Trade Hub"]},
-    {id:"altair",name:"Altair",x:.48,y:.76,stations:["Altair Foundry"]},
-    {id:"rigel",name:"Rigel",x:.85,y:.72,stations:["Rigel Research Port"]},
-    {id:"kepler",name:"Kepler",x:.22,y:.82,stations:["Kepler Colony"]},
-    {id:"tau-ceti",name:"Tau Ceti",x:.55,y:.55,stations:["Tau Colony One"]},
-    {id:"epsilon-eri",name:"Epsilon Eridani",x:.70,y:.60,stations:["Epsilon Mining"]},
-    {id:"trappist",name:"TRAPPIST-1",x:.15,y:.30,stations:["TRAPPIST Survey Base"]},
-    {id:"barnard",name:"Barnard's Star",x:.42,y:.35,stations:["Barnard Station"]} 
+  // Use shared universe if available
+  const SYSTEMS = (window.UNIVERSE && window.UNIVERSE.SYSTEMS) ? window.UNIVERSE.SYSTEMS : [
+    {id:"sol",name:"Sol",x:.18,y:.48},
+    {id:"alpha-cen",name:"Alpha Centauri",x:.39,y:.22},
+    {id:"proxima",name:"Proxima Centauri",x:.32,y:.15},
+    {id:"sirius",name:"Sirius",x:.61,y:.42},
+    {id:"vega",name:"Vega",x:.78,y:.18},
+    {id:"altair",name:"Altair",x:.48,y:.76},
+    {id:"rigel",name:"Rigel",x:.85,y:.72},
+    {id:"kepler",name:"Kepler",x:.22,y:.82},
+    {id:"tau-ceti",name:"Tau Ceti",x:.55,y:.55},
+    {id:"epsilon-eri",name:"Epsilon Eridani",x:.70,y:.60},
+    {id:"trappist",name:"TRAPPIST-1",x:.15,y:.30},
+    {id:"barnard",name:"Barnard's Star",x:.42,y:.35}
   ];
 
   const SHIP_TYPES = {
@@ -137,7 +137,7 @@
     }
     drawMap(); save();
   }
-  function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+  function esc(v){return String(v).replace(/[&<>"']/g,c=>({"&":"&","<":"<",">":">",'"':""","'":"&#39;"}[c]));}
 
   function drawMap(){
     const canvas=$("galaxyMap"); if (!canvas) return;
