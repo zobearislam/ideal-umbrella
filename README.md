@@ -1,90 +1,88 @@
-# Space Pack — Enhanced (Ideal Umbrella)
+# Space Pack — Enhanced
 
-A browser-based solar system simulator with flyable ships, walkable interiors, EVA, orbital mechanics, economy, reputation, factions, and resource crafting. Built for educational and exploratory use. Family-friendly.
+A browser-based solar system simulator with flyable ships, walkable interiors, EVA, orbital mechanics, economy, reputation, factions, resource crafting, missions, and interstellar transport. Built for educational and exploratory use. Family-friendly.
 
-> **Massive content update available!** See `CONTENT_EXPANSION.md` and the new files in `js/data/` for 40+ resources, 24 recipes, 10 ship types, 25+ star systems, 10 factions, and dynamic mission generation.
+## What's New
+
+- **Full solar system**: Mercury through Neptune plus major moons (Luna, Phobos, Deimos, Io, Europa, Ganymede, Callisto, Titan, Enceladus, Triton, etc.)
+- **Stations** at every major body and the asteroid belt
+- **Gates** connecting Sol to Alpha Centauri, Proxima, Sirius, Vega, Altair, Tau Ceti, Epsilon Eridani, TRAPPIST-1, Barnard's Star, and more
+- **Expanded resources & crafting**: iron, ice, crystal, uranium, titanium, silicon, alloy, circuits, plastic, LOX, LH2, gold, fertilizer, advanced circuits, antimatter
+- **Ship types**: Scout, Courier, Interceptor, Hauler, Freighter, Mining Rig, Passenger Liner, Capital Ship
+- **Mission board** with deliveries, combat, diplomacy, and exploration contracts
+- **Factions**: Terran Confederation, Martian Republic, Belt Miners’ Union, Jovian Syndicate, Outer Colonies League, Pirate Clans
+- **Company & Diplomacy** wireless interfaces
+- **Transport management** with fleet, contracts, and timestamped journeys
 
 ## Resources Module
 
-Resources are now defined in the expanded `js/data/resources.js` (and can still be extended in `js/space.js`). Each resource has:
+Resources are defined in `js/data/resources.js` and also referenced from the simulator. Each resource has:
 
 - `id` — unique string key
 - `name` — display name
-- `icon` — emoji or short symbol
-- `category` — raw / refined / fuel / component / advanced / consumer
-- `baseValue` — base economic value
-
-**40+ resources** including Iron Ore, Titanium Ore, Liquid Hydrogen, Cellulose-Quartz Composite, Quantum Chips, Fusion Reactors, and more. Matching asset images exist for several refined materials.
+- `icon` — emoji
+- `basePrice` — starting market price
+- `category` — raw / refined / high
 
 ## Crafting Table
 
-Recipes are in `js/data/resources.js` under `CRAFTING_RECIPES` (**24 recipes**).
+Recipes are in `CRAFTING_RECIPES`. Example:
 
 ```js
-{ id: "make-alloy", name: "Forge Alloy", inputs: ["refined_iron", "refined_copper"], output: "alloy", time: 6 }
+{ id: "smelt-alloy", name: "Smelt Alloy", inputs: ["iron", "fuel"], output: "alloy", time: 5 }
 ```
 
-- Inputs are resource IDs that are consumed (1 each by default).
-- Output is the resource ID produced.
-- Includes time cost for more advanced crafting systems.
+Inputs are consumed (1 each). Output is produced. Available at stations.
 
-Example recipes:
-- Refined Iron + Refined Copper → Alloy
-- Pure Silicon + Refined Copper + Crystal → Circuit
-- Cellulose + Quartz → Cellulose-Quartz Composite
-- Multiple components → Fusion Reactor
+## Gates & Systems
 
-## Expanded Universe
+Cyan ring gates connect star systems. Fly close to jump. Current systems include Sol, Alpha Centauri, Proxima Centauri, Sirius, Vega, Altair, Rigel, Kepler, Tau Ceti, Epsilon Eridani, TRAPPIST-1, and Barnard's Star.
 
-- **25+ star systems** in `js/data/systems-expanded.js` (Proxima, Tau Ceti, TRAPPIST, Gliese 581, Kepler-442, and many more)
-- **10 ship types** in `js/data/ships.js` (Scout, Interceptor, Miner, Titan Freighter, Phantom, Science Vessel, etc.)
-- **10 factions** in `js/data/factions.js` with preferred goods and starting reputation
-- **Dynamic mission generator** in `js/data/missions.js` with 8 template types
+## Factions & Reputation
 
-## Gates
-- Cyan ring gates connect locations
-- Fly close to a gate to automatically jump to its destination
-- Gate use slightly raises reputation with the controlling faction
-
-## Factions & Corporations
-- Terran Confederation, Martian Republic, Belt Miners’ Union, Jovian Syndicate, Outer Colonies League, Pirate Clans, Alpha Cooperative, Sirius Mining Corp, Science Collective, Independent
-- Stations and gates belong to factions
-- Reputation is tracked per faction and shown in the HUD
-- Prices and access can be affected by faction standing
+Reputation (0–100) affects prices, access, and mission availability. Peaceful actions raise standing; weapons fire near stations or civilians lowers it. Tracked via the Economy and IAG modules.
 
 ## Economy & Stations
 
-- Stations around planets, moons, and major systems
-- Economy: Credits, buy ships at stations (price affected by reputation)
-- Hire pilots with wages and skill
-- Reputation (0–100)
-- Defense laser on every ship (abstract, non-graphic)
-- Dock at stations for ships, pilots, inventory, and crafting
+- Credits for buying ships, hiring pilots, and crafting
+- Stations around every planet and large moon
+- Hire pilots and manage a fleet
+- Defense laser (Spacebar) — abstract, non-graphic
+- Dock button opens station menu (ships, pilots, inventory, crafting, missions)
 
 ## Controls
 
-| Mode | Controls |
-|------|----------|
-| **Fly** | Joystick / WASD / arrows to turn · W/S or slider for speed · Q/E roll · X stop |
-| **Walk** | Move inside ship · Green door = airlock · Front = seat |
-| **EVA** | Free movement outside · Stay close to re-enter |
+| Action | Control |
+|--------|---------|
+| Fire defense laser | Spacebar or Laser button |
+| Dock at station | Dock button (when near a station) |
+| Fly | Joystick / WASD / arrows · W/S or slider for speed · Q/E roll · X stop |
+| Walk / EVA | Stand up near seat / airlock |
 
-**Buttons:** Go (jump near selected object) · Lock · Time · Orbits · Pause · Help · Model
+Additional pages:
+- `galaxy.html` — interactive star system map and route finder
+- `transport.html` — fleet, contracts, and journeys
+- `missions.html` — mission board
+- `ui/company.html` — company wireless (ships, pilots, licenses)
+- `ui/diplomacy.html` — faction relations and battle forecast
 
 ## Project Structure
 
 ```
-index.html              Main page
+index.html              Main 3D simulator
+galaxy.html             Galaxy map
+transport.html          Transport command
+missions.html           Mission board
 css/                    Styles
 js/space.js             Core simulation
-js/data/                NEW: Expanded content modules
-  resources.js          40+ resources + 24 recipes
-  ships.js              10 ship types
-  factions.js           10 factions
-  systems-expanded.js   25+ star systems
-  missions.js           Dynamic mission generator
-assets/                 Images (including resource icons)
-CONTENT_EXPANSION.md    Details of the content update
+js/data/resources.js    Resources, ships, factions
+js/data/missions.js     Mission definitions
+js/core/universe.js     Shared star systems
+js/economy.js           Economy & reputation
+js/transport.js         Transport prototype
+js/iag.js               Authority / incident system
+ui/                     Company & diplomacy interfaces
+assets/                 Resource icons and control images
 ```
 
 ## Running
@@ -95,9 +93,9 @@ For GitHub Pages, push this folder to a repo and enable Pages.
 
 ## Customization
 
-- Edit or extend files in `js/data/` to add more resources, ships, systems, factions, or missions.
-- Import the ES modules into your scripts, or attach them to `window`.
-- See `CONTENT_EXPANSION.md` for integration guidance.
+- Edit `js/data/resources.js` to add resources, recipes, or ship types.
+- Edit `js/data/missions.js` or `js/core/universe.js` to expand systems and missions.
+- Edit the planet definitions inside `js/space.js` for new bodies.
 
 ## License
 

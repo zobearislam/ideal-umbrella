@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Space Pack — Mission Board</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { background: #0a0e17; color: #e0e0e0; font-family: system-ui, sans-serif; padding: 20px; }
+    .mission { border: 1px solid #445; padding: 16px; margin: 12px 0; border-radius: 8px; background: #121820; }
+    .mission h3 { margin: 0 0 8px; color: #d4af37; }
+    .meta { color: #8ab; font-size: 0.9em; }
+    .reward { color: #6c6; font-weight: bold; }
+    button { background: #c49a45; color: #1a120b; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+    nav a { color: #d4af37; margin-right: 16px; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">← Simulator</a>
+    <a href="transport.html">Transport</a>
+    <a href="galaxy.html">Galaxy</a>
+    <a href="ui/company.html">Company</a>
+    <a href="ui/diplomacy.html">Diplomacy</a>
+  </nav>
+  <h1>Mission Board</h1>
+  <p>Accept contracts, deliveries, and exploration jobs. Progress is tracked locally.</p>
+  <div id="list"></div>
+  <script src="js/data/missions.js"></script>
+  <script>
+    const list = document.getElementById("list");
+    function render() {
+      list.innerHTML = window.MISSIONS.map(m => `
+        <div class="mission">
+          <h3>${m.title} <span class="meta">[${m.type}] Difficulty ${m.difficulty}</span></h3>
+          <p>${m.description}</p>
+          <p class="meta">${m.from || ""} → ${m.to || ""} ${m.cargo ? `· ${m.quantity} ${m.cargo}` : ""}</p>
+          <p class="reward">Reward: ${m.reward.toLocaleString()} cr</p>
+          <button onclick="accept('${m.id}')">Accept</button>
+        </div>
+      `).join("");
+    }
+    window.accept = id => {
+      const m = window.MISSIONS.find(x => x.id === id);
+      if (!m) return;
+      alert(`Mission accepted: ${m.title}\nReward on completion: ${m.reward} cr\n(Full integration with simulator coming soon)`);
+      // Could set localStorage here
+    };
+    render();
+  </script>
+</body>
+</html>
