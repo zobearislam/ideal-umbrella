@@ -1,14 +1,11 @@
 /**
  * Supabase client configuration for Space Pack cloud saves.
  *
- * YOU add the publishable/anon key here. Do not commit service-role keys.
- * Expected shape of public.game_saves (RLS must restrict every op to auth.uid() = user_id):
- *   id uuid PK default gen_random_uuid()
- *   user_id uuid not null references auth.users(id) on delete cascade
- *   slot text not null default 'default'
- *   save_data jsonb not null
- *   updated_at timestamptz not null default now()
- *   unique (user_id, slot)
+ * Publishable/anon key only. Do not commit service-role or secret keys.
+ * Actual public.game_saves shape (do not recreate the table):
+ *   user_id, slot_name, schema_version, save_data, created_at, updated_at
+ *   primary key (user_id, slot_name)
+ * RLS must restrict every op to auth.uid() = user_id.
  */
 (function () {
   "use strict";
