@@ -1,7 +1,7 @@
 // Shared authoritative star systems for Space Pack / Transport Tycoon
 // Single source of truth. Simulator and galaxy map both import from here.
 
-export const SYSTEMS = [
+const SYSTEMS = [
   { id: "sol",       name: "Sol",              x: 0.18, y: 0.48, description: "Humanity's home system. Full planets, moons, stations, and asteroid belt.", population: 12000000000, faction: "terran", gates: ["gate-alpha-sol", "gate-sirius-sol", "gate-vega-sol", "gate-altair-sol", "gate-proxima-sol"] },
   { id: "alpha-cen", name: "Alpha Centauri",   x: 0.39, y: 0.22, description: "Nearby triple-star system with habitable worlds and trade hubs.", population: 450000000, faction: "alpha", gates: ["gate-alpha-sol", "gate-rigel-alpha", "gate-proxima-alpha"] },
   { id: "proxima",   name: "Proxima Centauri",  x: 0.32, y: 0.15, description: "Red dwarf with a rocky planet in the habitable zone. Research outposts.", population: 8000000, faction: "science_collective", gates: ["gate-proxima-sol", "gate-proxima-alpha"] },
@@ -17,7 +17,7 @@ export const SYSTEMS = [
 ];
 
 // Canonical ID map (resolves old short names)
-export const ID_MAP = {
+const ID_MAP = {
   alpha: "alpha-cen",
   "alpha-cen": "alpha-cen",
   sol: "sol",
@@ -33,16 +33,16 @@ export const ID_MAP = {
   barnard: "barnard"
 };
 
-export function canonicalId(id) {
+function canonicalId(id) {
   return ID_MAP[id] || id;
 }
 
-export function getSystem(id) {
+function getSystem(id) {
   const cid = canonicalId(id);
   return SYSTEMS.find(s => s.id === cid) || null;
 }
 
-export function findRoute(startId, destId) {
+function findRoute(startId, destId) {
   const start = canonicalId(startId);
   const dest = canonicalId(destId);
   if (!getSystem(start) || !getSystem(dest)) return null;
@@ -79,7 +79,5 @@ export function findRoute(startId, destId) {
   return null;
 }
 
-// Expose for non-module scripts
-if (typeof window !== "undefined") {
-  window.UNIVERSE = { SYSTEMS, getSystem, findRoute, canonicalId };
-}
+// Expose for all scripts
+window.UNIVERSE = { SYSTEMS, getSystem, findRoute, canonicalId, ID_MAP };
