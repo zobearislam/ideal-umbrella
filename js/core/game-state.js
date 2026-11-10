@@ -13,7 +13,9 @@ const defaultState = {
       name: "Independent Freighter",
       credits: 75000,
       ships: ["ship-1", "ship-2"],
-      stations: []
+      stations: [],
+      npc: false,
+      forSale: false
     }
   ],
   ships: [
@@ -22,8 +24,8 @@ const defaultState = {
   ],
   cargo: {},
   inventory: { iron: 5, ice: 8, fuel: 10, crystal: 2 },
-  factionRep: null, // legacy mirror of goodwill
-  factionStandings: null, // { [factionId]: { goodwill, trust, love, honour, spite } }
+  factionRep: null,
+  factionStandings: null,
   activeMissions: [],
   completedMissionIds: [],
   contracts: [],
@@ -31,7 +33,9 @@ const defaultState = {
   gameTime: 0,
   journeys: [],
   completedContractIds: [],
-  nextJourneyId: 1
+  nextJourneyId: 1,
+  npcJourneys: [],
+  nextShipSerial: 100
 };
 
 let state = JSON.parse(JSON.stringify(defaultState));
@@ -47,7 +51,6 @@ function setState(newState) {
 
 function saveState() {
   if (window.SaveManager) {
-    // Prefer live standings from FactionStanding module
     if (window.FactionStanding) {
       state.factionStandings = window.FactionStanding.getAll();
       const rep = {};
@@ -73,7 +76,9 @@ function saveState() {
       gameTime: state.gameTime,
       journeys: state.journeys || [],
       completedContractIds: state.completedContractIds || [],
-      nextJourneyId: state.nextJourneyId || 1
+      nextJourneyId: state.nextJourneyId || 1,
+      npcJourneys: state.npcJourneys || [],
+      nextShipSerial: state.nextShipSerial || 100
     };
     window.SaveManager.save(toSave);
   }
@@ -88,7 +93,9 @@ function loadState() {
     if (!Array.isArray(state.completedContractIds)) state.completedContractIds = [];
     if (!Array.isArray(state.activeMissions)) state.activeMissions = [];
     if (!Array.isArray(state.completedMissionIds)) state.completedMissionIds = [];
+    if (!Array.isArray(state.npcJourneys)) state.npcJourneys = [];
     if (typeof state.nextJourneyId !== "number") state.nextJourneyId = 1;
+    if (typeof state.nextShipSerial !== "number") state.nextShipSerial = 100;
     if (!state.inventory || typeof state.inventory !== "object") {
       state.inventory = { iron: 5, ice: 8, fuel: 10, crystal: 2 };
     }
@@ -210,7 +217,6 @@ function completeMission(missionId) {
   state.player.progression.missionsCompleted =
     (state.player.progression.missionsCompleted || 0) + 1;
 
-  // Reward scaled by faction stance when possible
   let reward = m.reward || 0;
   const fac =
     m.faction ||
