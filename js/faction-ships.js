@@ -1,24 +1,9 @@
 /**
- * Faction-controlled NPC ships — palette colors from FACTIONS,
- * attitude from IAG / FactionStanding.
- *
- * Hooks THREE.Scene so ships attach even when the sim does not export SpacePack.
+ * Faction-controlled NPC ships — proper models, faction palette,
+ * auto-turrets + missiles on non-cargo hulls.
  */
 (function () {
   "use strict";
-
-  var HOME = {
-    Earth: "terran",
-    Luna: "terran",
-    Mars: "martian",
-    Phobos: "martian",
-    Jupiter: "jovian",
-    Europa: "jovian",
-    Saturn: "jovian",
-    Ceres: "belt",
-    Neptune: "outer",
-    Triton: "outer"
-  };
 
   var ROSTER = [
     { id: "npc-terran-1", faction: "terran", type: "interceptor", name: "TCV Sentinel", home: "Earth" },
@@ -31,7 +16,9 @@
     { id: "npc-jovian-2", faction: "jovian", type: "scout", name: "JS Watcher", home: "Jupiter" },
     { id: "npc-outer-1", faction: "outer", type: "courier", name: "OCL Farline", home: "Neptune" },
     { id: "npc-pirate-1", faction: "pirate", type: "interceptor", name: "Black Needle", home: "Mars" },
-    { id: "npc-pirate-2", faction: "pirate", type: "scout", name: "Corsair Mote", home: "Jupiter" }
+    { id: "npc-pirate-2", faction: "pirate", type: "scout", name: "Corsair Mote", home: "Jupiter" },
+    { id: "npc-terran-3", faction: "terran", type: "scout", name: "TCV Dart", home: "Earth" },
+    { id: "npc-pirate-3", faction: "pirate", type: "interceptor", name: "Reaver Fang", home: "Jupiter" }
   ];
 
   function factionColor(factionId) {
@@ -49,50 +36,12 @@
     return fallback[factionId] || "#aaa";
   }
 
-  function parseHex(hex) {
-    hex = String(hex || "#888").replace("#", "");
-    if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
-    var n = parseInt(hex, 16);
-    return isNaN(n) ? 0x888888 : n;
-  }
-
-  function makeMesh(THREE, type, colorHex) {
-    var color = parseHex(colorHex);
-    var group = new THREE.Group();
-    var bodyMat = new THREE.MeshLambertMaterial({ color: color });
-    var accentMat = new THREE.MeshLambertMaterial({
-      color: color,
-      emissive: color,
-      emissiveIntensity: 0.18
-    });
-    var hull = new THREE.Mesh(new THREE.ConeGeometry(1.2, 4.2, 6), bodyMat);
-    hull.rotation.x = Math.PI / 2;
-    group.add(hull);
-    var eng = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.9, 0.4, 8), accentMat);
-    eng.position.z = 2.2;
-    eng.rotation.x = Math.PI / 2;
-    group.add(eng);
-    if (type === "hauler" || type === "freighter" || type === "miner") {
-      var pod = new THREE.Mesh(new THREE.BoxGeometry(2.4, 1.2, 2.5), bodyMat);
-      pod.position.z = 0.5;
-      group.add(pod);
-    }
-    if (type === "interceptor") {
-      var wingL = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.15, 2), accentMat);
-      var wingR = wingL.clone();
-      wingL.position.set(-1.4, 0, 0.2);
-      wingR.position.set(1.4, 0, 0.2);
-      group.add(wingL, wingR);
-    }
-    group.scale.setScalar(type === "freighter" ? 1.4 : type === "scout" ? 0.75 : 1);
-    return group;
-  }
-
   var npcList = [];
   var attached = false;
   var _THREE = null;
   var _scene = null;
   var _bodiesByName = {};
+  var _playerShip = null;
   var _tickStarted = false;
 
   function findBody(name) {
@@ -105,7 +54,55 @@
       if (obj.userData && obj.userData.name && obj.isMesh) {
         _bodiesByName[obj.userData.name] = obj;
       }
+      // Heuristic: player cone without npc flag
+      if (obj.isMesh && obj.geometry && obj.geometry.type === "ConeGeometry" && !obj.userData.npc && !obj.userData.name) {
+        if (!_playerShip) _playerShip = obj;
+      }
     });
+  }
+
+  function buildOne(def, i) {
+    var col = factionColor(def.faction);
+    var mesh;
+    if (window.ShipModels && window.ShipModels.buildShipModel) {
+      mesh = window.ShipModels.buildShipModel(_THREE, def.type, col, {});
+    } else {
+      mesh = new _THREE.Mesh(
+        new _THREE.ConeGeometry(1.2, 4, 6),
+        new _THREE.MeshLambertMaterial({ color: col })
+      );
+      mesh.rotation.x = Math.PI / 2;
+      mesh.userData.armed = !(window.ShipModels && window.ShipModels.isCargo(def.type));
+    }
+
+    var home = findBody(def.home);
+    var angle = (i / ROSTER.length) * Math.PI * 2;
+    var radius = 10 + (i % 5) * 3;
+    if (home) {
+      mesh.position.set(
+        home.position.x + Math.cos(angle) * radius,
+        0.4 * ((i % 3) - 1),
+        home.position.z + Math.sin(angle) * radius
+      );
+    } else {
+      mesh.position.set(46 + Math.cos(angle) * 14, 0, Math.sin(angle) * 14);
+    }
+
+    mesh.userData.npc = true;
+    mesh.userData.id = def.id;
+    mesh.userData.faction = def.faction;
+    mesh.userData.name = def.name;
+    mesh.userData.type = def.type;
+    mesh.userData.home = def.home;
+    mesh.userData.color = col;
+    mesh.userData.orbitAngle = angle;
+    mesh.userData.orbitRadius = radius;
+    mesh.userData.orbitSpeed = 0.04 + (i % 5) * 0.012;
+    mesh.userData.phase = Math.random() * Math.PI * 2;
+    mesh.userData.missileCd = 1 + Math.random() * 2;
+    mesh.userData.hp = 40 + (def.type === "interceptor" ? 30 : 0);
+
+    return mesh;
   }
 
   function attach(scene, THREE, opts) {
@@ -115,6 +112,7 @@
     attached = true;
     _THREE = THREE;
     _scene = scene;
+    if (opts.playerShip) _playerShip = opts.playerShip;
 
     if (opts.bodies && opts.bodies.length) {
       opts.bodies.forEach(function (b) {
@@ -123,41 +121,43 @@
     }
     scanBodies(scene);
 
+    if (window.ShipModels) window.ShipModels.setScene(scene, THREE);
+
     ROSTER.forEach(function (def, i) {
-      var col = factionColor(def.faction);
-      var mesh = makeMesh(THREE, def.type, col);
-      var home = findBody(def.home);
-      var angle = (i / ROSTER.length) * Math.PI * 2;
-      var radius = 8 + (i % 4) * 3;
-      if (home) {
-        mesh.position.set(
-          home.position.x + Math.cos(angle) * radius,
-          0.5 * ((i % 3) - 1),
-          home.position.z + Math.sin(angle) * radius
-        );
-      } else {
-        mesh.position.set(46 + Math.cos(angle) * 12, 0, Math.sin(angle) * 12);
-      }
-      mesh.userData = {
-        npc: true,
-        id: def.id,
-        faction: def.faction,
-        name: def.name,
-        type: def.type,
-        home: def.home,
-        color: col,
-        orbitAngle: angle,
-        orbitRadius: radius,
-        orbitSpeed: 0.05 + (i % 5) * 0.01,
-        phase: Math.random() * Math.PI * 2
-      };
+      var mesh = buildOne(def, i);
       scene.add(mesh);
       npcList.push(mesh);
     });
 
     startTick();
-    console.log("FactionShips: spawned " + npcList.length + " NPC vessels");
+    console.log("FactionShips: " + npcList.length + " ships with models/turrets/missiles");
     return npcList;
+  }
+
+  function hostileTo(ship, other) {
+    if (!other || !other.userData) return false;
+    var fac = ship.userData.faction;
+    // Pirates engage almost everyone; others engage pirates or player if hostile stance
+    if (fac === "pirate") {
+      if (other.userData.npc && other.userData.faction === "pirate") return false;
+      return true;
+    }
+    if (other.userData.faction === "pirate") return true;
+    // Player target: cone without npc
+    if (!other.userData.npc && window.IAG && window.IAG.fleetAttitude) {
+      var att = window.IAG.fleetAttitude(fac);
+      return !!att.hostile;
+    }
+    return false;
+  }
+
+  function gatherTargets(ship) {
+    var list = [];
+    npcList.forEach(function (n) {
+      if (n !== ship) list.push(n);
+    });
+    if (_playerShip) list.push(_playerShip);
+    return list;
   }
 
   function tick(dt) {
@@ -183,11 +183,42 @@
         mesh.position.y,
         tz + Math.sin(u.orbitAngle + 0.2) * r
       );
-      if (window.IAG && window.IAG.fleetAttitude) {
-        var att = window.IAG.fleetAttitude(u.faction);
-        if (att.hostile) mesh.position.y += Math.sin(u.phase * 3) * 0.15;
+
+      // Combat: non-cargo only
+      if (u.armed && window.ShipModels) {
+        window.ShipModels.updateArmedShip(mesh, gatherTargets(mesh), dt, {
+          range: 50,
+          missileRange: 65,
+          turretRate: 0.5,
+          missileRate: 4,
+          boltColor: u.color,
+          missileColor: u.faction === "pirate" ? "#ff4422" : "#ffaa44",
+          factionFilter: function (t) {
+            return hostileTo(mesh, t);
+          }
+        });
       }
     });
+
+    if (window.ShipModels) {
+      window.ShipModels.tickProjectiles(dt, function (proj) {
+        // Soft hit: remove projectile near target ship
+        if (!proj.target && proj.kind === "bolt") return false;
+        var hit = false;
+        var targets = npcList.slice();
+        if (_playerShip) targets.push(_playerShip);
+        targets.forEach(function (t) {
+          if (proj.owner === t) return;
+          if (proj.mesh.position.distanceTo(t.position) < 2.2) {
+            hit = true;
+            if (t.userData && t.userData.hp != null) {
+              t.userData.hp -= proj.damage || 3;
+            }
+          }
+        });
+        return hit;
+      });
+    }
   }
 
   function startTick() {
@@ -210,24 +241,11 @@
         faction: m.userData.faction,
         type: m.userData.type,
         color: m.userData.color,
-        home: m.userData.home
+        home: m.userData.home,
+        armed: !!m.userData.armed,
+        hp: m.userData.hp
       };
     });
-  }
-
-  function nearestNpc(playerPos, maxDist) {
-    maxDist = maxDist || 12;
-    if (!playerPos || !npcList.length) return null;
-    var best = null;
-    var bestD = maxDist;
-    npcList.forEach(function (m) {
-      var d = playerPos.distanceTo(m.position);
-      if (d < bestD) {
-        bestD = d;
-        best = m;
-      }
-    });
-    return best;
   }
 
   function tryAutoAttach() {
@@ -246,7 +264,6 @@
     return false;
   }
 
-  /** Capture the first THREE scene the sim creates */
   function installSceneHook() {
     if (typeof THREE === "undefined" || !THREE.Scene) {
       setTimeout(installSceneHook, 50);
@@ -260,13 +277,12 @@
       if (!_scene) {
         _scene = this;
         _THREE = THREE;
-        // Delay attach until planets exist (userData.name set)
         setTimeout(function () {
           if (!attached) {
             scanBodies(_scene);
             attach(_scene, THREE, {});
           }
-        }, 400);
+        }, 500);
       }
       return ret;
     };
@@ -282,11 +298,9 @@
 
   window.FactionShips = {
     ROSTER: ROSTER,
-    HOME: HOME,
     attach: attach,
     tick: tick,
     list: list,
-    nearest: nearestNpc,
     factionColor: factionColor,
     tryAutoAttach: tryAutoAttach
   };
