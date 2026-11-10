@@ -44,7 +44,7 @@
         <button type="button" id="btnCloudSave">Save to cloud</button>
         <button type="button" id="btnCloudLoad">Load from cloud</button>
       </div>
-      <p class="hint" id="authHint">Add your Supabase URL and anon key in js/core/supabase-config.js. Cloud save requires an account and working RLS on game_saves.</p>
+      <p class="hint" id="authHint">Add your Supabase URL and anon key in js/core/supabase-config.js.</p>
     </section>
 
     <section class="panel">
@@ -53,14 +53,16 @@
       <div id="fleetList" class="stack"></div>
       <form id="buyShipForm" class="inline-form">
         <label for="shipType">Purchase a ship</label>
-        <select id="shipType">
-          <!-- populated from window.SHIP_TYPES -->
-          <option value="courier">Courier — 12,000 cr</option>
-          <option value="hauler">Hauler — 25,000 cr</option>
-          <option value="freighter">Freighter — 55,000 cr</option>
-        </select>
+        <select id="shipType"></select>
         <button type="submit">Buy ship</button>
       </form>
+    </section>
+
+    <section class="panel">
+      <p class="eyebrow">RIVAL COMPANIES</p>
+      <h2>NPC carriers (for sale)</h2>
+      <p class="hint">Each runs 2–12 ships delivering goods across the map. Buyouts are expensive: fleet value × markup + treasury + premium.</p>
+      <div id="npcCompanyList" class="stack"></div>
     </section>
 
     <section class="panel">
@@ -77,7 +79,7 @@
         <label>Ship<select id="shipSelect" required></select></label>
         <button type="submit" class="wide">Dispatch ship</button>
       </form>
-      <p class="hint">Travel is timestamp-based. Close this page and return later; overdue deliveries are processed when the page is opened again.</p>
+      <p class="hint">Travel is timestamp-based. Overdue deliveries process when you reopen this page.</p>
     </section>
 
     <section class="panel">
@@ -94,11 +96,10 @@
       <button id="resetDemo" class="danger">Reset local demo data</button>
       <button type="button" id="btnRunTests" style="margin-top:10px">Run Core Tests</button>
       <pre id="testResults" class="hint" style="white-space:pre-wrap;max-height:200px;overflow:auto;margin-top:10px"></pre>
-      <p class="hint">Local saves stay in this browser. Cloud saves use your Supabase account. A failed cloud save never erases a valid local save.</p>
     </section>
   </main>
 
-  <footer>Space Pack Transport Prototype · Local + optional cloud save</footer>
+  <footer>Space Pack Transport · NPC companies deliver across the network</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/core/supabase-config.js"></script>
@@ -108,6 +109,7 @@
   <script src="js/core/save-manager.js"></script>
   <script src="js/core/game-state.js"></script>
   <script src="js/data/resources.js"></script>
+  <script src="js/npc-companies.js"></script>
   <script src="tests/core-integration.test.js"></script>
   <script src="js/transport.js"></script>
   <script>
@@ -147,10 +149,7 @@
         const password = $("authPassword").value;
         setCloudStatus("Signing in…");
         const res = await window.SaveManager.signIn(email, password);
-        if (!res.ok) {
-          setCloudStatus("Sign-in failed: " + res.error, false);
-          return;
-        }
+        if (!res.ok) { setCloudStatus("Sign-in failed: " + res.error, false); return; }
         setCloudStatus("Signed in", true);
         await refreshAuthUi();
       }
@@ -160,20 +159,14 @@
         const password = $("authPassword").value;
         setCloudStatus("Registering…");
         const res = await window.SaveManager.signUp(email, password);
-        if (!res.ok) {
-          setCloudStatus("Register failed: " + res.error, false);
-          return;
-        }
-        setCloudStatus(res.session ? "Registered & signed in" : "Registered — check email if confirmations are on", true);
+        if (!res.ok) { setCloudStatus("Register failed: " + res.error, false); return; }
+        setCloudStatus(res.session ? "Registered & signed in" : "Registered — check email if needed", true);
         await refreshAuthUi();
       }
 
       async function doSignOut() {
         const res = await window.SaveManager.signOut();
-        if (!res.ok) {
-          setCloudStatus("Sign-out failed: " + res.error, false);
-          return;
-        }
+        if (!res.ok) { setCloudStatus("Sign-out failed: " + res.error, false); return; }
         setCloudStatus("Signed out", true);
         await refreshAuthUi();
       }
@@ -182,10 +175,7 @@
         setCloudStatus("Saving to cloud…");
         if (window.GameState && window.GameState.saveState) window.GameState.saveState();
         const res = await window.SaveManager.cloudSave();
-        if (!res.ok) {
-          setCloudStatus("Cloud save failed: " + res.error, false);
-          return;
-        }
+        if (!res.ok) { setCloudStatus("Cloud save failed: " + res.error, false); return; }
         setCloudStatus("Cloud save OK · " + (res.updatedAt || "now"), true);
         if ($("savedAt")) $("savedAt").textContent = new Date().toLocaleString();
       }
@@ -193,14 +183,10 @@
       async function doCloudLoad() {
         setCloudStatus("Loading from cloud…");
         const res = await window.SaveManager.cloudLoad({ applyToLocal: true });
-        if (!res.ok) {
-          setCloudStatus("Cloud load failed: " + res.error, false);
-          return;
-        }
+        if (!res.ok) { setCloudStatus("Cloud load failed: " + res.error, false); return; }
         setCloudStatus("Cloud load OK · " + (res.updatedAt || "applied"), true);
-        if (window.GameState && window.GameState.loadState) {
-          window.GameState.loadState();
-        }
+        if (window.GameState && window.GameState.loadState) window.GameState.loadState();
+        if (window.NpcCompanies) window.NpcCompanies.ensureSeeded();
         if (typeof window.renderTransport === "function") window.renderTransport();
         else location.reload();
       }
@@ -209,31 +195,17 @@
         if (!testOut) return;
         testOut.textContent = "Running…";
         if (typeof window.runCoreTests !== "function") {
-          testOut.textContent = "runCoreTests() not found. tests/core-integration.test.js may not have loaded.";
+          testOut.textContent = "runCoreTests() not found.";
           return;
         }
         const logs = [];
-        const origLog = console.log;
-        const origErr = console.error;
-        console.log = function () {
-          logs.push(Array.prototype.slice.call(arguments).join(" "));
-          origLog.apply(console, arguments);
-        };
-        console.error = function () {
-          logs.push("ERROR: " + Array.prototype.slice.call(arguments).join(" "));
-          origErr.apply(console, arguments);
-        };
+        const origLog = console.log, origErr = console.error;
+        console.log = function () { logs.push(Array.prototype.slice.call(arguments).join(" ")); origLog.apply(console, arguments); };
+        console.error = function () { logs.push("ERROR: " + Array.prototype.slice.call(arguments).join(" ")); origErr.apply(console, arguments); };
         let passed = false;
-        try {
-          passed = !!window.runCoreTests();
-        } catch (e) {
-          logs.push("EXCEPTION: " + (e && e.message ? e.message : String(e)));
-          passed = false;
-        }
-        console.log = origLog;
-        console.error = origErr;
-        testOut.textContent =
-          (passed ? "RESULT: PASSED\n" : "RESULT: FAILED\n") + logs.join("\n");
+        try { passed = !!window.runCoreTests(); } catch (e) { logs.push("EXCEPTION: " + (e && e.message ? e.message : String(e))); }
+        console.log = origLog; console.error = origErr;
+        testOut.textContent = (passed ? "RESULT: PASSED\n" : "RESULT: FAILED\n") + logs.join("\n");
       }
 
       if ($("btnSignIn")) $("btnSignIn").addEventListener("click", doSignIn);
@@ -244,11 +216,8 @@
       if ($("btnRunTests")) $("btnRunTests").addEventListener("click", runTests);
 
       refreshAuthUi();
-      if (!window.SupabaseConfig || !window.SupabaseConfig.isConfigured()) {
-        setCloudStatus("Supabase not configured", false);
-      } else {
-        setCloudStatus("Ready (sign in to sync)", null);
-      }
+      if (!window.SupabaseConfig || !window.SupabaseConfig.isConfigured()) setCloudStatus("Supabase not configured", false);
+      else setCloudStatus("Ready (sign in to sync)", null);
     })();
   </script>
 </body>
