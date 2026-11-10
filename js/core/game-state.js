@@ -20,9 +20,10 @@ const defaultState = {
     { id: "ship-1", name: "Wayfarer", type: "hauler", owner: "company-1", location: "sol", status: "Idle", condition: 100, cargo: [], passengers: 0 },
     { id: "ship-2", name: "Swift Courier", type: "courier", owner: "company-1", location: "sol", status: "Idle", condition: 100, cargo: [], passengers: 0 }
   ],
-  cargo: {}, // systemId -> { type: quantity }  (station warehouses / delivered goods)
-  inventory: { iron: 5, ice: 8, fuel: 10, crystal: 2 }, // player ship hold (simulator)
-  factionRep: null, // filled from FACTIONS on first run
+  cargo: {},
+  inventory: { iron: 5, ice: 8, fuel: 10, crystal: 2 },
+  factionRep: null, // legacy mirror of goodwill
+  factionStandings: null, // { [factionId]: { goodwill, trust, love, honour, spite } }
   activeMissions: [],
   completedMissionIds: [],
   contracts: [],
@@ -46,6 +47,16 @@ function setState(newState) {
 
 function saveState() {
   if (window.SaveManager) {
+    // Prefer live standings from FactionStanding module
+    if (window.FactionStanding) {
+      state.factionStandings = window.FactionStanding.getAll();
+      const rep = {};
+      for (const [id, row] of Object.entries(state.factionStandings)) {
+        rep[id] = row.goodwill;
+      }
+      state.factionRep = rep;
+      window.factionRep = { ...rep };
+    }
     const toSave = {
       player: state.player,
       companies: state.companies,
@@ -53,6 +64,7 @@ function saveState() {
       cargo: state.cargo,
       inventory: state.inventory,
       factionRep: state.factionRep || window.factionRep || null,
+      factionStandings: state.factionStandings || null,
       activeMissions: state.activeMissions || [],
       completedMissionIds: state.completedMissionIds || [],
       contracts: state.contracts,
@@ -80,7 +92,9 @@ function loadState() {
     if (!state.inventory || typeof state.inventory !== "object") {
       state.inventory = { iron: 5, ice: 8, fuel: 10, crystal: 2 };
     }
-    if (!state.player.progression) state.player.progression = { deliveries: 0, exploration: 0, missionsCompleted: 0 };
+    if (!state.player.progression) {
+      state.player.progression = { deliveries: 0, exploration: 0, missionsCompleted: 0 };
+    }
     if (window.Credits && loaded.data.personalCredits != null) {
       window.Credits.setPersonal(loaded.data.personalCredits);
     }
@@ -99,10 +113,12 @@ function loadState() {
       state.factionRep = loaded.data.factionRep;
       window.factionRep = { ...loaded.data.factionRep };
     }
+    if (loaded.data.factionStandings && typeof loaded.data.factionStandings === "object") {
+      state.factionStandings = loaded.data.factionStandings;
+    }
     if (window.gameClock && typeof window.gameClock.load === "function" && loaded.data.clock) {
       window.gameClock.load(loaded.data.clock);
     }
-    // Mirror inventory onto window for simulator
     window.inventory = { ...state.inventory };
     console.log("Game state loaded");
   } else {
@@ -175,6 +191,7 @@ function acceptMission(mission) {
     quantity: mission.quantity || 0,
     reward: mission.reward || 0,
     reputation: mission.reputation || {},
+    faction: mission.faction || null,
     from: mission.from || null,
     to: mission.to || null,
     acceptedAt: Date.now()
@@ -193,26 +210,37 @@ function completeMission(missionId) {
   state.player.progression.missionsCompleted =
     (state.player.progression.missionsCompleted || 0) + 1;
 
+  // Reward scaled by faction stance when possible
+  let reward = m.reward || 0;
+  const fac =
+    m.faction ||
+    (m.reputation && Object.keys(m.reputation)[0]) ||
+    "terran";
+  if (window.FactionStanding) {
+    reward = window.FactionStanding.contractReward(reward, fac);
+  }
+
   if (window.Credits) {
-    window.Credits.addPersonal(m.reward || 0, `Mission: ${m.title}`);
+    window.Credits.addPersonal(reward, `Mission: ${m.title}`);
   } else {
-    window.credits = (window.credits || 0) + (m.reward || 0);
+    window.credits = (window.credits || 0) + reward;
   }
 
-  if (m.reputation && window.changeRep) {
+  if (m.reputation) {
     for (const [fid, delta] of Object.entries(m.reputation)) {
-      window.changeRep(delta, fid);
-    }
-  } else if (m.reputation && window.factionRep) {
-    for (const [fid, delta] of Object.entries(m.reputation)) {
-      window.factionRep[fid] = Math.max(
-        0,
-        Math.min(100, (window.factionRep[fid] || 50) + Number(delta))
-      );
+      if (window.FactionStanding) {
+        window.FactionStanding.applyRepEvent(fid, delta, "mission");
+      } else if (window.changeRep) {
+        window.changeRep(delta, fid);
+      } else if (window.factionRep) {
+        window.factionRep[fid] = Math.max(
+          0,
+          Math.min(100, (window.factionRep[fid] || 50) + Number(delta))
+        );
+      }
     }
   }
 
-  // Consume cargo from ship inventory if delivery mission
   if (m.cargo && m.quantity > 0 && state.inventory) {
     const have = state.inventory[m.cargo] || 0;
     if (have >= m.quantity) {
@@ -222,8 +250,11 @@ function completeMission(missionId) {
   }
 
   state.factionRep = window.factionRep ? { ...window.factionRep } : state.factionRep;
+  if (window.FactionStanding) {
+    state.factionStandings = window.FactionStanding.getAll();
+  }
   saveState();
-  return { ok: true, reward: m.reward, mission: m };
+  return { ok: true, reward, mission: m };
 }
 
 function canCompleteMission(missionId) {
@@ -233,7 +264,6 @@ function canCompleteMission(missionId) {
     const inv = state.inventory || window.inventory || {};
     return (inv[m.cargo] || 0) >= m.quantity;
   }
-  // combat / diplomatic / exploration: completable at any station for now
   return true;
 }
 
