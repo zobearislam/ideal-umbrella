@@ -1,6 +1,5 @@
 // Canonical game data for Space Pack / Ideal Umbrella
 // Single source of truth for resources, crafting, ships, and factions.
-// Loaded as a classic <script> so index.html, transport.html, etc. all share the same globals.
 
 window.RESOURCES = {
   iron: { id: "iron", name: "Iron Ore", icon: "🪨", basePrice: 40, category: "raw" },
@@ -31,7 +30,9 @@ window.CRAFTING_RECIPES = [
   { id: "process-uranium", name: "Process Uranium", inputs: ["uranium", "alloy"], output: "antimatter", time: 30 }
 ];
 
-// Unified ship catalog (simulator + transport)
+// Unified ship catalog
+// isCargo: no auto-turret / missiles
+// hasTurret / hasMissiles: combat hardpoints on non-cargo
 window.SHIP_TYPES = {
   scout: {
     id: "scout",
@@ -43,7 +44,12 @@ window.SHIP_TYPES = {
     fuelEfficiency: 1.4,
     maintenance: 20,
     weapon: 1,
-    description: "Fast reconnaissance vessel. Low cargo, high speed."
+    isCargo: false,
+    hasTurret: true,
+    hasMissiles: true,
+    turrets: 1,
+    missileRacks: 1,
+    description: "Fast reconnaissance vessel. Turret + light missiles."
   },
   courier: {
     id: "courier",
@@ -55,7 +61,12 @@ window.SHIP_TYPES = {
     fuelEfficiency: 1.2,
     maintenance: 35,
     weapon: 1,
-    description: "Agile delivery ship for small high-value cargo."
+    isCargo: false,
+    hasTurret: true,
+    hasMissiles: true,
+    turrets: 1,
+    missileRacks: 1,
+    description: "Agile courier with a defensive turret and one missile rail."
   },
   interceptor: {
     id: "interceptor",
@@ -67,7 +78,12 @@ window.SHIP_TYPES = {
     fuelEfficiency: 1.1,
     maintenance: 55,
     weapon: 3,
-    description: "High-speed combat-capable ship with light cargo."
+    isCargo: false,
+    hasTurret: true,
+    hasMissiles: true,
+    turrets: 2,
+    missileRacks: 2,
+    description: "Combat interceptor: dual turrets and missile rails."
   },
   hauler: {
     id: "hauler",
@@ -78,8 +94,13 @@ window.SHIP_TYPES = {
     fuelUse: 1.2,
     fuelEfficiency: 0.9,
     maintenance: 65,
-    weapon: 1,
-    description: "Reliable mid-size freighter."
+    weapon: 0,
+    isCargo: true,
+    hasTurret: false,
+    hasMissiles: false,
+    turrets: 0,
+    missileRacks: 0,
+    description: "Mid-size freighter. Unarmed cargo hull."
   },
   freighter: {
     id: "freighter",
@@ -90,8 +111,13 @@ window.SHIP_TYPES = {
     fuelUse: 1.5,
     fuelEfficiency: 0.7,
     maintenance: 110,
-    weapon: 2,
-    description: "Heavy cargo carrier for bulk goods."
+    weapon: 0,
+    isCargo: true,
+    hasTurret: false,
+    hasMissiles: false,
+    turrets: 0,
+    missileRacks: 0,
+    description: "Heavy bulk carrier. No combat hardpoints."
   },
   miner: {
     id: "miner",
@@ -102,8 +128,13 @@ window.SHIP_TYPES = {
     fuelUse: 1.6,
     fuelEfficiency: 0.8,
     maintenance: 90,
-    weapon: 1,
-    description: "Specialized mining vessel with ore processing bays."
+    weapon: 0,
+    isCargo: true,
+    hasTurret: false,
+    hasMissiles: false,
+    turrets: 0,
+    missileRacks: 0,
+    description: "Mining vessel with drill arm. Unarmed."
   },
   liner: {
     id: "liner",
@@ -114,8 +145,13 @@ window.SHIP_TYPES = {
     fuelUse: 1.3,
     fuelEfficiency: 0.6,
     maintenance: 140,
-    weapon: 1,
-    description: "Passenger and luxury goods transport. High maintenance."
+    weapon: 0,
+    isCargo: true,
+    hasTurret: false,
+    hasMissiles: false,
+    turrets: 0,
+    missileRacks: 0,
+    description: "Passenger liner. Unarmed."
   },
   capital: {
     id: "capital",
@@ -127,7 +163,12 @@ window.SHIP_TYPES = {
     fuelEfficiency: 0.5,
     maintenance: 300,
     weapon: 5,
-    description: "Massive bulk carrier and flagship. Slow but enormous capacity."
+    isCargo: false,
+    hasTurret: true,
+    hasMissiles: true,
+    turrets: 2,
+    missileRacks: 4,
+    description: "Flagship: heavy turrets and multiple missile racks."
   }
 };
 
@@ -135,7 +176,6 @@ window.getShipType = function (id) {
   return window.SHIP_TYPES[id] || null;
 };
 
-// Unified factions (matches universe.js faction ids + simulator reputation)
 window.FACTIONS = {
   terran: {
     id: "terran",
