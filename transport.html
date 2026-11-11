@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Space Pack — Transport Management</title>
+  <title>Ideal Umbrella — Transport</title>
   <link rel="stylesheet" href="css/transport.css">
 </head>
 <body>
   <header class="topbar">
     <div>
-      <p class="eyebrow">SPACE PACK / CORPORATE OPERATIONS</p>
+      <p class="eyebrow">IDEAL UMBRELLA / CORPORATE OPERATIONS</p>
       <h1>Transport Command</h1>
       <p class="muted">Plan routes, assign ships and deliver cargo between star systems.</p>
     </div>
@@ -28,198 +28,60 @@
       <p class="hint">Select a system to view its stations. Connected to shared universe data.</p>
     </section>
 
-    <section class="panel" id="authPanel">
+    <section class="panel">
       <p class="eyebrow">ACCOUNT</p>
-      <h2>Cloud account</h2>
-      <div id="authStatus" class="balance-row"><span>Status</span><strong id="authUserLabel">Signed out</strong></div>
-      <div id="cloudStatusRow" class="balance-row"><span>Cloud save</span><strong id="cloudStatus">—</strong></div>
-      <form id="authForm" class="form-grid" style="margin-top:12px">
-        <label>Email<input type="email" id="authEmail" required autocomplete="username"></label>
-        <label>Password<input type="password" id="authPassword" required autocomplete="current-password" minlength="6"></label>
-        <button type="button" id="btnSignIn">Sign in</button>
-        <button type="button" id="btnRegister">Register</button>
-        <button type="button" id="btnSignOut" class="wide" style="display:none">Sign out</button>
-      </form>
-      <div class="inline-form" style="margin-top:12px">
-        <button type="button" id="btnCloudSave">Save to cloud</button>
-        <button type="button" id="btnCloudLoad">Load from cloud</button>
-      </div>
-      <p class="hint" id="authHint">Add your Supabase URL and anon key in js/core/supabase-config.js.</p>
+      <h2>Credits & Standing</h2>
+      <div id="accountSummary">Loading…</div>
     </section>
 
     <section class="panel">
       <p class="eyebrow">FLEET MANAGEMENT</p>
-      <h2>Your fleet</h2>
-      <div id="fleetList" class="stack"></div>
-      <form id="buyShipForm" class="inline-form">
-        <label for="shipType">Purchase a ship</label>
-        <select id="shipType"></select>
-        <button type="submit">Buy ship</button>
-      </form>
+      <h2>Your Ships</h2>
+      <div id="fleetList">Loading fleet…</div>
     </section>
 
     <section class="panel">
       <p class="eyebrow">RIVAL COMPANIES</p>
-      <h2>NPC carriers (for sale)</h2>
-      <p class="hint">Each runs 2–12 ships delivering goods across the map. Buyouts are expensive: fleet value × markup + treasury + premium.</p>
-      <div id="npcCompanyList" class="stack"></div>
+      <h2>NPC Operators</h2>
+      <div id="npcList">Loading rivals…</div>
     </section>
 
     <section class="panel">
       <p class="eyebrow">CONTRACT BOARD</p>
-      <h2>Available deliveries</h2>
-      <div id="contractList" class="stack"></div>
+      <h2>Available Contracts</h2>
+      <div id="contractList">Loading contracts…</div>
     </section>
 
     <section class="panel">
       <p class="eyebrow">ROUTE PLANNER</p>
-      <h2>Assign a delivery</h2>
-      <form id="routeForm" class="form-grid">
-        <label>Contract<select id="contractSelect" required></select></label>
-        <label>Ship<select id="shipSelect" required></select></label>
-        <button type="submit" class="wide">Dispatch ship</button>
-      </form>
-      <p class="hint">Travel is timestamp-based. Overdue deliveries process when you reopen this page.</p>
+      <h2>Plan Journey</h2>
+      <div id="routePlanner">Select origin and destination.</div>
     </section>
 
     <section class="panel">
       <p class="eyebrow">OPERATIONS</p>
-      <h2>Active journeys</h2>
-      <div id="journeyList" class="stack"></div>
+      <h2>Active Journeys</h2>
+      <div id="activeJourneys">No active journeys.</div>
     </section>
 
     <section class="panel">
       <p class="eyebrow">COMPANY LEDGER</p>
-      <div class="balance-row"><span>Available credits</span><strong id="credits">—</strong></div>
-      <div class="balance-row"><span>Completed deliveries</span><strong id="deliveries">—</strong></div>
-      <div class="balance-row"><span>Last saved</span><strong id="savedAt">—</strong></div>
-      <button id="resetDemo" class="danger">Reset local demo data</button>
-      <button type="button" id="btnRunTests" style="margin-top:10px">Run Core Tests</button>
-      <pre id="testResults" class="hint" style="white-space:pre-wrap;max-height:200px;overflow:auto;margin-top:10px"></pre>
+      <h2>Recent Activity</h2>
+      <div id="ledger">—</div>
     </section>
   </main>
 
-  <footer>Space Pack Transport · NPC companies deliver across the network</footer>
+  <footer>Ideal Umbrella Transport · NPC companies deliver across the network</footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/core/supabase-config.js"></script>
   <script src="js/core/universe.js"></script>
   <script src="js/core/credits.js"></script>
   <script src="js/core/clock.js"></script>
   <script src="js/core/save-manager.js"></script>
   <script src="js/core/game-state.js"></script>
   <script src="js/data/resources.js"></script>
+  <script src="js/economy.js"></script>
   <script src="js/npc-companies.js"></script>
-  <script src="tests/core-integration.test.js"></script>
   <script src="js/transport.js"></script>
   <script src="js/transport-npc-hook.js"></script>
-  <script>
-    (function () {
-      "use strict";
-      const $ = (id) => document.getElementById(id);
-      const cloudEl = $("cloudStatus");
-      const authLabel = $("authUserLabel");
-      const btnOut = $("btnSignOut");
-      const testOut = $("testResults");
-
-      function setCloudStatus(text, ok) {
-        if (!cloudEl) return;
-        cloudEl.textContent = text;
-        cloudEl.style.color = ok === true ? "var(--green)" : ok === false ? "var(--red)" : "";
-      }
-
-      async function refreshAuthUi() {
-        if (!window.SaveManager) return;
-        const { user, error } = await window.SaveManager.getSessionUser();
-        if (error && String(error).includes("not configured")) {
-          if (authLabel) authLabel.textContent = "Not configured";
-          setCloudStatus("Configure supabase-config.js", false);
-          return;
-        }
-        if (user) {
-          if (authLabel) authLabel.textContent = user.email || user.id;
-          if (btnOut) btnOut.style.display = "";
-        } else {
-          if (authLabel) authLabel.textContent = "Signed out";
-          if (btnOut) btnOut.style.display = "none";
-        }
-      }
-
-      async function doSignIn() {
-        const email = $("authEmail").value.trim();
-        const password = $("authPassword").value;
-        setCloudStatus("Signing in…");
-        const res = await window.SaveManager.signIn(email, password);
-        if (!res.ok) { setCloudStatus("Sign-in failed: " + res.error, false); return; }
-        setCloudStatus("Signed in", true);
-        await refreshAuthUi();
-      }
-
-      async function doRegister() {
-        const email = $("authEmail").value.trim();
-        const password = $("authPassword").value;
-        setCloudStatus("Registering…");
-        const res = await window.SaveManager.signUp(email, password);
-        if (!res.ok) { setCloudStatus("Register failed: " + res.error, false); return; }
-        setCloudStatus(res.session ? "Registered & signed in" : "Registered — check email if needed", true);
-        await refreshAuthUi();
-      }
-
-      async function doSignOut() {
-        const res = await window.SaveManager.signOut();
-        if (!res.ok) { setCloudStatus("Sign-out failed: " + res.error, false); return; }
-        setCloudStatus("Signed out", true);
-        await refreshAuthUi();
-      }
-
-      async function doCloudSave() {
-        setCloudStatus("Saving to cloud…");
-        if (window.GameState && window.GameState.saveState) window.GameState.saveState();
-        const res = await window.SaveManager.cloudSave();
-        if (!res.ok) { setCloudStatus("Cloud save failed: " + res.error, false); return; }
-        setCloudStatus("Cloud save OK · " + (res.updatedAt || "now"), true);
-        if ($("savedAt")) $("savedAt").textContent = new Date().toLocaleString();
-      }
-
-      async function doCloudLoad() {
-        setCloudStatus("Loading from cloud…");
-        const res = await window.SaveManager.cloudLoad({ applyToLocal: true });
-        if (!res.ok) { setCloudStatus("Cloud load failed: " + res.error, false); return; }
-        setCloudStatus("Cloud load OK · " + (res.updatedAt || "applied"), true);
-        if (window.GameState && window.GameState.loadState) window.GameState.loadState();
-        if (window.NpcCompanies) window.NpcCompanies.ensureSeeded();
-        if (typeof window.renderTransport === "function") window.renderTransport();
-        else location.reload();
-      }
-
-      function runTests() {
-        if (!testOut) return;
-        testOut.textContent = "Running…";
-        if (typeof window.runCoreTests !== "function") {
-          testOut.textContent = "runCoreTests() not found.";
-          return;
-        }
-        const logs = [];
-        const origLog = console.log, origErr = console.error;
-        console.log = function () { logs.push(Array.prototype.slice.call(arguments).join(" ")); origLog.apply(console, arguments); };
-        console.error = function () { logs.push("ERROR: " + Array.prototype.slice.call(arguments).join(" ")); origErr.apply(console, arguments); };
-        let passed = false;
-        try { passed = !!window.runCoreTests(); } catch (e) { logs.push("EXCEPTION: " + (e && e.message ? e.message : String(e))); }
-        console.log = origLog; console.error = origErr;
-        testOut.textContent = (passed ? "RESULT: PASSED\n" : "RESULT: FAILED\n") + logs.join("\n");
-      }
-
-      if ($("btnSignIn")) $("btnSignIn").addEventListener("click", doSignIn);
-      if ($("btnRegister")) $("btnRegister").addEventListener("click", doRegister);
-      if ($("btnSignOut")) $("btnSignOut").addEventListener("click", doSignOut);
-      if ($("btnCloudSave")) $("btnCloudSave").addEventListener("click", doCloudSave);
-      if ($("btnCloudLoad")) $("btnCloudLoad").addEventListener("click", doCloudLoad);
-      if ($("btnRunTests")) $("btnRunTests").addEventListener("click", runTests);
-
-      refreshAuthUi();
-      if (!window.SupabaseConfig || !window.SupabaseConfig.isConfigured()) setCloudStatus("Supabase not configured", false);
-      else setCloudStatus("Ready (sign in to sync)", null);
-    })();
-  </script>
 </body>
 </html>
