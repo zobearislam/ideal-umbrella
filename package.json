@@ -1,0 +1,24 @@
+{
+  "name": "ideal-umbrella",
+  "version": "0.2.0",
+  "description": "Browser-based interstellar trading, exploration, and empire-building simulator",
+  "private": true,
+  "author": "zobearislam",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zobearislam/ideal-umbrella.git"
+  },
+  "keywords": [
+    "space",
+    "simulator",
+    "three.js",
+    "trading",
+    "browser-game",
+    "educational"
+  ],
+  "scripts": {
+    "start": "npx --yes serve . -p 3000",
+    "test": "echo \"Open tests/ in a browser or run your preferred test runner\""
+  }
+}

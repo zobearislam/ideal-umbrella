@@ -1,102 +1,159 @@
-# Space Pack — Enhanced
+# Ideal Umbrella 🌂
 
-A browser-based solar system simulator with flyable ships, walkable interiors, EVA, orbital mechanics, economy, reputation, factions, resource crafting, missions, and interstellar transport. Built for educational and exploratory use. Family-friendly.
+**Browser-based interstellar trading, exploration, and empire-building simulator.**
 
-## What's New
+Fly ships through a full solar system and beyond, manage cargo and crafting, build reputation with factions, run a transport company, accept missions, and expand your influence across the stars. No installation required — just open it in a modern browser.
 
-- **Full solar system**: Mercury through Neptune plus major moons (Luna, Phobos, Deimos, Io, Europa, Ganymede, Callisto, Titan, Enceladus, Triton, etc.)
-- **Stations** at every major body and the asteroid belt
-- **Gates** connecting Sol to Alpha Centauri, Proxima, Sirius, Vega, Altair, Tau Ceti, Epsilon Eridani, TRAPPIST-1, Barnard's Star, and more
-- **Expanded resources & crafting**: iron, ice, crystal, uranium, titanium, silicon, alloy, circuits, plastic, LOX, LH2, gold, fertilizer, advanced circuits, antimatter
-- **Ship types**: Scout, Courier, Interceptor, Hauler, Freighter, Mining Rig, Passenger Liner, Capital Ship
-- **Mission board** with deliveries, combat, diplomacy, and exploration contracts
-- **Factions**: Terran Confederation, Martian Republic, Belt Miners’ Union, Jovian Syndicate, Outer Colonies League, Pirate Clans
-- **Company & Diplomacy** wireless interfaces
-- **Transport management** with fleet, contracts, and timestamped journeys
+Family-friendly. Educational focus on orbital mechanics, resource chains, and light strategy.
 
-## Resources Module
+---
 
-Resources are defined in `js/data/resources.js` and also referenced from the simulator. Each resource has:
+## Features
 
-- `id` — unique string key
-- `name` — display name
-- `icon` — emoji
-- `basePrice` — starting market price
-- `category` — raw / refined / high
+### Simulation
+- Full inner + outer solar system (Mercury → Neptune) with major moons
+- Stations at key bodies and the asteroid belt
+- Flyable ships with cockpit / standing / EVA modes
+- Orbital visualization, time acceleration, lock-on targeting
+- Simple defense laser (abstract, non-graphic)
 
-## Crafting Table
+### Economy & Logistics
+- Credits, personal + company accounts
+- 15+ resources across raw / refined / high-value categories
+- Crafting recipes at stations
+- Shared inventory between simulator and Transport
+- Rival NPC companies that haul goods (buy them out if you can afford it)
 
-Recipes are in `CRAFTING_RECIPES`. Example:
+### Ships
+- Scout, Courier, Interceptor, Hauler, Freighter, Mining Rig, Passenger Liner, Capital Ship
+- Cargo vs combat hulls (turrets / missiles only on combat vessels)
+- Fleet management and pilot hiring
 
-```js
-{ id: "smelt-alloy", name: "Smelt Alloy", inputs: ["iron", "fuel"], output: "alloy", time: 5 }
-```
+### Galaxy & Travel
+- Multiple star systems connected by cyan ring gates
+- Interactive galaxy map with route finding
+- Transport command center for contracts and journeys
 
-Inputs are consumed (1 each). Output is produced. Available at stations.
+### Factions & Reputation
+- Terran Confederation, Martian Republic, Belt Miners’ Union, Jovian Syndicate, Outer Colonies League, Pirate Clans, Alpha Cooperative, Sirius Mining Corp, Science Collective, Independents
+- Reputation (0–100) affects prices, access, and available missions
 
-## Gates & Systems
+### Missions & Company
+- Delivery, hauling, scientific, emergency, and bounty contracts
+- Company wireless interface (ships, pilots, licenses)
+- Diplomacy panel with faction relations and battle forecasts
+- Finance overview
 
-Cyan ring gates connect star systems. Fly close to jump. Current systems include Sol, Alpha Centauri, Proxima Centauri, Sirius, Vega, Altair, Rigel, Kepler, Tau Ceti, Epsilon Eridani, TRAPPIST-1, and Barnard's Star.
+---
 
-## Factions & Reputation
+## Quick Start
 
-Reputation (0–100) affects prices, access, and mission availability. Peaceful actions raise standing; weapons fire near stations or civilians lowers it. Tracked via the Economy and IAG modules.
+1. Clone or download the repository.
+2. Open `index.html` in a modern browser (Chrome, Firefox, Edge, Safari).
+3. No build step or server required for local play.
 
-## Economy & Stations
+For GitHub Pages: enable Pages on the `main` branch (root).
 
-- Credits for buying ships, hiring pilots, and crafting
-- Stations around every planet and large moon
-- Hire pilots and manage a fleet
-- Defense laser (Spacebar) — abstract, non-graphic
-- Dock button opens station menu (ships, pilots, inventory, crafting, missions)
+---
 
-## Controls
+## Controls (Main Simulator)
 
-| Action | Control |
-|--------|---------|
-| Fire defense laser | Spacebar or Laser button |
-| Dock at station | Dock button (when near a station) |
-| Fly | Joystick / WASD / arrows · W/S or slider for speed · Q/E roll · X stop |
-| Walk / EVA | Stand up near seat / airlock |
+| Action              | Control                          |
+|---------------------|----------------------------------|
+| Fly                 | Joystick / WASD / Arrow keys     |
+| Throttle            | Slider or ▲▼                     |
+| Pitch               | ↑↓                               |
+| Roll                | Q / E                            |
+| Stop                | X or Stop button                 |
+| Fire defense laser  | Spacebar or Laser button         |
+| Dock                | Dock button (near station)       |
+| Camera target       | Select body → Go / Lock          |
+| Stand / Sit         | Stand button                     |
+| Time scale          | Settings → Time x1 / x10 / …     |
+| Toggle orbits       | Settings → Orbits                |
 
-Additional pages:
-- `galaxy.html` — interactive star system map and route finder
-- `transport.html` — fleet, contracts, and journeys
-- `missions.html` — mission board
-- `ui/company.html` — company wireless (ships, pilots, licenses)
-- `ui/diplomacy.html` — faction relations and battle forecast
+Additional pages via the Menu button:
+- Galaxy map
+- Transport
+- Missions
+- Company
+- Diplomacy
+- Finance
+
+---
 
 ## Project Structure
 
 ```
-index.html              Main 3D simulator
-galaxy.html             Galaxy map
-transport.html          Transport command
-missions.html           Mission board
-css/                    Styles
-js/space.js             Core simulation
-js/data/resources.js    Resources, ships, factions
-js/data/missions.js     Mission definitions
-js/core/universe.js     Shared star systems
-js/economy.js           Economy & reputation
-js/transport.js         Transport prototype
-js/iag.js               Authority / incident system
-ui/                     Company & diplomacy interfaces
-assets/                 Resource icons and control images
+index.html                 Main 3D simulator
+galaxy.html                Interactive star map + route finder
+transport.html             Fleet, contracts, NPC rivals
+missions.html              Mission board
+ui/company.html            Company management
+ui/diplomacy.html          Faction relations
+ui/finance.html            Credits overview
+
+css/                       Styles (steampunk theme)
+js/
+  space.js                 Core Three.js simulator
+  economy.js               Credits, prices, reputation helpers
+  transport.js             Transport logic
+  iag.js                   Authority / incident system
+  npc-companies.js         Rival company simulation
+  ship-models.js           Visual ship variants
+  data/
+    resources.js           Canonical RESOURCES, CRAFTING_RECIPES, SHIP_TYPES, FACTIONS
+    missions.js            Mission templates + generator
+    systems-expanded.js    Extra systems catalog
+  core/
+    universe.js            SYSTEMS, getSystem, findRoute
+    game-state.js          Shared state + save bridge
+    credits.js             Personal / company credit accounts
+    save-manager.js        Persistence (local + Supabase option)
+    faction-standing.js    Reputation tracking
+assets/resources/          Resource icons
+database/                  SQL helpers for optional backend
+tests/                     Basic integration tests
 ```
 
-## Running
-
-Open `index.html` in a modern browser. No build step required.
-
-For GitHub Pages, push this folder to a repo and enable Pages.
+---
 
 ## Customization
 
-- Edit `js/data/resources.js` to add resources, recipes, or ship types.
-- Edit `js/data/missions.js` or `js/core/universe.js` to expand systems and missions.
-- Edit the planet definitions inside `js/space.js` for new bodies.
+- **Resources / recipes / ships / factions** → edit `js/data/resources.js`
+- **Missions** → `js/data/missions.js`
+- **Star systems & gates** → `js/core/universe.js` (and `systems-expanded.js` for extras)
+- **Planet / moon definitions** → inside `js/space.js`
+- **Visual style** → `css/style.css` and related stylesheets
+
+All major catalogs are attached to `window` so classic scripts can share them without a bundler.
+
+---
+
+## Optional: Supabase Saves
+
+The project includes hooks for cloud saves via Supabase (see `js/core/supabase-config.js` and `js/core/save-manager.js`).  
+Copy the example config, add your project URL + anon key, and enable the relevant tables (see `database/` SQL files).
+
+Local storage continues to work without any backend.
+
+---
+
+## Development Notes
+
+- No build step by design — pure HTML/CSS/JS for maximum portability.
+- Three.js is loaded from CDN (r128). Newer versions can be swapped carefully.
+- Shared state lives on `window.GameState`, `window.Credits`, `window.UNIVERSE`, etc.
+- Keep new content in the `js/data/` modules so the simulator, transport, and UIs stay in sync.
+
+---
 
 ## License
 
-Use freely for educational and personal projects.
+MIT — see [LICENSE](LICENSE).
+
+Use freely for educational, personal, and commercial projects. Attribution appreciated but not required.
+
+---
+
+*Ideal Umbrella — stay dry among the stars.*

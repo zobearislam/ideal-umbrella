@@ -1,0 +1,31 @@
+# Dependencies / build
+node_modules/
+dist/
+build/
+.cache/
+*.log
+npm-debug.log*
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.local
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+
+# Temporary / generated
+*.tmp
+.temp/
+coverage/
+.nyc_output/
+
+# Supabase / local DB dumps (if any)
+*.sql.bak
+supabase/.temp/
