@@ -1,4 +1,4 @@
-// Mission board data
+// Mission board data — massively expanded
 window.MISSIONS = [
   {
     id: "m001",
@@ -122,6 +122,189 @@ window.MISSIONS = [
     reputation: { terran: 8, outer: 4 },
     difficulty: 5,
     description: "First official survey mission to the seven-planet system. Requires a capable ship."
+  },
+  {
+    id: "m011",
+    title: "Helium-3 Harvest Run",
+    type: "delivery",
+    from: "Luna Depot",
+    to: "Earth Orbital Port",
+    cargo: "helium3",
+    quantity: 12,
+    reward: 9800,
+    reputation: { terran: 3 },
+    difficulty: 2,
+    description: "Rare Helium-3 from lunar regolith processing for fusion research."
+  },
+  {
+    id: "m012",
+    title: "Rare Earths for Science Collective",
+    type: "delivery",
+    from: "Sirius Mining",
+    to: "Rigel Station",
+    cargo: "rare_earth",
+    quantity: 6,
+    reward: 14500,
+    reputation: { science_collective: 4, sirius_mining: 2 },
+    difficulty: 3,
+    description: "High-value rare earths needed for advanced sensor arrays."
+  },
+  {
+    id: "m013",
+    title: "Battery Supply for Corporate League",
+    type: "delivery",
+    from: "Altair Foundries",
+    to: "Vega Hub",
+    cargo: "battery",
+    quantity: 18,
+    reward: 16200,
+    reputation: { corporate: 5, independent: 2 },
+    difficulty: 3,
+    description: "Power cells for expanding corporate infrastructure."
+  },
+  {
+    id: "m014",
+    title: "Explorer Survey: Wolf 359",
+    type: "exploration",
+    from: "Sol",
+    to: "Wolf 359",
+    reward: 21000,
+    reputation: { explorers: 6, terran: 3 },
+    difficulty: 4,
+    description: "Map the flare star system and report anomalies for the Explorer's Guild."
+  },
+  {
+    id: "m015",
+    title: "Nanite Delivery to Proxima",
+    type: "delivery",
+    from: "Science Collective",
+    to: "Proxima Outpost",
+    cargo: "nanites",
+    quantity: 4,
+    reward: 28000,
+    reputation: { science_collective: 7 },
+    difficulty: 4,
+    description: "Delicate nanite samples for biological research on Proxima b."
+  },
+  {
+    id: "m016",
+    title: "Steel for Outer Shipyards",
+    type: "delivery",
+    from: "Altair",
+    to: "Kepler",
+    cargo: "steel",
+    quantity: 25,
+    reward: 19500,
+    reputation: { outer: 4, independent: 3 },
+    difficulty: 3,
+    description: "Structural steel for expanding colony shipyards."
+  },
+  {
+    id: "m017",
+    title: "Pirate Interdiction: Vega Approaches",
+    type: "combat",
+    from: "Vega",
+    reward: 16500,
+    reputation: { jovian: 6, pirate: -12, terran: 3 },
+    difficulty: 4,
+    description: "Clear pirate scouts threatening trade lanes near Vega."
+  },
+  {
+    id: "m018",
+    title: "Data Core Transfer",
+    type: "delivery",
+    from: "Rigel",
+    to: "Alpha Centauri",
+    cargo: "data_core",
+    quantity: 3,
+    reward: 12000,
+    reputation: { science_collective: 5, alpha: 3 },
+    difficulty: 2,
+    description: "Encrypted research data for shared scientific archive."
+  },
+  {
+    id: "m019",
+    title: "Fusion Core Emergency",
+    type: "delivery",
+    from: "Sol",
+    to: "TRAPPIST-1",
+    cargo: "fusion_core",
+    quantity: 2,
+    reward: 42000,
+    reputation: { outer: 8, terran: 4 },
+    difficulty: 5,
+    description: "Critical power cores for the growing TRAPPIST colony. High priority."
+  },
+  {
+    id: "m020",
+    title: "Luxury Passenger Charter",
+    type: "diplomatic",
+    from: "Earth",
+    to: "Vega",
+    reward: 9500,
+    reputation: { jovian: 3, terran: 2 },
+    difficulty: 2,
+    description: "Transport high-profile passengers. Reputation gains with destination faction."
+  },
+  {
+    id: "m021",
+    title: "Cobalt Ore for Batteries",
+    type: "delivery",
+    from: "Belt",
+    to: "Altair",
+    cargo: "cobalt",
+    quantity: 20,
+    reward: 11200,
+    reputation: { belt: 3, independent: 2 },
+    difficulty: 2,
+    description: "Raw cobalt needed for next-gen battery production."
+  },
+  {
+    id: "m022",
+    title: "Explorer Guild: Barnard's Star Mapping",
+    type: "exploration",
+    from: "Sol",
+    to: "Barnard's Star",
+    reward: 18000,
+    reputation: { explorers: 5, belt: 2 },
+    difficulty: 3,
+    description: "Detailed survey of the nearby red dwarf and its asteroid resources."
+  },
+  {
+    id: "m023",
+    title: "Quantum Chip Prototype Delivery",
+    type: "delivery",
+    from: "Science Collective",
+    to: "Corporate League HQ",
+    cargo: "quantum_chip",
+    quantity: 1,
+    reward: 55000,
+    reputation: { science_collective: 6, corporate: 5 },
+    difficulty: 4,
+    description: "Extremely valuable prototype. Secure transport required."
+  },
+  {
+    id: "m024",
+    title: "Ammonia Ice for Fertilizer Plants",
+    type: "delivery",
+    from: "Outer Colonies",
+    to: "Mars",
+    cargo: "ammonia",
+    quantity: 35,
+    reward: 8700,
+    reputation: { martian: 4, outer: 3 },
+    difficulty: 2,
+    description: "Agricultural feedstock for Martian terraforming projects."
+  },
+  {
+    id: "m025",
+    title: "Capital Ship Escort Request",
+    type: "combat",
+    from: "Sirius",
+    reward: 32000,
+    reputation: { sirius_mining: 7, pirate: -15 },
+    difficulty: 5,
+    description: "Provide armed escort for a valuable mining convoy."
   }
 ];
 

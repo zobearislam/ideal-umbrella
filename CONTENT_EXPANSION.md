@@ -1,63 +1,43 @@
 # Content Expansion - Ideal Umbrella
 
-This update adds a large volume of new content to the Space Pack / Ideal Umbrella project.
+Major content expansion for the Space Pack / Ideal Umbrella project.
 
-## New Data Modules
+## New / Expanded Data
 
-### `js/data/resources.js`
-- **50+ resources** across categories: raw, refined, fuel, component, advanced, consumer
-- Includes items matching existing asset images (cellulose_quartz, fertilizer, liquid_hydrogen, etc.)
-- **24 crafting recipes** with time costs
-- Helper functions: `getResource()`, `getRecipe()`
+### `js/data/resources.js` (Canonical)
+- **40+ resources** across raw, refined, and high-value categories
+- New raw: copper, aluminum, carbon, nickel, cobalt, lithium, rare_earth, helium3, methane, ammonia, quartz
+- New refined: copper_ingot, aluminum_ingot, steel, glass, battery, coolant, polymer, ceramics, refined_titanium
+- New high: quantum_chip, fusion_core, nanites, exotic_matter, data_core, pure_silicon
+- **23 crafting recipes** covering the full production chains
+- **13 ship types**: added Science Vessel, Luxury Yacht, Combat Frigate, Super Hauler, Phantom Runner
+- **12 factions**: added Corporate League and Explorer's Guild
 
-### `js/data/ships.js`
-- **10 ship types** (expanded from the original 3)
-- New ships: Scout, Interceptor, Miner, Luxury Liner, Science Vessel, Titan Freighter, Phantom
-- Each has capacity, speed, fuel efficiency, maintenance, and description
-
-### `js/data/factions.js`
-- **10 factions** with descriptions, preferred goods, and starting reputation
-- Includes original factions plus Science Collective, Sirius Mining Corp, etc.
-
-### `js/data/systems-expanded.js`
-- **25+ star systems** (expanded from 7)
-- New systems: Proxima, Tau Ceti, Epsilon Eridani, TRAPPIST, Barnard's Star, Wolf 359, Ross 128, Gliese 581, Kepler-442, and more
-- Each system has population, controlling faction, and description
+### `js/core/universe.js`
+- **20 star systems** with full route connectivity
+- New systems: Wolf 359, Ross 128, Gliese 581, Kepler-442, 61 Cygni, Lalande 21185, Wolf 1061, Gliese 667
+- Updated `findRoute` with complete connection graph so any system is reachable
 
 ### `js/data/missions.js`
-- **8 mission templates**: Supply Run, Ore Hauling, Luxury Delivery, Scientific Sample, Emergency Relief, Industrial Parts, Fuel Resupply, Pirate Bounty
-- Generator function `generateMission()` to create dynamic contracts
+- **25 mission templates** covering delivery, combat, exploration, and diplomatic contracts
+- Wider variety of cargo types, destinations, and reputation effects
+- Higher-tier missions involving advanced resources and distant systems
 
-## Integration Notes
+## Integration
 
-These modules are designed as ES modules (`export`). To use them:
+All data is attached to `window` (RESOURCES, CRAFTING_RECIPES, SHIP_TYPES, FACTIONS, UNIVERSE, MISSIONS) so existing classic scripts continue to work without changes.
 
-```js
-import { RESOURCES, CRAFTING_RECIPES } from './js/data/resources.js';
-import { SHIP_TYPES } from './js/data/ships.js';
-import { FACTIONS } from './js/data/factions.js';
-import { EXPANDED_SYSTEMS } from './js/data/systems-expanded.js';
-```
-
-Or attach to `window` if using classic scripts.
-
-## Next Steps for Full Integration
-
-1. Update `js/space.js` to load the new RESOURCES and CRAFTING_RECIPES
-2. Expand `js/transport.js` to use EXPANDED_SYSTEMS and new SHIP_TYPES
-3. Wire mission generation into the contract system
-4. Add UI panels for the new resource catalog and faction details
-5. Generate more asset images for the new resources if desired
-
-## Summary of Added Content
+## Summary
 
 | Category       | Previous | Now    |
 |----------------|----------|--------|
-| Resources      | ~6       | 40+    |
-| Recipes        | ~3       | 24     |
-| Ship Types     | 3        | 10     |
-| Factions       | ~6       | 10     |
-| Star Systems   | 7        | 25+    |
-| Mission Types  | 4 static | 8 templates + generator |
+| Resources      | ~16      | 40+    |
+| Recipes        | 7        | 23     |
+| Ship Types     | 8        | 13     |
+| Factions       | 10       | 12     |
+| Star Systems   | 12       | 20     |
+| Mission Types  | 10       | 25     |
 
-Enjoy the expanded universe!
+The universe is now significantly deeper for trading, exploration, and long-term progression.
+
+Enjoy the expanded Ideal Umbrella!
