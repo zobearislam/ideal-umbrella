@@ -2,30 +2,34 @@
 
 All notable changes to Ideal Umbrella are documented here.
 
-## [Unreleased] — Overhaul (2026-11)
+## [0.3.0] — Core Overhaul (2026-11-11)
 
-### Added
-- MIT LICENSE
-- Proper `.gitignore`
-- Completely rewritten README with accurate Ideal Umbrella branding, features, controls, structure, and customization guide
-- Add package.json for project metadata
-- Consistent Ideal Umbrella branding across documentation and page titles
+### Added / Restored
+- **Complete playable 3D simulator** (`js/space.js`)
+  - Full solar system with major moons
+  - Ship flight (WASD / joystick / throttle / pitch / roll)
+  - Docking at any body → station panel
+  - Station features: buy/sell resources, craft from recipes, complete missions
+  - HUD (credits, cargo, thrust, dock status)
+  - Defense laser, time scale, pause, orbit lines, camera lock
+  - Shared inventory & reputation with the rest of the game
+- HUD, station panel, toast notification, and help overlay styles
+- MIT LICENSE, `.gitignore`, `package.json`
+- Consistent Ideal Umbrella branding across all pages
 
 ### Improved
-- Documentation clarity and completeness
-- Project hygiene for future contributions and GitHub Pages deployment
-- Foundation for fuller integration of expanded content (resources, ships, factions, systems, missions)
+- Completely rewritten README (features, controls, structure, customization)
+- Transport page branding and structure cleanup
+- Page titles and meta description
+- Foundation for continued content expansion
 
 ### Notes
-- Data modules in `js/data/resources.js` remain the single source of truth for resources, crafting recipes, ship types, and factions.
-- `js/core/universe.js` remains the primary systems catalog (with route finding).
-- Content expansion work continues; see CONTENT_EXPANSION.md for the original plan.
+- Open `index.html` and fly near Earth (or any body) → press **Dock** to use the market, craft, and complete missions.
+- Accept missions on the Mission Board first, then complete them after docking with the required cargo.
+- Data modules in `js/data/resources.js` remain the single source of truth.
 
 ## Expanded Content Update (previous)
 
 - Full solar system (Mercury–Neptune) + major moons
-- Expanded star systems (Proxima, Tau Ceti, Epsilon Eridani, TRAPPIST-1, Barnard's Star, etc.)
-- New resources, crafting recipes, and ship types
-- Mission board with multiple contract types
-- Shared data files and improved navigation
-- Transport prototype enhancements
+- Expanded star systems, resources, recipes, ship types, factions
+- Mission board, transport prototype, company/diplomacy UIs
