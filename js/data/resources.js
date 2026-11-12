@@ -1,6 +1,6 @@
 // Canonical game data for Space Pack / Ideal Umbrella
 // Single source of truth for resources, crafting, ships, and factions.
-// Massively expanded content update.
+// Massively expanded content update (v0.5).
 
 window.RESOURCES = {
   // Raw materials
@@ -21,6 +21,17 @@ window.RESOURCES = {
   methane: { id: "methane", name: "Methane Ice", icon: "❄️", basePrice: 40, category: "raw" },
   ammonia: { id: "ammonia", name: "Ammonia Ice", icon: "🟣", basePrice: 35, category: "raw" },
   quartz: { id: "quartz", name: "Cellulose Quartz", icon: "💠", basePrice: 85, category: "raw" },
+  platinum: { id: "platinum", name: "Platinum Ore", icon: "⚪", basePrice: 320, category: "raw" },
+  tungsten: { id: "tungsten", name: "Tungsten Ore", icon: "⚪", basePrice: 150, category: "raw" },
+  sulfur: { id: "sulfur", name: "Sulfur", icon: "🟡", basePrice: 45, category: "raw" },
+  phosphorus: { id: "phosphorus", name: "Phosphorus", icon: "🟨", basePrice: 55, category: "raw" },
+  deuterium: { id: "deuterium", name: "Deuterium", icon: "💧", basePrice: 180, category: "raw" },
+  palladium: { id: "palladium", name: "Palladium Ore", icon: "🟤", basePrice: 260, category: "raw" },
+  iridium: { id: "iridium", name: "Iridium Ore", icon: "⚪", basePrice: 340, category: "raw" },
+  organics: { id: "organics", name: "Organic Compounds", icon: "🌿", basePrice: 40, category: "raw" },
+  biomass: { id: "biomass", name: "Biomass", icon: "🌱", basePrice: 35, category: "raw" },
+  osmium: { id: "osmium", name: "Osmium Ore", icon: "⚪", basePrice: 380, category: "raw" },
+  water: { id: "water", name: "Purified Water", icon: "💦", basePrice: 30, category: "raw" },
 
   // Refined
   fuel: { id: "fuel", name: "Fuel Cell", icon: "⛽", basePrice: 80, category: "refined" },
@@ -40,6 +51,17 @@ window.RESOURCES = {
   polymer: { id: "polymer", name: "Polymer", icon: "🧪", basePrice: 100, category: "refined" },
   ceramics: { id: "ceramics", name: "Ceramics", icon: "🏺", basePrice: 140, category: "refined" },
   refined_titanium: { id: "refined_titanium", name: "Refined Titanium", icon: "⚙️", basePrice: 200, category: "refined" },
+  platinum_ingot: { id: "platinum_ingot", name: "Platinum Ingot", icon: "⚪", basePrice: 650, category: "refined" },
+  tungsten_alloy: { id: "tungsten_alloy", name: "Tungsten Alloy", icon: "⚙️", basePrice: 320, category: "refined" },
+  explosives: { id: "explosives", name: "Explosives", icon: "💣", basePrice: 180, category: "refined" },
+  pharmaceuticals: { id: "pharmaceuticals", name: "Pharmaceuticals", icon: "💊", basePrice: 220, category: "refined" },
+  food_rations: { id: "food_rations", name: "Food Rations", icon: "🍜", basePrice: 50, category: "refined" },
+  electronics: { id: "electronics", name: "Electronics", icon: "💻", basePrice: 340, category: "refined" },
+  sensors: { id: "sensors", name: "Sensor Array", icon: "📡", basePrice: 380, category: "refined" },
+  thrusters: { id: "thrusters", name: "Thruster Assembly", icon: "🚀", basePrice: 420, category: "refined" },
+  armor_plates: { id: "armor_plates", name: "Armor Plates", icon: "🛡️", basePrice: 280, category: "refined" },
+  deuterium_fuel: { id: "deuterium_fuel", name: "Deuterium Fuel", icon: "⛽", basePrice: 290, category: "refined" },
+  luxury_goods: { id: "luxury_goods", name: "Luxury Goods", icon: "💎", basePrice: 520, category: "refined" },
 
   // High / Advanced
   advanced_circuit: { id: "advanced_circuit", name: "Advanced Circuit", icon: "💻", basePrice: 480, category: "high" },
@@ -49,7 +71,14 @@ window.RESOURCES = {
   nanites: { id: "nanites", name: "Nanites", icon: "🦠", basePrice: 800, category: "high" },
   exotic_matter: { id: "exotic_matter", name: "Exotic Matter", icon: "🌌", basePrice: 5000, category: "high" },
   data_core: { id: "data_core", name: "Data Core", icon: "💾", basePrice: 600, category: "high" },
-  pure_silicon: { id: "pure_silicon", name: "Pure Silicon", icon: "💎", basePrice: 150, category: "high" }
+  pure_silicon: { id: "pure_silicon", name: "Pure Silicon", icon: "💎", basePrice: 150, category: "high" },
+  warp_coil: { id: "warp_coil", name: "Warp Coil", icon: "🌀", basePrice: 4200, category: "high" },
+  shield_generator: { id: "shield_generator", name: "Shield Generator", icon: "🛡️", basePrice: 3800, category: "high" },
+  ai_core: { id: "ai_core", name: "AI Core", icon: "🤖", basePrice: 2800, category: "high" },
+  biogel: { id: "biogel", name: "Biogel", icon: "🧪", basePrice: 950, category: "high" },
+  antimatter_containment: { id: "antimatter_containment", name: "Antimatter Containment", icon: "⚡", basePrice: 6200, category: "high" },
+  research_data: { id: "research_data", name: "Research Data", icon: "📈", basePrice: 750, category: "high" },
+  singularity_fragment: { id: "singularity_fragment", name: "Singularity Fragment", icon: "🕳️", basePrice: 8500, category: "high" }
 };
 
 window.CRAFTING_RECIPES = [
@@ -75,7 +104,25 @@ window.CRAFTING_RECIPES = [
   { id: "stabilize-exotic", name: "Stabilize Exotic Matter", inputs: ["antimatter", "crystal", "data_core"], output: "exotic_matter", time: 40 },
   { id: "encode-data", name: "Encode Data Core", inputs: ["circuit", "crystal"], output: "data_core", time: 9 },
   { id: "purify-silicon", name: "Purify Silicon", inputs: ["silicon", "fuel"], output: "pure_silicon", time: 6 },
-  { id: "make-fertilizer", name: "Produce Fertilizer", inputs: ["ammonia", "carbon", "ice"], output: "fertilizer", time: 5 }
+  { id: "make-fertilizer", name: "Produce Fertilizer", inputs: ["ammonia", "carbon", "ice"], output: "fertilizer", time: 5 },
+  { id: "smelt-platinum", name: "Smelt Platinum", inputs: ["platinum", "fuel"], output: "platinum_ingot", time: 8 },
+  { id: "forge-tungsten", name: "Forge Tungsten Alloy", inputs: ["tungsten", "steel", "fuel"], output: "tungsten_alloy", time: 10 },
+  { id: "make-explosives", name: "Synthesize Explosives", inputs: ["sulfur", "phosphorus", "fuel"], output: "explosives", time: 6 },
+  { id: "produce-pharma", name: "Produce Pharmaceuticals", inputs: ["organics", "biomass", "coolant"], output: "pharmaceuticals", time: 9 },
+  { id: "process-food", name: "Process Food Rations", inputs: ["biomass", "water", "fertilizer"], output: "food_rations", time: 5 },
+  { id: "assemble-electronics", name: "Assemble Electronics", inputs: ["circuit", "copper_ingot", "pure_silicon"], output: "electronics", time: 11 },
+  { id: "build-sensors", name: "Build Sensor Array", inputs: ["electronics", "crystal", "rare_earth"], output: "sensors", time: 14 },
+  { id: "assemble-thrusters", name: "Assemble Thrusters", inputs: ["alloy", "fuel", "electronics"], output: "thrusters", time: 12 },
+  { id: "forge-armor", name: "Forge Armor Plates", inputs: ["tungsten_alloy", "steel", "ceramics"], output: "armor_plates", time: 13 },
+  { id: "refine-deuterium", name: "Refine Deuterium Fuel", inputs: ["deuterium", "hydrogen"], output: "deuterium_fuel", time: 7 },
+  { id: "craft-luxury", name: "Craft Luxury Goods", inputs: ["gold", "platinum_ingot", "glass"], output: "luxury_goods", time: 10 },
+  { id: "build-warp", name: "Build Warp Coil", inputs: ["exotic_matter", "fusion_core", "quantum_chip"], output: "warp_coil", time: 35 },
+  { id: "assemble-shield", name: "Assemble Shield Generator", inputs: ["fusion_core", "electronics", "armor_plates"], output: "shield_generator", time: 28 },
+  { id: "program-ai", name: "Program AI Core", inputs: ["quantum_chip", "data_core", "nanites"], output: "ai_core", time: 22 },
+  { id: "synthesize-biogel", name: "Synthesize Biogel", inputs: ["pharmaceuticals", "nanites", "water"], output: "biogel", time: 15 },
+  { id: "contain-antimatter", name: "Build Antimatter Containment", inputs: ["antimatter", "exotic_matter", "shield_generator"], output: "antimatter_containment", time: 45 },
+  { id: "compile-research", name: "Compile Research Data", inputs: ["data_core", "sensors", "crystal"], output: "research_data", time: 12 },
+  { id: "extract-singularity", name: "Extract Singularity Fragment", inputs: ["exotic_matter", "warp_coil", "antimatter_containment"], output: "singularity_fragment", time: 60 }
 ];
 
 // Unified ship catalog — expanded
@@ -300,6 +347,142 @@ window.SHIP_TYPES = {
     turrets: 1,
     missileRacks: 1,
     description: "High-speed stealth-capable runner for risky deliveries."
+  },
+  destroyer: {
+    id: "destroyer",
+    name: "Destroyer",
+    price: 320000,
+    capacity: 40,
+    speed: 0.85,
+    fuelUse: 2.2,
+    fuelEfficiency: 0.6,
+    maintenance: 280,
+    weapon: 6,
+    isCargo: false,
+    hasTurret: true,
+    hasMissiles: true,
+    turrets: 4,
+    missileRacks: 4,
+    description: "Heavy combat destroyer with extensive armament."
+  },
+  tanker: {
+    id: "tanker",
+    name: "Fuel Tanker",
+    price: 75000,
+    capacity: 180,
+    speed: 0.7,
+    fuelUse: 1.1,
+    fuelEfficiency: 1.3,
+    maintenance: 95,
+    weapon: 0,
+    isCargo: true,
+    hasTurret: false,
+    hasMissiles: false,
+    turrets: 0,
+    missileRacks: 0,
+    description: "Specialized fuel transport with expanded tankage."
+  },
+  surveyor: {
+    id: "surveyor",
+    name: "Deep Surveyor",
+    price: 88000,
+    capacity: 25,
+    speed: 1.3,
+    fuelUse: 1.0,
+    fuelEfficiency: 1.1,
+    maintenance: 85,
+    weapon: 0,
+    isCargo: true,
+    hasTurret: false,
+    hasMissiles: false,
+    turrets: 0,
+    missileRacks: 0,
+    description: "Long-range exploration vessel with advanced sensors."
+  },
+  medical: {
+    id: "medical",
+    name: "Medical Ship",
+    price: 110000,
+    capacity: 35,
+    speed: 1.15,
+    fuelUse: 1.2,
+    fuelEfficiency: 0.85,
+    maintenance: 130,
+    weapon: 0,
+    isCargo: true,
+    hasTurret: false,
+    hasMissiles: false,
+    turrets: 0,
+    missileRacks: 0,
+    description: "Hospital ship with medical bays and biogel storage."
+  },
+  raider: {
+    id: "raider",
+    name: "Pirate Raider",
+    price: 68000,
+    capacity: 18,
+    speed: 1.7,
+    fuelUse: 1.5,
+    fuelEfficiency: 0.75,
+    maintenance: 70,
+    weapon: 3,
+    isCargo: false,
+    hasTurret: true,
+    hasMissiles: true,
+    turrets: 2,
+    missileRacks: 2,
+    description: "Fast attack craft favored by independent raiders."
+  },
+  dreadnought: {
+    id: "dreadnought",
+    name: "Dreadnought",
+    price: 850000,
+    capacity: 150,
+    speed: 0.45,
+    fuelUse: 3.5,
+    fuelEfficiency: 0.4,
+    maintenance: 650,
+    weapon: 8,
+    isCargo: false,
+    hasTurret: true,
+    hasMissiles: true,
+    turrets: 6,
+    missileRacks: 6,
+    description: "Ultimate capital ship. Overwhelming firepower."
+  },
+  barge: {
+    id: "barge",
+    name: "Mining Barge",
+    price: 145000,
+    capacity: 250,
+    speed: 0.5,
+    fuelUse: 1.8,
+    fuelEfficiency: 0.6,
+    maintenance: 180,
+    weapon: 0,
+    isCargo: true,
+    hasTurret: false,
+    hasMissiles: false,
+    turrets: 0,
+    missileRacks: 0,
+    description: "Massive ore processor and hauler for deep belt operations."
+  },
+  courier_fast: {
+    id: "courier_fast",
+    name: "Express Courier",
+    price: 42000,
+    capacity: 8,
+    speed: 2.2,
+    fuelUse: 1.6,
+    fuelEfficiency: 0.7,
+    maintenance: 60,
+    weapon: 1,
+    isCargo: false,
+    hasTurret: true,
+    hasMissiles: false,
+    turrets: 1,
+    missileRacks: 0,
+    description: "Ultra-fast priority delivery craft."
   }
 };
 
@@ -403,6 +586,46 @@ window.FACTIONS = {
     color: "#20b2aa",
     startingRep: 45,
     preferredGoods: ["data_core", "fuel", "crystal"]
+  },
+  free_traders: {
+    id: "free_traders",
+    name: "Free Traders Alliance",
+    description: "Loose coalition of independent merchants and shipping companies.",
+    color: "#daa520",
+    startingRep: 48,
+    preferredGoods: ["luxury_goods", "electronics", "fuel"]
+  },
+  shadows: {
+    id: "shadows",
+    name: "Syndicate of Shadows",
+    description: "Covert criminal network dealing in smuggling and black markets.",
+    color: "#4b0082",
+    startingRep: 10,
+    preferredGoods: ["explosives", "nanites", "gold"]
+  },
+  terraformers: {
+    id: "terraformers",
+    name: "Terraforming Initiative",
+    description: "Dedicated organization transforming worlds for human habitation.",
+    color: "#228b22",
+    startingRep: 42,
+    preferredGoods: ["fertilizer", "oxygen", "water", "pharmaceuticals"]
+  },
+  ai_collective: {
+    id: "ai_collective",
+    name: "AI Collective",
+    description: "Emergent machine intelligence seeking computational resources.",
+    color: "#00ced1",
+    startingRep: 25,
+    preferredGoods: ["ai_core", "quantum_chip", "data_core"]
+  },
+  stellar_order: {
+    id: "stellar_order",
+    name: "Order of the Stellar Path",
+    description: "Quasi-religious order focused on exploration and enlightenment.",
+    color: "#9370db",
+    startingRep: 38,
+    preferredGoods: ["research_data", "crystal", "luxury_goods"]
   }
 };
 
