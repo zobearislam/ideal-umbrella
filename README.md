@@ -19,27 +19,27 @@ Family-friendly. Educational focus on orbital mechanics, resource chains, and li
 
 ### Economy & Logistics
 - Credits, personal + company accounts
-- 15+ resources across raw / refined / high-value categories
-- Crafting recipes at stations
+- **70+ resources** across raw / refined / high-value categories with full production chains
+- **43 crafting recipes** at stations
 - Shared inventory between simulator and Transport
 - Rival NPC companies that haul goods (buy them out if you can afford it)
 
 ### Ships
-- Scout, Courier, Interceptor, Hauler, Freighter, Mining Rig, Passenger Liner, Capital Ship
+- **21 ship types** including Scout, Courier, Interceptor, Hauler, Freighter, Mining Rig, Passenger Liner, Capital Ship, Science Vessel, Luxury Yacht, Combat Frigate, Super Hauler, Phantom Runner, Destroyer, Fuel Tanker, Deep Surveyor, Medical Ship, Pirate Raider, Dreadnought, Mining Barge, Express Courier
 - Cargo vs combat hulls (turrets / missiles only on combat vessels)
 - Fleet management and pilot hiring
 
 ### Galaxy & Travel
-- Multiple star systems connected by cyan ring gates
+- **35 star systems** connected by cyan ring gates
 - Interactive galaxy map with route finding
 - Transport command center for contracts and journeys
 
 ### Factions & Reputation
-- Terran Confederation, Martian Republic, Belt Miners’ Union, Jovian Syndicate, Outer Colonies League, Pirate Clans, Alpha Cooperative, Sirius Mining Corp, Science Collective, Independents
+- **17 factions**: Terran Confederation, Martian Republic, Belt Miners’ Union, Jovian Syndicate, Outer Colonies League, Pirate Clans, Alpha Cooperative, Sirius Mining Corp, Science Collective, Independents, Corporate League, Explorer's Guild, Free Traders Alliance, Syndicate of Shadows, Terraforming Initiative, AI Collective, Order of the Stellar Path
 - Reputation (0–100) affects prices, access, and available missions
 
 ### Missions & Company
-- Delivery, hauling, scientific, emergency, and bounty contracts
+- **45 mission templates**: delivery, hauling, scientific, emergency, combat, exploration, and diplomatic contracts
 - Company wireless interface (ships, pilots, licenses)
 - Diplomacy panel with faction relations and battle forecasts
 - Finance overview
