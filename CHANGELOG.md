@@ -2,6 +2,21 @@
 
 All notable changes to Ideal Umbrella are documented here.
 
+## [0.5.0] — Massive Content Expansion II (2026-11-12)
+
+### Added
+- **30+ additional resources** (raw, refined, and high-tech) with full production chains
+- **20+ new crafting recipes** for advanced components (warp coils, shields, AI cores, biogel, etc.)
+- **8 new ship types**: Destroyer, Fuel Tanker, Deep Surveyor, Medical Ship, Pirate Raider, Dreadnought, Mining Barge, Express Courier
+- **5 new factions**: Free Traders Alliance, Syndicate of Shadows, Terraforming Initiative, AI Collective, Order of the Stellar Path
+- **15 additional star systems** with complete interstellar route graph (35 systems total)
+- **20 new mission templates** (45 total) spanning delivery, combat, exploration, and diplomacy involving all new content
+- Updated CONTENT_EXPANSION.md to reflect actual current content
+
+### Improved
+- All major catalogs remain in canonical files (`resources.js`, `universe.js`, `missions.js`)
+- Route finder supports the full expanded network
+
 ## [0.4.0] — Massive Content Expansion (2026-11-11)
 
 ### Added
