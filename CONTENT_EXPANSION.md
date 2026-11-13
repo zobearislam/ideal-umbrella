@@ -2,42 +2,39 @@
 
 Major content expansion for the Space Pack / Ideal Umbrella project.
 
-## New / Expanded Data (v0.5)
+## New / Expanded Data (v0.6)
 
-### `js/data/resources.js` (Canonical)
-- **70+ resources** across raw, refined, and high-value categories
-- New raw: platinum, tungsten, sulfur, phosphorus, deuterium, palladium, iridium, organics, biomass, osmium, water
-- New refined: platinum_ingot, tungsten_alloy, explosives, pharmaceuticals, food_rations, electronics, sensors, thrusters, armor_plates, deuterium_fuel, luxury_goods
-- New high: warp_coil, shield_generator, ai_core, biogel, antimatter_containment, research_data, singularity_fragment
-- **43 crafting recipes** covering full production chains including advanced tech
-- **21 ship types**: added Destroyer, Fuel Tanker, Deep Surveyor, Medical Ship, Pirate Raider, Dreadnought, Mining Barge, Express Courier
-- **17 factions**: added Free Traders Alliance, Syndicate of Shadows, Terraforming Initiative, AI Collective, Order of the Stellar Path
+### `js/data/resources.js` + `js/data/additional_content.js`
+- **90+ resources** across raw, refined, and high-value categories
+- New raw: rhodium, rhenium, molybdenum, vanadium, niobium, tellurium, xenon, krypton, nitrogen_ice, carbon_dioxide_ice, organic_sludge, spores, dark_ore, void_crystal
+- New refined: plasma_cell, quantum_processor, superalloy, cryo_fuel, nano_armor
+- New high: dark_matter_sample, living_metal, consciousness_matrix, zero_point_module, stellar_core_fragment
+- **43+ crafting recipes** (existing) plus new chains for advanced materials
+- **26 ship types**: added Fleet Carrier, Stealth Bomber, Mining Mothership, Research Cruiser, Luxury Cruiser
+- **21 factions**: added Merchant Guild, Military Order, Bio Collective, Void Walkers
 
 ### `js/core/universe.js`
-- **35 star systems** with full route connectivity
-- New systems: Procyon, Arcturus, Capella, Fomalhaut, Deneb, Betelgeuse, Polaris, Canopus, 55 Cancri, HD 189733, Ross 248, Luhman 16, HD 40307, WISE 0855, Tau Ceti e Colony
-- Updated `findRoute` with complete connection graph so any system is reachable
+- **35+ star systems** with full route connectivity (expandable)
 
-### `js/data/missions.js`
-- **45 mission templates** covering delivery, combat, exploration, and diplomatic contracts
-- Wider variety of cargo types (including all new advanced resources), destinations, and reputation effects
-- Higher-tier missions involving advanced resources, distant systems, and new factions
+### `js/data/missions.js` + `js/data/missions_extra.js`
+- **55+ mission templates** covering delivery, combat, exploration, and diplomatic contracts
+- New high-tier missions involving advanced resources, new factions, and extreme systems
 
 ## Integration
 
-All data is attached to `window` (RESOURCES, CRAFTING_RECIPES, SHIP_TYPES, FACTIONS, UNIVERSE, MISSIONS) so existing classic scripts continue to work without changes.
+Include `additional_content.js` and `missions_extra.js` after the core data files in your HTML for the extra content to load automatically.
+
+All data remains attached to `window` so classic scripts continue to work.
 
 ## Summary
 
 | Category       | Previous | Now    |
 |----------------|----------|--------|
-| Resources      | ~40      | 70+    |
-| Recipes        | 23       | 43     |
-| Ship Types     | 13       | 21     |
-| Factions       | 12       | 17     |
-| Star Systems   | 20       | 35     |
-| Mission Types  | 25       | 45     |
+| Resources      | 70+      | 90+    |
+| Ship Types     | 21       | 26     |
+| Factions       | 17       | 21     |
+| Mission Types  | 45       | 55+    |
 
-The universe is now significantly deeper for trading, exploration, and long-term progression.
+The universe is now even deeper for trading, exploration, and long-term progression.
 
 Enjoy the expanded Ideal Umbrella!
