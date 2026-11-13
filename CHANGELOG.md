@@ -2,6 +2,20 @@
 
 All notable changes to Ideal Umbrella are documented here.
 
+## [0.6.0] — Additional Content Expansion (2026-11-13)
+
+### Added
+- **24 additional resources** (rhodium, rhenium, dark ore, void crystal, plasma cells, quantum processors, dark matter samples, living metal, etc.)
+- **5 new ship types**: Fleet Carrier, Stealth Bomber, Mining Mothership, Research Cruiser, Luxury Cruiser
+- **4 new factions**: Merchant Guild, Military Order, Bio Collective, Void Walkers
+- **10 additional mission templates** (55 total) involving the new resources and factions
+- Loaded the extra content scripts on the Mission Board and Transport pages so the new content is actually available
+
+### Fixed
+- Mission Board page now includes `missions_extra.js` so all 55 missions appear
+- Transport page now includes `additional_content.js` so extra ships, resources, and factions are available
+- Updated package version and titles for consistency
+
 ## [0.5.0] — Massive Content Expansion II (2026-11-12)
 
 ### Added
