@@ -2,6 +2,22 @@
 
 All notable changes to Ideal Umbrella are documented here.
 
+## [0.7.0] — Massive Content Expansion III (2026-11-14)
+
+### Added
+- **22 additional resources** (germanium, selenium, indium, gallium, bismuth, antimony, mercury, neon/argon ice, stellar dust, dark matter precursor, graphene, superconductors, neural interfaces, fusion parts, plasma coils, singularity cores, omega particles, chrono crystals, void alloy, quantum stabilizers, living circuits)
+- **10 new ship types**: Battleship, Deep Exploration Vessel, Trade Barge, Assault Carrier, Mobile Science Station, Smuggler, Colony Ship, Elite Interceptor, Bulk Processor, Diplomatic Envoy
+- **6 new factions**: Trade Syndicate, Rebel Alliance, Ancient Guardians, MegaCorp Consortium, Nomad Clans, Stellar Cult
+- **8 additional high-tier mission templates** involving the new resources and factions (extreme difficulty runs, singularity recovery, diplomatic escorts, etc.)
+- New `js/data/expansion_v07.js` loaded on Simulator, Mission Board, and Transport pages
+
+### Improved
+- All new content automatically available across the game once the expansion script loads
+- Total resources now exceed 110+
+- Total ship types now 36+
+- Total factions now 27+
+- Mission templates now 63+
+
 ## [0.6.0] — Additional Content Expansion (2026-11-13)
 
 ### Added
