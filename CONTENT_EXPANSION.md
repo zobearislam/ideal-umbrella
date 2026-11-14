@@ -2,38 +2,33 @@
 
 Major content expansion for the Space Pack / Ideal Umbrella project.
 
-## New / Expanded Data (v0.6)
+## New / Expanded Data (v0.7)
 
-### `js/data/resources.js` + `js/data/additional_content.js`
-- **90+ resources** across raw, refined, and high-value categories
-- New raw: rhodium, rhenium, molybdenum, vanadium, niobium, tellurium, xenon, krypton, nitrogen_ice, carbon_dioxide_ice, organic_sludge, spores, dark_ore, void_crystal
-- New refined: plasma_cell, quantum_processor, superalloy, cryo_fuel, nano_armor
-- New high: dark_matter_sample, living_metal, consciousness_matrix, zero_point_module, stellar_core_fragment
-- **43+ crafting recipes** (existing) plus new chains for advanced materials
-- **26 ship types**: added Fleet Carrier, Stealth Bomber, Mining Mothership, Research Cruiser, Luxury Cruiser
-- **21 factions**: added Merchant Guild, Military Order, Bio Collective, Void Walkers
+### `js/data/expansion_v07.js`
+- **22 additional resources** (germanium, selenium, indium, gallium, bismuth, antimony, mercury, neon ice, argon ice, stellar dust, dark matter precursor, graphene, superconductors, neural interfaces, fusion reactor parts, plasma coils, singularity cores, omega particles, chrono crystals, void alloy, quantum stabilizers, living circuits)
+- **10 new ship types**: Battleship, Deep Exploration Vessel, Trade Barge, Assault Carrier, Mobile Science Station, Smuggler, Colony Ship, Elite Interceptor, Bulk Processor, Diplomatic Envoy
+- **6 new factions**: Trade Syndicate, Rebel Alliance, Ancient Guardians, MegaCorp Consortium, Nomad Clans, Stellar Cult
+- **8 additional extreme/high-tier mission templates** involving the new content
 
-### `js/core/universe.js`
-- **35+ star systems** with full route connectivity (expandable)
-
-### `js/data/missions.js` + `js/data/missions_extra.js`
-- **55+ mission templates** covering delivery, combat, exploration, and diplomatic contracts
-- New high-tier missions involving advanced resources, new factions, and extreme systems
+### Previous expansions
+- `js/data/resources.js` + `js/data/additional_content.js`: 90+ resources, 26 ships, 21 factions
+- `js/core/universe.js`: 35+ star systems with full route connectivity
+- `js/data/missions.js` + `js/data/missions_extra.js`: 55+ mission templates
 
 ## Integration
 
-Include `additional_content.js` and `missions_extra.js` after the core data files in your HTML for the extra content to load automatically.
+Include `expansion_v07.js` after the core data files (it is already added to `index.html`, `missions.html`, and `transport.html`).
 
 All data remains attached to `window` so classic scripts continue to work.
 
 ## Summary
 
-| Category       | Previous | Now    |
-|----------------|----------|--------|
-| Resources      | 70+      | 90+    |
-| Ship Types     | 21       | 26     |
-| Factions       | 17       | 21     |
-| Mission Types  | 45       | 55+    |
+| Category       | Previous | Now     |
+|----------------|----------|---------|
+| Resources      | 90+      | 110+    |
+| Ship Types     | 26       | 36+     |
+| Factions       | 21       | 27+     |
+| Mission Types  | 55+      | 63+     |
 
 The universe is now even deeper for trading, exploration, and long-term progression.
 
