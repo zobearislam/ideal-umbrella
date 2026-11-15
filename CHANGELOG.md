@@ -2,6 +2,17 @@
 
 All notable changes to Ideal Umbrella are documented here.
 
+## [0.8.0] — Content Expansion v08 + Branding Cleanup (2026-11-15)
+
+### Added
+- Full integration of `js/data/expansion_v08.js` (30 resources, 12 ships, 8 factions, 12 missions)
+- Consistent Ideal Umbrella branding on Galaxy, Company, Diplomacy, and Finance pages
+
+### Fixed / Improved
+- Updated outdated `README_TRANSPORT_SETUP.md` to reflect current integrated transport system
+- Cleaned old "Space Transport Tycoon" / "Space Pack" references in comments
+- Package version bumped to match content expansion
+
 ## [0.7.0] — Massive Content Expansion III (2026-11-14)
 
 ### Added
@@ -86,7 +97,6 @@ All notable changes to Ideal Umbrella are documented here.
 ### Notes
 - Open `index.html` and fly near Earth (or any body) → press **Dock** to use the market, craft, and complete missions.
 - Accept missions on the Mission Board first, then complete them after docking with the required cargo.
-- Data modules in `js/data/resources.js` remain the single source of truth.
 
 ## Expanded Content Update (previous)
 

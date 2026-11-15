@@ -1,48 +1,20 @@
-# Space Pack transport prototype
+# Ideal Umbrella — Transport System
 
-## Files to add
-
-Copy these files into your existing repository without deleting or replacing the simulator:
-
-- `transport.html`
-- `css/transport.css`
-- `js/transport.js`
-- `database/transport_schema.sql` (optional future backend foundation)
-
-No existing file needs to be replaced for this first prototype.
+The Transport page is fully integrated with the main Ideal Umbrella simulator.
 
 ## How to use
 
-1. Add the files while preserving the folders shown above.
-2. Commit/push to the `main` branch.
-3. Open `https://YOUR-GITHUB-PAGES-SITE/transport.html`.
-4. Use the top link to return to the existing 3D simulator.
+1. Open `transport.html` (linked from the main menu).
+2. Manage your fleet, accept contracts, and handle NPC rival companies.
+3. Shared game state (credits, inventory, ships) is synchronized with the 3D simulator via `GameState`.
 
-Optional: add a link in the existing `index.html` navigation area:
+## Features
 
-```html
-<a href="transport.html">Transport Management</a>
-```
+- Full star system network from `js/core/universe.js`
+- Ship management and journeys
+- Contracts and NPC company interactions
+- Local + optional Supabase cloud saves
 
-## What works in this prototype
+## Supabase (optional)
 
-- 2D clickable star-system map (sample network of seven systems).
-- Buy courier, hauler and freighter ships.
-- View sample delivery contracts.
-- Assign a ship to a contract when it is already at the contract's origin.
-- Check cargo capacity before dispatch.
-- Timestamp-based journeys; overdue deliveries complete when the page is reopened.
-- Browser-local save using `localStorage`.
-
-## Important limitations
-
-This is a front-end prototype, not the final multiplayer economy:
-- Save data is stored only in the current browser/device.
-- It is not shared between players or devices.
-- Players can alter browser storage, so it must not be used to award real multiplayer credits.
-- The sample star systems and links are illustrative and are not imported from `js/space.js`.
-- No automatic repositioning, cargo market, fuel, maintenance billing, accounts or server synchronization yet.
-
-## Supabase SQL
-
-`database/transport_schema.sql` is a starting database schema, not a complete multiplayer backend. Review it and back up your Supabase project before running it. The browser should never be allowed to directly award delivery rewards. A trusted server/Edge Function must validate deliveries and update company balances.
+See `js/core/supabase-config.js` and `database/` for cloud save setup. Use the publishable/anon key only.
