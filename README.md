@@ -19,13 +19,13 @@ Family-friendly. Educational focus on orbital mechanics, resource chains, and li
 
 ### Economy & Logistics
 - Credits, personal + company accounts
-- **140+ resources** across raw / refined / high-value categories with full production chains
+- **185+ resources** across raw / refined / high-value categories with full production chains
 - **50+ crafting recipes** at stations
 - Shared inventory between simulator and Transport
 - Rival NPC companies that haul goods (buy them out if you can afford it)
 
 ### Ships
-- **48+ ship types** including Scout, Courier, Interceptor, Hauler, Freighter, Mining Rig, Passenger Liner, Capital Ship, Science Vessel, Luxury Yacht, Combat Frigate, Super Hauler, Phantom Runner, Destroyer, Fuel Tanker, Deep Surveyor, Medical Ship, Pirate Raider, Dreadnought, Mining Barge, Express Courier, Fleet Carrier, Stealth Bomber, Mining Mothership, Research Cruiser, Luxury Cruiser, Battleship, Deep Exploration Vessel, Trade Barge, Assault Carrier, Mobile Science Station, Smuggler, Colony Ship, Elite Interceptor, Bulk Processor, Diplomatic Envoy, Titan-Class Dreadnought, Generation Ark, Phase Runner, Mobile Refinery Cruiser, Stealth Frigate, Quantum Hauler, Siege Engine, Research Ark, Pirate Mothership, Diplomatic Cruiser, Asteroid Cracker, Void Walker
+- **63+ ship types** including Scout, Courier, Interceptor, Hauler, Freighter, Mining Rig, Passenger Liner, Capital Ship, Science Vessel, Luxury Yacht, Combat Frigate, Super Hauler, Phantom Runner, Destroyer, Fuel Tanker, Deep Surveyor, Medical Ship, Pirate Raider, Dreadnought, Mining Barge, Express Courier, Fleet Carrier, Stealth Bomber, Mining Mothership, Research Cruiser, Luxury Cruiser, Battleship, Deep Exploration Vessel, Trade Barge, Assault Carrier, Mobile Science Station, Smuggler, Colony Ship, Elite Interceptor, Bulk Processor, Diplomatic Envoy, Titan-Class Dreadnought, Generation Ark, Phase Runner, Mobile Refinery Cruiser, Stealth Frigate, Quantum Hauler, Siege Engine, Research Ark, Pirate Mothership, Diplomatic Cruiser, Asteroid Cracker, Void Walker, Prime Dreadnought, Colony Ark, Phase Assassin, Mobile Foundry, Ghost Frigate, Quantum Freighter, Planetary Siege Platform, Research University, Corsair Flagship, Diplomatic Flagship, Asteroid Processor, Anomaly Explorer, Stealth Hauler, Titan Carrier, Void Harvester
 - Cargo vs combat hulls (turrets / missiles only on combat vessels)
 - Fleet management and pilot hiring
 
@@ -35,11 +35,11 @@ Family-friendly. Educational focus on orbital mechanics, resource chains, and li
 - Transport command center for contracts and journeys
 
 ### Factions & Reputation
-- **35+ factions**: Terran Confederation, Martian Republic, Belt Miners’ Union, Jovian Syndicate, Outer Colonies League, Pirate Clans, Alpha Cooperative, Sirius Mining Corp, Science Collective, Independents, Corporate League, Explorer's Guild, Free Traders Alliance, Syndicate of Shadows, Terraforming Initiative, AI Collective, Order of the Stellar Path, Merchant Guild, Military Order, Bio Collective, Void Walkers, Trade Syndicate, Rebel Alliance, Ancient Guardians, MegaCorp Consortium, Nomad Clans, Stellar Cult, Void Cult, Free Traders Union, Xenotech Collective, Orbital League, Deep Miners Guild, Quantum Order, Frontier Militia, Stellar Archivists
+- **45+ factions**: Terran Confederation, Martian Republic, Belt Miners’ Union, Jovian Syndicate, Outer Colonies League, Pirate Clans, Alpha Cooperative, Sirius Mining Corp, Science Collective, Independents, Corporate League, Explorer's Guild, Free Traders Alliance, Syndicate of Shadows, Terraforming Initiative, AI Collective, Order of the Stellar Path, Merchant Guild, Military Order, Bio Collective, Void Walkers, Trade Syndicate, Rebel Alliance, Ancient Guardians, MegaCorp Consortium, Nomad Clans, Stellar Cult, Void Cult, Free Traders Union, Xenotech Collective, Orbital League, Deep Miners Guild, Quantum Order, Frontier Militia, Stellar Archivists, Stellar Empire, Free Colonies Alliance, Tech Syndicate, Order of Void Walkers, Mineral Consortium, Scientific Federation, Merchant Republic, Shadow Council, Bio-Engineers Guild, Anomaly Hunters
 - Reputation (0–100) affects prices, access, and available missions
 
 ### Missions & Company
-- **75+ mission templates**: delivery, hauling, scientific, emergency, combat, exploration, and diplomatic contracts
+- **95+ mission templates**: delivery, hauling, scientific, emergency, combat, exploration, and diplomatic contracts
 - Company wireless interface (ships, pilots, licenses)
 - Diplomacy panel with faction relations and battle forecasts
 - Finance overview
@@ -106,6 +106,7 @@ js/
     additional_content.js  Extra resources, ships, factions (v0.6)
     expansion_v07.js       Expansion (v0.7) — resources, ships, factions, missions
     expansion_v08.js       Massive expansion (v0.8) — resources, ships, factions, missions
+    expansion_v09.js       Huge expansion (v0.9) — +45 resources, +15 ships, +10 factions, +20 missions
     missions.js            Mission templates + generator
     missions_extra.js      Additional high-tier missions
     systems-expanded.js    Extra systems catalog
@@ -124,7 +125,7 @@ tests/                     Basic integration tests
 
 ## Customization
 
-- **Resources / recipes / ships / factions** → edit `js/data/resources.js`, `js/data/additional_content.js`, `js/data/expansion_v07.js`, and `js/data/expansion_v08.js`
+- **Resources / recipes / ships / factions** → edit `js/data/resources.js`, `js/data/additional_content.js`, `js/data/expansion_v07.js`, `js/data/expansion_v08.js`, and `js/data/expansion_v09.js`
 - **Missions** → `js/data/missions.js`, `js/data/missions_extra.js`, and expansions
 - **Star systems & gates** → `js/core/universe.js` (and `systems-expanded.js` for extras)
 - **Planet / moon definitions** → inside `js/space.js`
