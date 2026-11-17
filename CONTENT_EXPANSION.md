@@ -2,15 +2,16 @@
 
 Major content expansion for the Space Pack / Ideal Umbrella project.
 
-## New / Expanded Data (v0.9)
+## New / Expanded Data (v1.0)
 
-### `js/data/expansion_v09.js`
-- **45 additional resources**: rare earths (scandium, yttrium, europium, gadolinium, terbium, dysprosium, holmium, erbium, thulium, ytterbium, lutetium, praseodymium, samarium), radioactives (promethium, actinium, thorium, plutonium, neptunium, americium, curium), refined (superconductor, metamaterial, smart alloy, photonic crystal, graphene, nanotube, aerogel, plasma core, gravitic lens, neural interface), and high-tier (dark matter core, chroniton particle, zero point module, precursor crystal, living metal, void crystal, stellar core fragment, quantum entanglement key, antimatter stabilizer, bio-neural matrix, phase matter, tachyon emitter, reality anchor, cosmic string, singularity core)
-- **15 new ship types**: Prime Dreadnought, Colony Ark, Phase Assassin, Mobile Foundry, Ghost Frigate, Quantum Freighter, Planetary Siege Platform, Research University, Corsair Flagship, Diplomatic Flagship, Asteroid Processor, Anomaly Explorer, Stealth Hauler, Titan Carrier, Void Harvester
-- **10 new factions**: Stellar Empire, Free Colonies Alliance, Tech Syndicate, Order of Void Walkers, Mineral Consortium, Scientific Federation, Merchant Republic, Shadow Council, Bio-Engineers Guild, Anomaly Hunters
-- **20 additional extreme/high-tier mission templates** involving the new content
+### `js/data/expansion_v10.js`
+- **55 additional resources**: exotic raw materials (molybdenum, tungsten, vanadium, chromium, manganese, cobalt, nickel, iridium, osmium, ruthenium, palladium), ices (helium-3, deuterium, methane clathrate, ammonia, enriched water), refined (high-entropy alloy, ceramic matrix, diamondoid, fullerene, quantum dot, meta-lens, room-temp superconductor, neutronium alloy, phase alloy, bio-steel), and extreme high-tier (strange matter, negative mass, tachyon crystal, chronal stabilizer, reality thread, void pearl, stellar plasma bottle, quantum foam, precursor key, living hull matrix, antimatter crystal, graviton emitter, entropy engine, refined cosmic dust, dark energy cell, phase shifter, neural lace, singularity seed, omega particle, chroniton lattice, void alloy plate, quantum entangler, bio-processor, stellar core alloy, precursor circuit, living metal ingot, tachyon coil, reality stabilizer, cosmic string segment, singularity engine)
+- **20 new ship types**: Apex Dreadnought, World Ark, Phase Wraith, Mega Foundry, Shadow Cruiser, Quantum Superhauler, Orbital Fortress, Academy Ship, Pirate Mothership, Embassy Ship, Asteroid Cracker, Anomaly Hunter, Ghost Hauler, Leviathan Carrier, Void Reaper, Chronal Explorer, Singularity Tug, Neural Flagship, Bio Ark, Omega Dreadnought
+- **15 new factions**: Imperial Remnant, Frontier League, Quantum Order, Void Reapers, Stellar Foundries, Chronal Institute, Free Merchants Guild, Shadow Syndicate, Bio Collective Prime, Anomaly Consortium, Stellar Empire Core, Research Exodus, Mineral Lords, Neural Collective, Omega Cult
+- **30 additional extreme/high-tier mission templates** involving the new content
 
 ### Previous expansions
+- `js/data/expansion_v09.js`: +45 resources, +15 ships, +10 factions, +20 missions
 - `js/data/expansion_v08.js`: +30 resources, +12 ships, +8 factions, +12 missions
 - `js/data/expansion_v07.js`: +22 resources, +10 ships, +6 factions, +8 missions
 - `js/data/resources.js` + `js/data/additional_content.js`: base content
@@ -19,7 +20,7 @@ Major content expansion for the Space Pack / Ideal Umbrella project.
 
 ## Integration
 
-Include `expansion_v09.js` after the core data files (it is added to `index.html`, `missions.html`, and `transport.html`).
+Include `expansion_v10.js` after the core data files (it is added to `index.html`, `missions.html`, and `transport.html`).
 
 All data remains attached to `window` so classic scripts continue to work.
 
@@ -27,10 +28,10 @@ All data remains attached to `window` so classic scripts continue to work.
 
 | Category       | Previous | Now     |
 |----------------|----------|---------|
-| Resources      | 140+     | 185+    |
-| Ship Types     | 48+      | 63+     |
-| Factions       | 35+      | 45+     |
-| Mission Types  | 75+      | 95+     |
+| Resources      | 185+     | 240+    |
+| Ship Types     | 63+      | 83+     |
+| Factions       | 45+      | 60+     |
+| Mission Types  | 95+      | 125+    |
 
 The universe is now even deeper for trading, exploration, and long-term progression.
 
