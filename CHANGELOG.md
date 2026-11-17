@@ -2,6 +2,19 @@
 
 All notable changes to Ideal Umbrella are documented here.
 
+## [1.0.0] — Massive Content Expansion v10 (2026-11-17)
+
+### Added
+- Full integration of `js/data/expansion_v10.js` (55 resources, 20 ships, 15 factions, 30 missions)
+- Extreme high-tier content: Apex/Omega Dreadnoughts, World Ark, Phase Wraith, Singularity Tug, Omega Cult, Chronal Institute, Void Reapers, and more
+- Loaded on Simulator, Mission Board, and Transport pages
+
+### Improved
+- Total resources now exceed 240+
+- Total ship types now 83+
+- Total factions now 60+
+- Mission templates now 125+
+
 ## [0.8.0] — Content Expansion v08 + Branding Cleanup (2026-11-15)
 
 ### Added
