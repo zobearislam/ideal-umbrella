@@ -19,13 +19,13 @@ Family-friendly. Educational focus on orbital mechanics, resource chains, and li
 
 ### Economy & Logistics
 - Credits, personal + company accounts
-- **240+ resources** across raw / refined / high-value categories with full production chains
+- **280+ resources** across raw / refined / high-value categories with full production chains
 - **50+ crafting recipes** at stations
 - Shared inventory between simulator and Transport
 - Rival NPC companies that haul goods (buy them out if you can afford it)
 
 ### Ships
-- **83+ ship types** including Scout, Courier, Interceptor, Hauler, Freighter, Mining Rig, Passenger Liner, Capital Ship, Science Vessel, Luxury Yacht, Combat Frigate, Super Hauler, Phantom Runner, Destroyer, Fuel Tanker, Deep Surveyor, Medical Ship, Pirate Raider, Dreadnought, Mining Barge, Express Courier, Fleet Carrier, Stealth Bomber, Mining Mothership, Research Cruiser, Luxury Cruiser, Battleship, Deep Exploration Vessel, Trade Barge, Assault Carrier, Mobile Science Station, Smuggler, Colony Ship, Elite Interceptor, Bulk Processor, Diplomatic Envoy, Titan-Class Dreadnought, Generation Ark, Phase Runner, Mobile Refinery Cruiser, Stealth Frigate, Quantum Hauler, Siege Engine, Research Ark, Pirate Mothership, Diplomatic Cruiser, Asteroid Cracker, Void Walker, Prime Dreadnought, Colony Ark, Phase Assassin, Mobile Foundry, Ghost Frigate, Quantum Freighter, Planetary Siege Platform, Research University, Corsair Flagship, Diplomatic Flagship, Asteroid Processor, Anomaly Explorer, Stealth Hauler, Titan Carrier, Void Harvester, Apex Dreadnought, World Ark, Phase Wraith, Mega Foundry, Shadow Cruiser, Quantum Superhauler, Orbital Fortress, Academy Ship, Pirate Mothership, Embassy Ship, Asteroid Cracker, Anomaly Hunter, Ghost Hauler, Leviathan Carrier, Void Reaper, Chronal Explorer, Singularity Tug, Neural Flagship, Bio Ark, Omega Dreadnought
+- **98+ ship types** including Scout, Courier, Interceptor, Hauler, Freighter, Mining Rig, Passenger Liner, Capital Ship, Science Vessel, Luxury Yacht, Combat Frigate, Super Hauler, Phantom Runner, Destroyer, Fuel Tanker, Deep Surveyor, Medical Ship, Pirate Raider, Dreadnought, Mining Barge, Express Courier, Fleet Carrier, Stealth Bomber, Mining Mothership, Research Cruiser, Luxury Cruiser, Battleship, Deep Exploration Vessel, Trade Barge, Assault Carrier, Mobile Science Station, Smuggler, Colony Ship, Elite Interceptor, Bulk Processor, Diplomatic Envoy, Titan-Class Dreadnought, Generation Ark, Phase Runner, Mobile Refinery Cruiser, Stealth Frigate, Quantum Hauler, Siege Engine, Research Ark, Pirate Mothership, Diplomatic Cruiser, Asteroid Cracker, Void Walker, Prime Dreadnought, Colony Ark, Phase Assassin, Mobile Foundry, Ghost Frigate, Quantum Freighter, Planetary Siege Platform, Research University, Corsair Flagship, Diplomatic Flagship, Asteroid Processor, Anomaly Explorer, Stealth Hauler, Titan Carrier, Void Harvester, Apex Dreadnought, World Ark, Phase Wraith, Mega Foundry, Shadow Cruiser, Quantum Superhauler, Orbital Fortress, Academy Ship, Pirate Mothership, Embassy Ship, Asteroid Cracker, Anomaly Hunter, Ghost Hauler, Leviathan Carrier, Void Reaper, Chronal Explorer, Singularity Tug, Neural Flagship, Bio Ark, Omega Dreadnought, Absolute Dreadnought, Genesis Ark, Phase Overlord, Mega Forge World, Shadow Overlord, Omega Overlord, Titan Carrier, Knowledge Ark, Pirate Empire Flagship, Diplomatic Overlord, Void Overlord, Chronal Overlord, Neural Overlord, Bio Overlord, Research University Ship
 - Cargo vs combat hulls (turrets / missiles only on combat vessels)
 - Fleet management and pilot hiring
 
@@ -35,11 +35,11 @@ Family-friendly. Educational focus on orbital mechanics, resource chains, and li
 - Transport command center for contracts and journeys
 
 ### Factions & Reputation
-- **60+ factions**: Terran Confederation, Martian Republic, Belt Miners’ Union, Jovian Syndicate, Outer Colonies League, Pirate Clans, Alpha Cooperative, Sirius Mining Corp, Science Collective, Independents, Corporate League, Explorer's Guild, Free Traders Alliance, Syndicate of Shadows, Terraforming Initiative, AI Collective, Order of the Stellar Path, Merchant Guild, Military Order, Bio Collective, Void Walkers, Trade Syndicate, Rebel Alliance, Ancient Guardians, MegaCorp Consortium, Nomad Clans, Stellar Cult, Void Cult, Free Traders Union, Xenotech Collective, Orbital League, Deep Miners Guild, Quantum Order, Frontier Militia, Stellar Archivists, Stellar Empire, Free Colonies Alliance, Tech Syndicate, Order of Void Walkers, Mineral Consortium, Scientific Federation, Merchant Republic, Shadow Council, Bio-Engineers Guild, Anomaly Hunters, Imperial Remnant, Frontier League, Quantum Order, Void Reapers, Stellar Foundries, Chronal Institute, Free Merchants Guild, Shadow Syndicate, Bio Collective Prime, Anomaly Consortium, Stellar Empire Core, Research Exodus, Mineral Lords, Neural Collective, Omega Cult
+- **72+ factions**: Terran Confederation, Martian Republic, Belt Miners’ Union, Jovian Syndicate, Outer Colonies League, Pirate Clans, Alpha Cooperative, Sirius Mining Corp, Science Collective, Independents, Corporate League, Explorer's Guild, Free Traders Alliance, Syndicate of Shadows, Terraforming Initiative, AI Collective, Order of the Stellar Path, Merchant Guild, Military Order, Bio Collective, Void Walkers, Trade Syndicate, Rebel Alliance, Ancient Guardians, MegaCorp Consortium, Nomad Clans, Stellar Cult, Void Cult, Free Traders Union, Xenotech Collective, Orbital League, Deep Miners Guild, Quantum Order, Frontier Militia, Stellar Archivists, Stellar Empire, Free Colonies Alliance, Tech Syndicate, Order of Void Walkers, Mineral Consortium, Scientific Federation, Merchant Republic, Shadow Council, Bio-Engineers Guild, Anomaly Hunters, Imperial Remnant, Frontier League, Quantum Order, Void Reapers, Stellar Foundries, Chronal Institute, Free Merchants Guild, Shadow Syndicate, Bio Collective Prime, Anomaly Consortium, Stellar Empire Core, Research Exodus, Mineral Lords, Neural Collective, Omega Cult, Absolute Order, Genesis Collective, Phase Lords, Forge Empire, Shadow Empire, Omega Empire, Titan Legion, Knowledge Keepers, Pirate Empire, Diplomatic Order, Void Empire, Chronal Empire
 - Reputation (0–100) affects prices, access, and available missions
 
 ### Missions & Company
-- **125+ mission templates**: delivery, hauling, scientific, emergency, combat, exploration, and diplomatic contracts
+- **145+ mission templates**: delivery, hauling, scientific, emergency, combat, exploration, and diplomatic contracts
 - Company wireless interface (ships, pilots, licenses)
 - Diplomacy panel with faction relations and battle forecasts
 - Finance overview
@@ -108,6 +108,7 @@ js/
     expansion_v08.js       Massive expansion (v0.8) — resources, ships, factions, missions
     expansion_v09.js       Huge expansion (v0.9) — +45 resources, +15 ships, +10 factions, +20 missions
     expansion_v10.js       Massive expansion (v1.0) — +55 resources, +20 ships, +15 factions, +30 missions
+    expansion_v11.js       Extreme expansion (v1.1) — +40 resources, +15 ships, +12 factions, +20 missions
     missions.js            Mission templates + generator
     missions_extra.js      Additional high-tier missions
     systems-expanded.js    Extra systems catalog
@@ -126,7 +127,7 @@ tests/                     Basic integration tests
 
 ## Customization
 
-- **Resources / recipes / ships / factions** → edit `js/data/resources.js`, `js/data/additional_content.js`, `js/data/expansion_v07.js`, `js/data/expansion_v08.js`, `js/data/expansion_v09.js`, and `js/data/expansion_v10.js`
+- **Resources / recipes / ships / factions** → edit `js/data/resources.js`, `js/data/additional_content.js`, `js/data/expansion_v07.js`, `js/data/expansion_v08.js`, `js/data/expansion_v09.js`, `js/data/expansion_v10.js`, and `js/data/expansion_v11.js`
 - **Missions** → `js/data/missions.js`, `js/data/missions_extra.js`, and expansions
 - **Star systems & gates** → `js/core/universe.js` (and `systems-expanded.js` for extras)
 - **Planet / moon definitions** → inside `js/space.js`
