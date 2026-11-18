@@ -2,6 +2,19 @@
 
 All notable changes to Ideal Umbrella are documented here.
 
+## [1.1.0] — Massive Content Expansion v11 (2026-11-18)
+
+### Added
+- Full integration of `js/data/expansion_v11.js` (40+ resources, 15 ships, 12 factions, 20 missions)
+- Extreme high-tier content: Absolute Dreadnought, Genesis Ark, Phase Overlord, Omega Overlord, Absolute Omega Particle, and new factions including Absolute Order, Omega Empire, Genesis Collective, Phase Lords, and more
+- Loaded on Simulator, Mission Board, and Transport pages
+
+### Improved
+- Total resources now exceed 280+
+- Total ship types now 98+
+- Total factions now 72+
+- Mission templates now 145+
+
 ## [1.0.0] — Massive Content Expansion v10 (2026-11-17)
 
 ### Added
