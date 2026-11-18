@@ -7,7 +7,7 @@
 (function () {
   "use strict";
 
-  const SAVE_KEY = "spaceTransportTycoonSave";
+  const SAVE_KEY = "spaceTransportTycoonSave"; // legacy key retained for existing saves
   const SAVE_VERSION = 2;
   // Cloud row uses slot_name (primary key is user_id + slot_name). Prefer "primary".
   const CLOUD_SLOT = "primary";
