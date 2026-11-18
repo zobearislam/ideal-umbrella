@@ -1,5 +1,5 @@
 /**
- * Supabase client configuration for Space Pack cloud saves.
+ * Supabase client configuration for Ideal Umbrella cloud saves.
  *
  * Publishable/anon key only. Do not commit service-role or secret keys.
  * Actual public.game_saves shape (do not recreate the table):
