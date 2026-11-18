@@ -1,6 +1,6 @@
 # Content Expansion - Ideal Umbrella
 
-Major content expansion for the Space Pack / Ideal Umbrella project.
+Major content expansion for the Ideal Umbrella project.
 
 ## New / Expanded Data (v1.0)
 
