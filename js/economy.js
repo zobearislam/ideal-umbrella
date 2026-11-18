@@ -1,4 +1,4 @@
-// Adapted Economy module from Transport Framework for Space Pack
+// Adapted Economy module from Transport Framework for Ideal Umbrella
 window.Economy = (() => {
   "use strict";
 
