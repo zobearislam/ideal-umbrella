@@ -2,6 +2,19 @@
 
 All notable changes to Ideal Umbrella are documented here.
 
+## [1.2.0] — Ultimate Content Expansion v12 (2026-11-19)
+
+### Added
+- Full integration of `js/data/expansion_v12.js` (50+ resources, 20 ships, 15 factions, 25 missions)
+- Ultimate high-tier content: Absolute Emperor, Reality Ark, Phase God, Singularity Emperor, Absolute Omega Core, Omega Reality Particle, Precursor Flagship, and new factions including Reality Order, Genesis Empire, Absolute Emperor Order, Singularity Empire, and more
+- Loaded on Simulator, Mission Board, and Transport pages
+
+### Improved
+- Total resources now exceed 330+
+- Total ship types now 118+
+- Total factions now 87+
+- Mission templates now 170+
+
 ## [1.1.0] — Massive Content Expansion v11 (2026-11-18)
 
 ### Added
