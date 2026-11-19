@@ -254,8 +254,7 @@ Object.assign(window.FACTIONS || {}, {
 });
 
 // Extra mission templates
-if (window.MISSION_TEMPLATES) {
-  window.MISSION_TEMPLATES.push(
+window.MISSIONS = (window.MISSIONS || []).concat([
     {
       id: "omega-delivery",
       type: "delivery",
@@ -352,7 +351,6 @@ if (window.MISSION_TEMPLATES) {
       difficulty: "extreme",
       faction: "ancient_guardians"
     }
-  );
-}
+  ]);
 
 console.log("Expansion v0.7 loaded: +22 resources, +10 ships, +6 factions, +8 missions");
