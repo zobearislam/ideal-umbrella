@@ -1,1 +1,95 @@
-PLACEHOLDER_TRANSPORT
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ideal Umbrella — Transport</title>
+  <link rel="stylesheet" href="css/transport.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">IDEAL UMBRELLA / CORPORATE OPERATIONS</p>
+      <h1>Transport Command</h1>
+      <p class="muted">Plan routes, assign ships and deliver cargo between star systems.</p>
+    </div>
+    <nav>
+      <a href="index.html">← Return to flight simulator</a> · <a href="galaxy.html">Galaxy Map</a>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="panel map-panel">
+      <div class="panel-heading">
+        <div><p class="eyebrow">NETWORK OVERVIEW</p><h2>Galaxy map</h2></div>
+        <span id="clock" class="pill">Loading time…</span>
+      </div>
+      <canvas id="galaxyMap" aria-label="Interactive star system map"></canvas>
+      <p class="hint">Select a system to view its stations. Connected to shared universe data.</p>
+    </section>
+
+    <section class="panel">
+      <p class="eyebrow">ACCOUNT</p>
+      <h2>Credits & Standing</h2>
+      <div id="accountSummary">Loading…</div>
+    </section>
+
+    <section class="panel">
+      <p class="eyebrow">FLEET MANAGEMENT</p>
+      <h2>Your Ships</h2>
+      <div id="fleetList">Loading fleet…</div>
+    </section>
+
+    <section class="panel">
+      <p class="eyebrow">RIVAL COMPANIES</p>
+      <h2>NPC Operators</h2>
+      <div id="npcList">Loading rivals…</div>
+    </section>
+
+    <section class="panel">
+      <p class="eyebrow">CONTRACT BOARD</p>
+      <h2>Available Contracts</h2>
+      <div id="contractList">Loading contracts…</div>
+    </section>
+
+    <section class="panel">
+      <p class="eyebrow">ROUTE PLANNER</p>
+      <h2>Plan Journey</h2>
+      <div id="routePlanner">Select origin and destination.</div>
+    </section>
+
+    <section class="panel">
+      <p class="eyebrow">OPERATIONS</p>
+      <h2>Active Journeys</h2>
+      <div id="activeJourneys">No active journeys.</div>
+    </section>
+
+    <section class="panel">
+      <p class="eyebrow">COMPANY LEDGER</p>
+      <h2>Recent Activity</h2>
+      <div id="ledger">—</div>
+    </section>
+  </main>
+
+  <footer>Ideal Umbrella Transport · NPC companies deliver across the network</footer>
+
+  <script src="js/core/universe.js"></script>
+  <script src="js/core/credits.js"></script>
+  <script src="js/core/clock.js"></script>
+  <script src="js/core/save-manager.js"></script>
+  <script src="js/core/game-state.js"></script>
+  <script src="js/data/resources.js"></script>
+  <script src="js/data/additional_content.js"></script>
+  <script src="js/data/expansion_v07.js"></script>
+  <script src="js/data/expansion_v08.js"></script>
+  <script src="js/data/expansion_v09.js"></script>
+  <script src="js/data/expansion_v10.js"></script>
+  <script src="js/data/expansion_v11.js"></script>
+  <script src="js/data/expansion_v12.js"></script>
+  <script src="js/data/expansion_v13.js"></script>
+  <script src="js/economy.js"></script>
+  <script src="js/npc-companies.js"></script>
+  <script src="js/transport.js"></script>
+  <script src="js/transport-npc-hook.js"></script>
+</body>
+</html>
