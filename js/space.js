@@ -495,15 +495,24 @@
     const invEl = $("stationInventory");
     if (invEl) {
       const inv = window.inventory || {};
-      invEl.innerHTML = Object.keys(inv).length
-        ? Object.entries(inv)
-            .filter(([, q]) => q > 0)
-            .map(([id, q]) => {
-              const r = RESOURCES[id] || { name: id, icon: "📦" };
-              return `<div class="inv-row">${r.icon || "📦"} ${r.name}: <b>${q}</b> <button data-buy="${id}" class="mini-btn">Buy</button> <button data-sell="${id}" class="mini-btn">Sell</button></div>`;
-            })
-            .join("")
+      // Market: show a selection of common resources to buy
+      const marketIds = ["iron", "ice", "fuel", "crystal", "alloy", "circuit", "plastic", "oxygen", "hydrogen", "steel", "copper", "titanium", "silicon", "uranium", "gold"].filter(id => RESOURCES[id]);
+      let html = "<h5>Station Market</h5>";
+      html += marketIds.map(id => {
+        const r = RESOURCES[id];
+        const price = resourcePrice(id);
+        return `<div class="inv-row">${r.icon || "📦"} ${r.name} — <b>${price} cr</b> <button data-buy="${id}" class="mini-btn">Buy</button></div>`;
+      }).join("");
+      html += "<h5>Your Hold</h5>";
+      const holdItems = Object.entries(inv).filter(([, q]) => q > 0);
+      html += holdItems.length
+        ? holdItems.map(([id, q]) => {
+            const r = RESOURCES[id] || { name: id, icon: "📦" };
+            const sellPrice = Math.floor(resourcePrice(id) * 0.85);
+            return `<div class="inv-row">${r.icon || "📦"} ${r.name}: <b>${q}</b> <button data-sell="${id}" class="mini-btn">Sell (${sellPrice} cr)</button></div>`;
+          }).join("")
         : "<p>Hold empty</p>";
+      invEl.innerHTML = html;
       invEl.querySelectorAll("[data-buy]").forEach(btn => {
         btn.onclick = () => {
           const id = btn.dataset.buy;
@@ -514,7 +523,7 @@
             persistPlayerEconomy();
             openStation(body);
             updateHUD();
-            msg("Bought 1 " + id);
+            msg("Bought 1 " + (RESOURCES[id]?.name || id));
           } else msg("Not enough credits");
         };
       });
@@ -523,11 +532,12 @@
           const id = btn.dataset.sell;
           if ((window.inventory[id] || 0) > 0) {
             window.inventory[id]--;
-            addPersonal(resourcePrice(id) * 0.85, "sell " + id);
+            if (window.inventory[id] <= 0) delete window.inventory[id];
+            addPersonal(Math.floor(resourcePrice(id) * 0.85), "sell " + id);
             persistPlayerEconomy();
             openStation(body);
             updateHUD();
-            msg("Sold 1 " + id);
+            msg("Sold 1 " + (RESOURCES[id]?.name || id));
           }
         };
       });
