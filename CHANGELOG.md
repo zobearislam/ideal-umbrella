@@ -1,3 +1,17 @@
+## [1.5.0] — Transcendent Reality / Creator Tier Expansion v15 (2026-11-22)
+
+### Added
+- Full integration of `js/data/expansion_v15.js` (55+ resources, 25 ships, 16 factions, 35 missions)
+- Transcendent / creator-tier content: Primordial Ark, Absolute Source Dreadnought, Absolute Transcendent Emperor, Source Code God, Reality Weaver, Absolute Creator Particle, Meta-Omniverse Godship, and new factions including Primordial Order, Absolute Source Council, Transcendent Order, Source Code God Collective, Reality Weaver Collective, and more
+- Loaded on Simulator, Mission Board, and Transport pages
+
+### Improved
+- Total resources now exceed 425+
+- Total ship types now 165+
+- Total factions now 116+
+- Mission templates now 235+
+
+
 ## [1.4.0] — Omniversal Content Expansion v14 (2026-11-21)
 
 ### Added
