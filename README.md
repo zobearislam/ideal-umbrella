@@ -2,7 +2,7 @@
 
 Browser-based interstellar trading, exploration, and empire-building simulator.
 
-Fly ships in a 3D solar system, manage cargo and reputation, accept missions, run a transport company, and expand across star systems — from industrial resources all the way to omniversal and creator-tier realities.
+Fly ships in a 3D solar system, manage cargo and reputation, accept missions, run a transport company, and expand across star systems — from industrial resources all the way to omniversal, creator-tier, and beyond-absolute meta-existence realities.
 
 ## Quick start
 
@@ -26,11 +26,11 @@ Then open http://localhost:3000
 
 - Full solar system with planets and moons
 - Shared game state across pages (inventory, credits, missions, ships)
-- Massive resource economy (425+ resources), crafting, factions (116+), and reputation
-- 165+ ship types from cargo haulers to Absolute Transcendent Emperors
-- 235+ mission templates spanning hauling, combat, exploration, and diplomacy
+- Massive resource economy (475+ resources), crafting, factions (131+), and reputation
+- 187+ ship types from cargo haulers to Absolute Meta-Transcendent Emperors
+- 267+ mission templates spanning hauling, combat, exploration, and diplomacy
 - Transport contracts and NPC companies
 - Local saves (optional Supabase cloud saves)
-- Content expansions up to Transcendent Reality / Creator Tier (v1.5)
+- Content expansions up to Beyond Absolute / Meta-Existence / Pre-Creation Tier (v1.6)
 
 See CHANGELOG.md and CONTENT_EXPANSION.md for full content expansion history.
