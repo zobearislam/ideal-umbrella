@@ -1,3 +1,17 @@
+## [1.6.0] — Beyond Absolute / Meta-Existence Expansion v16 (2026-11-23)
+
+### Added
+- Full integration of `js/data/expansion_v16.js` (50+ resources, 22 ships, 15 factions, 32 missions)
+- Beyond-absolute / meta-existence content: Pre-Creation Ark, Source of Sources Dreadnought, Absolute Meta-Transcendent Emperor, Existence Engine God, Pre-Existence Particle, Meta-Source Emperor, and new factions including Pre-Creation Order, Source of Sources Council, Absolute Meta-Transcendent Order, Existence Engine Collective, and more
+- Loaded on Simulator, Mission Board, and Transport pages
+
+### Improved
+- Total resources now exceed 475+
+- Total ship types now 187+
+- Total factions now 131+
+- Mission templates now 267+
+
+
 ## [1.5.0] — Transcendent Reality / Creator Tier Expansion v15 (2026-11-22)
 
 ### Added
