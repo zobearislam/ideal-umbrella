@@ -2,15 +2,21 @@
 
 This file tracks major content additions. See CHANGELOG.md for the full version history.
 
-## Current status (v1.5+)
+## Current status (v1.6+)
 
-- Resources: 425+
-- Ship types: 165+
-- Factions: 116+
-- Mission templates: 235+
+- Resources: 475+
+- Ship types: 187+
+- Factions: 131+
+- Mission templates: 267+
 - Star systems: expanded network in js/core/universe.js
 
-Expansions are loaded via js/data/expansion_v07.js through expansion_v15.js on the main pages (simulator, missions, transport).
+Expansions are loaded via js/data/expansion_v07.js through expansion_v16.js on the main pages (simulator, missions, transport).
+
+## v1.6 Beyond Absolute / Meta-Existence Expansion
+- Added expansion_v16.js: 50+ resources, 22 ships, 15 factions, 32 missions
+- Content reaches pre-creation / meta-source / existence engine / absolute beyond / source of sources / pre-existence tier
+- Highlights: Pre-Creation Ark, Source of Sources Dreadnought, Absolute Meta-Transcendent Emperor, Existence Engine God, Pre-Existence Particle, and new factions including Pre-Creation Order, Source of Sources Council, Absolute Meta-Transcendent Order, Existence Engine Collective
+- Total resources now 475+, ships 187+, factions 131+, missions 267+
 
 ## v1.5 Transcendent Reality / Creator Tier Expansion
 - Added expansion_v15.js: 55+ resources, 25 ships, 16 factions, 35 missions
