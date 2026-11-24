@@ -1,68 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Ideal Umbrella — Transport Company</title>
-<link rel="stylesheet" href="css/transport.css">
 <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/transport.css">
 </head>
 <body>
-<header>
-  <h1>Transport Company</h1>
-  <a href="index.html">← Back to Simulator</a>
-  <div id="clock"></div>
-</header>
+<div class="topbar">
+  <a href="index.html">← Simulator</a>
+  <a href="missions.html">Missions</a>
+  <a href="galaxy.html">Galaxy</a>
+  <a href="ui/company.html">Company</a>
+  <a href="ui/diplomacy.html">Diplomacy</a>
+  <a href="ui/finance.html">Finance</a>
+  <span style="margin-left:auto" id="credits"></span>
+</div>
 
-<main>
-  <section class="panel">
-    <h2>Company Overview</h2>
-    <p>Company Credits: <span id="credits">—</span></p>
-    <p>Deliveries completed: <span id="deliveries">—</span></p>
-    <p>Last saved: <span id="savedAt">—</span></p>
-    <button id="resetDemo" type="button">Reset Demo Save</button>
-  </section>
+<h1>Transport Company</h1>
+<p>Manage your fleet, accept contracts, and compete with NPC haulers. All credits and reputation are shared with the simulator.</p>
 
-  <section class="panel">
-    <h2>Fleet</h2>
-    <div id="fleetList"></div>
-    <form id="buyShipForm">
-      <label>Buy new ship:
-        <select id="shipType"></select>
-      </label>
-      <button type="submit">Purchase</button>
-    </form>
-  </section>
+<div id="status"></div>
+<div id="fleet"></div>
+<div id="contracts"></div>
+<div id="npc"></div>
 
-  <section class="panel">
-    <h2>Available Contracts</h2>
-    <div id="contractList"></div>
-  </section>
-
-  <section class="panel">
-    <h2>Dispatch Journey</h2>
-    <form id="routeForm">
-      <label>Contract:
-        <select id="contractSelect"></select>
-      </label>
-      <label>Ship:
-        <select id="shipSelect"></select>
-      </label>
-      <button type="submit">Dispatch</button>
-    </form>
-    <div id="journeyList"></div>
-  </section>
-
-  <section class="panel">
-    <h2>Galaxy Map</h2>
-    <canvas id="galaxyMap" width="600" height="400" style="max-width:100%;background:#000;border:1px solid #555;"></canvas>
-  </section>
-</main>
-
-<!-- Core + data scripts -->
-<script src="js/core/universe.js"></script>
 <script src="js/core/credits.js"></script>
-<script src="js/core/clock.js"></script>
 <script src="js/core/save-manager.js"></script>
 <script src="js/core/game-state.js"></script>
 <script src="js/data/resources.js"></script>
@@ -77,8 +41,11 @@
 <script src="js/data/expansion_v14.js"></script>
 <script src="js/data/expansion_v15.js"></script>
 <script src="js/data/expansion_v16.js"></script>
-<script src="js/data/ships.js"></script>
-<script src="js/data/factions.js"></script>
+<script src="js/data/expansion_v17.js"></script>
+<script src="js/data/missions.js"></script>
+<script src="js/data/missions_extra.js"></script>
+<script src="js/core/faction-standing.js"></script>
+<script src="js/economy.js"></script>
 <script src="js/npc-companies.js"></script>
 <script src="js/transport.js"></script>
 <script src="js/transport-npc-hook.js"></script>

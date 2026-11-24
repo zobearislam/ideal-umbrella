@@ -1,3 +1,17 @@
+## [1.7.0] — Post-Meta Absolute / Beyond Absolute Beyond Expansion v17 (2026-11-24)
+
+### Added
+- Full integration of `js/data/expansion_v17.js` (60+ resources, 25 ships, 18 factions, 40 missions)
+- Post-meta / absolute-beyond-absolute content: Post-Meta Ark, Absolute Beyond Absolute Emperor, Source of Source of Sources Dreadnought, Absolute Beyond Transcendent Emperor, Pre-Pre-Creation Particle, Meta-Meta God Particle, and new factions including Post-Meta Order, Absolute Beyond Absolute Empire, Source of Source of Sources Council, Absolute Beyond Transcendent Order, and more
+- Loaded on Simulator, Mission Board, and Transport pages
+
+### Improved
+- Total resources now exceed 535+
+- Total ship types now 212+
+- Total factions now 149+
+- Mission templates now 307+
+
+
 ## [1.6.0] — Beyond Absolute / Meta-Existence Expansion v16 (2026-11-23)
 
 ### Added
