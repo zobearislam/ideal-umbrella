@@ -1,3 +1,16 @@
+## [2.0.0] — Absolute Beyond Beyond Beyond Beyond / Source of Source of Source of Source of Source Expansion v20 (2026-11-27)
+
+### Added
+- Full integration of `js/data/expansion_v20.js` (120+ resources, 60 ships, 40 factions, 100 missions)
+- Absolute-beyond-beyond-beyond-beyond / source-of-source-of-source-of-source-of-source / meta-meta-meta-absolute-beyond content: Absolute Beyond Beyond Beyond Beyond Ark, Source of Source of Source of Source of Source Emperor, Absolute Final Beyond Beyond Form, Absolute Final Final Beyond Form, Absolute Beyond Beyond Beyond Beyond Essence, and dozens of new factions including Absolute Beyond Beyond Beyond Beyond Order, Source of Source of Source of Source of Source Empire, Absolute Final Final Beyond Order, and more
+- Loaded on Simulator, Mission Board, and Transport pages
+
+### Improved
+- Total resources now exceed 770+
+- Total ship types now 320+
+- Total factions now 225+
+- Mission templates now 487+
+
 ## [1.9.0] — Absolute Beyond Beyond Beyond / Source of Source of Source of Source Expansion v19 (2026-11-26)
 
 ### Added
