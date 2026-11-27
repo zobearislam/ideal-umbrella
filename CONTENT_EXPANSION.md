@@ -2,15 +2,21 @@
 
 This file tracks major content additions. See CHANGELOG.md for the full version history.
 
-## Current status (v1.9+)
+## Current status (v2.0+)
 
-- Resources: 650+
-- Ship types: 260+
-- Factions: 185+
-- Mission templates: 387+
+- Resources: 770+
+- Ship types: 320+
+- Factions: 225+
+- Mission templates: 487+
 - Star systems: expanded network in js/core/universe.js
 
-Expansions are loaded via js/data/expansion_v07.js through expansion_v19.js on the main pages (simulator, missions, transport).
+Expansions are loaded via js/data/expansion_v07.js through expansion_v20.js on the main pages (simulator, missions, transport).
+
+## v2.0 Absolute Beyond Beyond Beyond Beyond / Source of Source of Source of Source of Source Expansion
+- Added expansion_v20.js: 120+ resources, 60 ships, 40 factions, 100 missions
+- Content reaches absolute-beyond-beyond-beyond-beyond / source-of-source-of-source-of-source-of-source / meta-meta-meta-absolute-beyond / pre-pre-pre-pre-pre-creation / absolute-final-final-beyond tier
+- Highlights: Absolute Beyond Beyond Beyond Beyond Ark, Source of Source of Source of Source of Source Emperor, Absolute Final Beyond Beyond Form, Absolute Final Final Beyond Form, Absolute Beyond Beyond Beyond Beyond Essence, and new factions including Absolute Beyond Beyond Beyond Beyond Order, Source of Source of Source of Source of Source Empire, Absolute Final Final Beyond Order, and many more
+- Total resources now 770+, ships 320+, factions 225+, missions 487+
 
 ## v1.9 Absolute Beyond Beyond Beyond / Source of Source of Source of Source Expansion
 - Added expansion_v19.js: 50+ resources, 10 ships, 4 factions, 3 missions (core set; expandable)
