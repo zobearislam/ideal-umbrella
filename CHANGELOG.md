@@ -2,7 +2,7 @@
 
 ### Added
 - Full integration of `js/data/expansion_v20.js` (120+ resources, 60 ships, 40 factions, 100 missions)
-- Absolute-beyond-beyond-beyond-beyond / source-of-source-of-source-of-source-of-source / meta-meta-meta-absolute-beyond content: Absolute Beyond Beyond Beyond Beyond Ark, Source of Source of Source of Source of Source Emperor, Absolute Final Beyond Beyond Form, Absolute Final Final Beyond Form, Absolute Beyond Beyond Beyond Beyond Essence, and dozens of new factions including Absolute Beyond Beyond Beyond Beyond Order, Source of Source of Source of Source of Source Empire, Absolute Final Final Beyond Order, and more
+- Absolute-beyond-beyond-beyond-beyond / source-of-source-of-source-of-source-of-sources / meta-meta-meta-absolute-beyond content
 - Loaded on Simulator, Mission Board, and Transport pages
 
 ### Improved
