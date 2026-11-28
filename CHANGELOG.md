@@ -1,3 +1,16 @@
+## [2.1.0] — Absolute Beyond Beyond Beyond Beyond Beyond / Source of Source of Source of Source of Source of Source Expansion v21 (2026-11-28)
+
+### Added
+- Full integration of `js/data/expansion_v21.js` (85+ resources, 42 ships, 28 factions, 65 missions)
+- Absolute-beyond-beyond-beyond-beyond-beyond / source-of-source-of-source-of-source-of-source-of-sources / meta-meta-meta-meta-absolute-beyond content
+- Loaded on Simulator, Mission Board, and Transport pages
+
+### Improved
+- Total resources now exceed 855+
+- Total ship types now 362+
+- Total factions now 253+
+- Mission templates now 552+
+
 ## [2.0.0] — Absolute Beyond Beyond Beyond Beyond / Source of Source of Source of Source of Source Expansion v20 (2026-11-27)
 
 ### Added
